@@ -1,89 +1,127 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 
 const quickLinks = [
   { label: "About", href: "/about" },
-  { label: "For Nurses", href: "/nurses" },
-  { label: "For Employers", href: "/employers" },
-  { label: "Recruitment Process", href: "/process" },
+  { label: "Nurses", href: "/nurses" },
+  { label: "Employers", href: "/employers" },
+  { label: "Process", href: "/process" },
   { label: "Contact", href: "/contact" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-100 bg-[#061f3d] text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.3fr_0.8fr_1fr] md:px-8">
-        <div>
-          <div className="flex items-center gap-3">
-            <Image
-              src="/images/careradar-logo.jpeg"
-              alt="CareRadar Logo"
-              width={58}
-              height={58}
-              className="h-14 w-14 rounded-full bg-white object-contain"
-            />
-            <div>
-              <p className="text-2xl font-semibold">
-                Care<span className="text-[#10c4b6]">Radar</span>
-              </p>
-              <p className="mt-1 text-xs tracking-[0.25em] text-slate-300">
-                WE REALLY DO CARE
-              </p>
+    <footer className="bg-white px-4 pb-4 md:px-8 md:pb-5">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.5rem] bg-[#061f3d] text-white shadow-xl shadow-slate-200 md:rounded-[2rem]">
+        <div className="grid gap-7 px-5 py-7 md:grid-cols-[1.2fr_0.8fr_1fr] md:gap-10 md:px-10 md:py-12">
+          <div>
+            <Link href="/" className="inline-flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white md:h-14 md:w-14">
+                <Image
+                  src="/images/careradar-logo.jpeg"
+                  alt="CareRadar Logo"
+                  width={46}
+                  height={46}
+                  className="h-9 w-9 rounded-full object-contain md:h-11 md:w-11"
+                />
+              </div>
+
+              <div>
+                <p className="text-xl font-semibold tracking-tight md:text-2xl">
+                  Care<span className="text-[#10c4b6]">Radar</span>
+                </p>
+                <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.24em] text-slate-400 md:text-[10px]">
+                  We really do care
+                </p>
+              </div>
+            </Link>
+
+            <p className="mt-4 max-w-md text-sm leading-6 text-slate-300 md:mt-6 md:leading-7">
+              CareRadar supports nurses and healthcare employers through a
+              structured, transparent, and care-led international recruitment
+              journey.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#10c4b6]">
+              Explore
+            </h3>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 md:flex md:flex-col md:gap-3">
+              {quickLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="group inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300 transition hover:text-white md:bg-transparent md:px-0 md:py-0"
+                >
+                  <span>{link.label}</span>
+                  <ArrowRight
+                    size={14}
+                    className="hidden opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100 md:block"
+                  />
+                </Link>
+              ))}
             </div>
           </div>
 
-          <p className="mt-5 max-w-md text-sm leading-7 text-slate-300">
-            CareRadar supports qualified nurses and healthcare employers through
-            a structured, transparent, and care-led international recruitment
-            journey.
-          </p>
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#10c4b6]">
+              Contact
+            </h3>
+
+            <div className="mt-4 grid gap-2 text-sm text-slate-300 md:space-y-4">
+              <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <Phone size={17} className="mt-0.5 shrink-0 text-[#10c4b6]" />
+                <div>
+                  <p className="font-semibold text-white">Phone / WhatsApp</p>
+                  <p className="mt-0.5 text-xs text-slate-400 md:text-sm">
+                    To be added
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <Mail size={17} className="mt-0.5 shrink-0 text-[#10c4b6]" />
+                <div>
+                  <p className="font-semibold text-white">Email</p>
+                  <p className="mt-0.5 text-xs text-slate-400 md:text-sm">
+                    To be added
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <MapPin size={17} className="mt-0.5 shrink-0 text-[#10c4b6]" />
+                <div>
+                  <p className="font-semibold text-white">Location</p>
+                  <p className="mt-0.5 text-xs text-slate-400 md:text-sm">
+                    To be added
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-[#10c4b6]">
-            Quick Links
-          </h3>
+        <div className="border-t border-white/10 px-5 py-4 md:px-10 md:py-5">
+          <div className="flex flex-col gap-2 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
+            <p>© {new Date().getFullYear()} CareRadar. All rights reserved.</p>
 
-          <div className="mt-5 flex flex-col gap-3">
-            {quickLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-slate-300 transition hover:text-white"
-              >
-                {link.label}
+            <div className="flex gap-4">
+              <Link href="/about" className="transition hover:text-white">
+                About
               </Link>
-            ))}
+              <Link href="/process" className="transition hover:text-white">
+                Process
+              </Link>
+              <Link href="/contact" className="transition hover:text-white">
+                Contact
+              </Link>
+            </div>
           </div>
         </div>
-
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-[#10c4b6]">
-            Contact
-          </h3>
-
-          <div className="mt-5 space-y-4 text-sm text-slate-300">
-            <p className="flex gap-3">
-              <Phone size={18} className="mt-0.5 text-[#10c4b6]" />
-              <span>Phone / WhatsApp details to be added</span>
-            </p>
-
-            <p className="flex gap-3">
-              <Mail size={18} className="mt-0.5 text-[#10c4b6]" />
-              <span>Email address to be added</span>
-            </p>
-
-            <p className="flex gap-3">
-              <MapPin size={18} className="mt-0.5 text-[#10c4b6]" />
-              <span>Office address to be added</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10 px-5 py-5 text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} CareRadar. All rights reserved.
       </div>
     </footer>
   );

@@ -4,6 +4,8 @@ import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
+  BriefcaseBusiness,
+  Building2,
   Compass,
   HeartHandshake,
   ShieldCheck,
@@ -41,6 +43,33 @@ const values = [
     description:
       "CareRadar is designed specifically for nursing and healthcare recruitment pathways.",
     icon: BadgeCheck,
+  },
+];
+
+const founders = [
+  {
+    name: "Akshat Gupta",
+    role: "Co-Founder",
+    image: "/images/akshat-gupta.jpeg",
+    icon: BriefcaseBusiness,
+    bio: [
+      "Akshat Gupta brings a multidisciplinary background across finance, consulting, and international business. His experience gives him a strong understanding of how organisations grow, how markets evolve, and how the right talent can shape long-term success.",
+      "At CareRadar, Akshat is focused on building a trusted healthcare recruitment platform that supports skilled nursing professionals and healthcare providers through a more structured, transparent, and human process.",
+      "His approach goes beyond recruitment by placing equal importance on candidate support, professional growth, integration, and long-term partnerships built on trust, quality, and mutual success.",
+      "He believes that addressing healthcare workforce challenges requires more than efficient hiring processes. It requires genuine care for the people whose lives, careers, and organisations are shaped by these opportunities.",
+    ],
+  },
+  {
+    name: "Ron Rüdiger",
+    role: "Co-Founder",
+    image: "/images/ron-rudiger.jpeg",
+    icon: Users,
+    bio: [
+      "Ron Rüdiger brings several years of experience in human resources leadership, having worked as Head of HR across corporate and mid-sized organisational environments.",
+      "Throughout his career, he has led recruitment initiatives, developed and optimised HR structures, advised leadership teams, and supported organisations through periods of growth and transformation.",
+      "His work is guided by a clear belief: the long-term success of any organisation depends on the people who strengthen its culture, shape its performance, and drive it forward.",
+      "At CareRadar, Ron brings this people-first perspective into international healthcare recruitment, helping build a process that values both organisational needs and candidate journeys.",
+    ],
   },
 ];
 
@@ -150,8 +179,85 @@ export default function AboutPage() {
             <p>
               The company does not position recruitment as a rushed transaction.
               It positions recruitment as a guided pathway. That is why the
-              tagline matters: <span className="font-semibold text-[#08264a]">we really do care.</span>
+              tagline matters:{" "}
+              <span className="font-semibold text-[#08264a]">
+                we really do care.
+              </span>
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FOUNDERS */}
+      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+              Leadership
+            </p>
+
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
+              Meet the people behind CareRadar.
+            </h2>
+
+            <p className="mt-4 text-sm leading-7 text-slate-600 md:text-base">
+              CareRadar is led by professionals with experience across
+              international business, consulting, finance, recruitment, and
+              human resources.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {founders.map((founder) => {
+              const Icon = founder.icon;
+
+              return (
+                <article
+                  key={founder.name}
+                  className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100"
+                >
+                  <div className="flex h-full flex-col">
+                    <div className="relative flex h-[300px] w-full items-center justify-center bg-[#f8fbff] p-4 sm:h-[340px]">
+                      <Image
+                        src={founder.image}
+                        alt={founder.name}
+                        fill
+                        className="object-contain p-4"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                      />
+                    </div>
+
+                    <div className="flex flex-1 flex-col p-6 md:p-8">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                          <Icon size={22} />
+                        </div>
+
+                        <div>
+                          <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
+                            {founder.name}
+                          </h3>
+                          <p className="mt-1 text-sm font-semibold text-[#08a99d]">
+                            {founder.role}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 space-y-4">
+                        {founder.bio.map((paragraph) => (
+                          <p
+                            key={paragraph}
+                            className="text-sm leading-7 text-slate-600"
+                          >
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -247,8 +353,8 @@ export default function AboutPage() {
 
             <p className="mt-4 text-sm leading-7 text-slate-600">
               The long-term vision is to support healthcare systems with
-              suitable nursing talent while helping candidates access meaningful
-              international career pathways.
+              suitable nursing talent while helping candidates access
+              meaningful, well-guided opportunities abroad.
             </p>
           </div>
 

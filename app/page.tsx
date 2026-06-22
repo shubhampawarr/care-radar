@@ -40,28 +40,45 @@ const pathways = [
 ];
 
 const processSteps = [
-  "Initial enquiry and registration",
-  "Profile review and eligibility understanding",
-  "Document and interview preparation guidance",
-  "Employer matching and recruitment coordination",
+  {
+    title: "Initial enquiry and registration",
+    description:
+      "The first step is understanding whether the visitor is a nurse or employer and what support they need.",
+  },
+  {
+    title: "Profile review and eligibility understanding",
+    description:
+      "CareRadar reviews the basic situation so the next steps are realistic, not vague or confusing.",
+  },
+  {
+    title: "Document and interview preparation guidance",
+    description:
+      "The candidate journey is strengthened through clearer preparation before employer interaction.",
+  },
+  {
+    title: "Employer matching and recruitment coordination",
+    description:
+      "Suitable candidates and employers are connected through a more organised recruitment pathway.",
+  },
 ];
 
 export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_72%)] px-5 py-10 md:px-8 md:py-16">
-        <div className="absolute left-[-120px] top-16 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
-        <div className="absolute right-[-120px] top-28 h-72 w-72 rounded-full bg-[#08264a]/10 blur-3xl" />
+      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-10 md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.22]" />
+        <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
+        <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.06fr_0.94fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm md:mx-0">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
               <HeartHandshake size={14} />
               International Nurse Recruitment
             </div>
 
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.4rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               Helping nurses and healthcare employers move forward with care.
             </h1>
 
@@ -81,13 +98,14 @@ export default function Home() {
 
               <Link
                 href="/employers"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
               >
                 Hire Nurses
               </Link>
             </div>
 
-            <div className="mx-auto mt-8 max-w-2xl border-l-2 border-[#08a99d] bg-white px-5 py-4 text-left shadow-sm md:mx-0">
+            <div className="mx-auto mt-8 max-w-2xl rounded-[1.4rem] border border-slate-100 bg-white/90 p-5 text-left shadow-lg shadow-slate-100 backdrop-blur md:mx-0">
+              <div className="mb-4 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
               <p className="text-sm leading-7 text-slate-600">
                 The recruitment journey can feel complex for both sides. Nurses
                 need clarity about requirements, documents, interviews, and
@@ -99,14 +117,15 @@ export default function Home() {
           </div>
 
           <div className="relative mx-auto w-full max-w-sm md:max-w-md">
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-xl shadow-slate-100">
-              <div className="rounded-[1.5rem] bg-[#f8fbff] px-5 py-7 text-center">
+            <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
+            <div className="relative rounded-[2rem] border border-white bg-white p-4 shadow-2xl shadow-slate-200">
+              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] px-5 py-7 text-center">
                 <Image
                   src="/images/careradar-logo.jpeg"
                   alt="CareRadar Logo"
                   width={190}
                   height={190}
-                  className="mx-auto h-40 w-40 rounded-full object-contain md:h-48 md:w-48"
+                  className="mx-auto h-36 w-36 rounded-full object-contain md:h-44 md:w-44"
                   priority
                 />
 
@@ -124,6 +143,19 @@ export default function Home() {
                   A recruitment experience built on dignity, guidance, and
                   dependable support.
                 </p>
+
+                <div className="mt-6 grid grid-cols-3 gap-2">
+                  {["Care", "Clarity", "Trust"].map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl border border-slate-100 bg-white px-3 py-3 shadow-sm"
+                    >
+                      <p className="text-xs font-semibold text-[#08264a]">
+                        {item}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -131,11 +163,14 @@ export default function Home() {
       </section>
 
       {/* TRUST POINTS */}
-      <section className="bg-white px-5 py-10 md:px-8">
-        <div className="mx-auto max-w-7xl border-y border-slate-100 py-6">
-          <div className="grid gap-4 md:grid-cols-4">
+      <section className="bg-white px-5 py-8 md:px-8 md:py-10">
+        <div className="mx-auto max-w-7xl rounded-[1.6rem] border border-slate-100 bg-white p-4 shadow-lg shadow-slate-100 md:p-5">
+          <div className="grid gap-3 md:grid-cols-4">
             {trustPoints.map((point) => (
-              <div key={point} className="flex items-start gap-3">
+              <div
+                key={point}
+                className="flex items-start gap-3 rounded-2xl bg-[#f8fbff] p-4"
+              >
                 <CheckCircle2
                   size={18}
                   className="mt-1 shrink-0 text-[#08a99d]"
@@ -198,9 +233,9 @@ export default function Home() {
             </h2>
 
             <p className="mt-4 text-sm leading-7 text-slate-600 md:text-base">
-              The website should quickly guide visitors depending on who they
-              are: a nurse looking for opportunities or an employer looking to
-              hire.
+              CareRadar guides each visitor toward the right pathway — whether
+              they are a nurse exploring opportunities or a healthcare employer
+              looking to hire.
             </p>
           </div>
 
@@ -212,10 +247,13 @@ export default function Home() {
                 <Link
                   href={item.href}
                   key={item.title}
-                  className="group rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/30 hover:shadow-xl md:p-8"
+                  className="group relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 transition hover:-translate-y-1 hover:border-[#08a99d]/30 hover:shadow-xl md:p-8"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                  <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#08a99d] to-[#08264a]" />
+                  <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-[#08a99d]/5" />
+
+                  <div className="relative flex items-start gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                       <Icon size={24} />
                     </div>
 
@@ -228,7 +266,7 @@ export default function Home() {
                         {item.description}
                       </p>
 
-                      <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#08a99d]">
+                      <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#08a99d]/10 px-4 py-2 text-sm font-semibold text-[#087d76]">
                         {item.cta}
                         <ArrowRight
                           size={16}
@@ -246,9 +284,11 @@ export default function Home() {
 
       {/* DARK CALM SECTION */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d]">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
           <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
-            <div className="p-7 text-white md:p-10">
+            <div className="relative p-7 text-white md:p-10">
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
+
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
                 Why It Matters
               </p>
@@ -339,24 +379,17 @@ export default function Home() {
           <div className="space-y-4">
             {processSteps.map((step, index) => (
               <div
-                key={step}
-                className="flex gap-4 rounded-[1.3rem] border border-slate-100 bg-white p-5 shadow-sm"
+                key={step.title}
+                className="flex gap-4 rounded-[1.4rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#08264a] text-sm font-semibold text-white">
                   {index + 1}
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-[#08264a]">{step}</h3>
+                  <h3 className="font-semibold text-[#08264a]">{step.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {index === 0 &&
-                      "The first step is understanding whether the visitor is a nurse or employer and what support they need."}
-                    {index === 1 &&
-                      "CareRadar reviews the basic situation so the next steps are realistic, not vague or confusing."}
-                    {index === 2 &&
-                      "The candidate journey is strengthened through clearer preparation before employer interaction."}
-                    {index === 3 &&
-                      "Suitable candidates and employers are connected through a more organised recruitment pathway."}
+                    {step.description}
                   </p>
                 </div>
               </div>
@@ -367,7 +400,9 @@ export default function Home() {
 
       {/* FINAL CTA */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
             Start Your Journey
           </p>
