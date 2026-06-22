@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Building2,
   CheckCircle2,
-  ClipboardCheck,
   Mail,
   MapPin,
   MessageCircle,
@@ -47,22 +46,30 @@ const formFields = [
   "Current City / Country",
 ];
 
+const heroPoints = [
+  "Apply as a nurse",
+  "Enquire as a healthcare employer",
+  "Ask about the recruitment process",
+  "Speak with the CareRadar team",
+];
+
 export default function ContactPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_72%)] px-5 py-12 md:px-8 md:py-16">
-        <div className="absolute left-[-120px] top-16 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
-        <div className="absolute right-[-120px] top-28 h-72 w-72 rounded-full bg-[#08264a]/10 blur-3xl" />
+      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-10 md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.18]" />
+        <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
+        <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm md:mx-0">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
               <Send size={14} />
               Contact CareRadar
             </div>
 
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.4rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               Start with one clear recruitment conversation.
             </h1>
 
@@ -82,45 +89,51 @@ export default function ContactPage() {
 
               <Link
                 href="/process"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
               >
                 View Process
               </Link>
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-md">
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xl shadow-slate-100">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-                Enquiry Types
-              </p>
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
 
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
-                Choose the right pathway before moving forward.
-              </h2>
+            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-2xl shadow-slate-200">
+              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
+                  <MessageCircle size={24} />
+                </div>
 
-              <div className="mt-6 space-y-4">
-                {[
-                  "Apply as a nurse",
-                  "Enquire as a healthcare employer",
-                  "Ask about the recruitment process",
-                  "Speak with the CareRadar team",
-                ].map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2
-                      size={18}
-                      className="mt-1 shrink-0 text-[#08a99d]"
-                    />
-                    <p className="text-sm leading-6 text-slate-600">{item}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-7 border-l-2 border-[#08a99d] bg-[#f8fbff] px-5 py-4">
-                <p className="text-sm leading-7 text-slate-600">
-                  The first step is simple: share your details and CareRadar can
-                  guide you toward the correct recruitment pathway.
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+                  Enquiry Types
                 </p>
+
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
+                  Choose the right pathway before moving forward.
+                </h2>
+
+                <div className="mt-6 space-y-4">
+                  {heroPoints.map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2
+                        size={18}
+                        className="mt-1 shrink-0 text-[#08a99d]"
+                      />
+                      <p className="text-sm leading-6 text-slate-600">
+                        {item}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 rounded-[1.3rem] border border-slate-100 bg-white p-5 shadow-sm">
+                  <div className="mb-4 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
+                  <p className="text-sm leading-7 text-slate-600">
+                    The first step is simple: share your details and CareRadar
+                    can guide you toward the correct recruitment pathway.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -152,17 +165,19 @@ export default function ContactPage() {
               return (
                 <div
                   key={item.title}
-                  className="rounded-[1.5rem] border border-slate-100 bg-white p-6 shadow-sm"
+                  className="group relative overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                  <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-[#08a99d]/5" />
+
+                  <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                     <Icon size={22} />
                   </div>
 
-                  <h3 className="mt-5 text-lg font-semibold text-[#08264a]">
+                  <h3 className="relative mt-5 text-lg font-semibold text-[#08264a]">
                     {item.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-7 text-slate-600">
+                  <p className="relative mt-3 text-sm leading-7 text-slate-600">
                     {item.description}
                   </p>
                 </div>
@@ -193,13 +208,15 @@ export default function ContactPage() {
               healthcare role or hiring requirement.
             </p>
 
-            <div className="mt-8 rounded-[1.5rem] border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mt-8 overflow-hidden rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100">
+              <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
+
               <h3 className="text-lg font-semibold text-[#08264a]">
                 Contact details
               </h3>
 
               <div className="mt-5 space-y-4">
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 rounded-2xl bg-[#f8fbff] p-4">
                   <Phone size={18} className="mt-1 shrink-0 text-[#08a99d]" />
                   <div>
                     <p className="text-sm font-semibold text-[#08264a]">
@@ -211,7 +228,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 rounded-2xl bg-[#f8fbff] p-4">
                   <Mail size={18} className="mt-1 shrink-0 text-[#08a99d]" />
                   <div>
                     <p className="text-sm font-semibold text-[#08264a]">
@@ -223,7 +240,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 rounded-2xl bg-[#f8fbff] p-4">
                   <MapPin size={18} className="mt-1 shrink-0 text-[#08a99d]" />
                   <div>
                     <p className="text-sm font-semibold text-[#08264a]">
@@ -238,7 +255,9 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <form className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xl shadow-slate-100 md:p-8">
+          <form className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 shadow-2xl shadow-slate-100 md:p-8">
+            <div className="mb-6 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
+
             <div className="grid gap-5 md:grid-cols-2">
               {formFields.map((label) => (
                 <div key={label}>
@@ -283,7 +302,7 @@ export default function ContactPage() {
               Submit Enquiry <Send size={16} />
             </button>
 
-            <p className="mt-4 text-xs leading-6 text-slate-500">
+            <p className="mt-4 rounded-2xl bg-[#f8fbff] px-4 py-3 text-xs leading-6 text-slate-500">
               This form is currently a front-end enquiry layout. We can connect
               it to email, WhatsApp, Google Sheets, or a backend once the client
               confirms the preferred enquiry system.
@@ -294,7 +313,9 @@ export default function ContactPage() {
 
       {/* FINAL STRIP */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
             CareRadar
           </p>

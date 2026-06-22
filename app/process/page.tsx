@@ -73,22 +73,30 @@ const employerPath = [
   "Move toward interview and selection coordination",
 ];
 
+const heroPoints = [
+  "Clear first enquiry",
+  "Profile and requirement understanding",
+  "Preparation before employer conversations",
+  "Responsible recruitment coordination",
+];
+
 export default function ProcessPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_72%)] px-5 py-12 md:px-8 md:py-16">
-        <div className="absolute left-[-120px] top-16 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
-        <div className="absolute right-[-120px] top-28 h-72 w-72 rounded-full bg-[#08264a]/10 blur-3xl" />
+      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-10 md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.18]" />
+        <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
+        <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm md:mx-0">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
               <ClipboardCheck size={14} />
               Recruitment Process
             </div>
 
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.4rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               A clear recruitment journey from first enquiry to coordination.
             </h1>
 
@@ -108,46 +116,52 @@ export default function ProcessPage() {
 
               <Link
                 href="/nurses"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
               >
                 For Nurses
               </Link>
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-md">
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xl shadow-slate-100">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-                Process Promise
-              </p>
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
 
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
-                Simple enough to understand. Structured enough to trust.
-              </h2>
+            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-2xl shadow-slate-200">
+              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
+                  <HeartHandshake size={24} />
+                </div>
 
-              <div className="mt-6 space-y-4">
-                {[
-                  "Clear first enquiry",
-                  "Profile and requirement understanding",
-                  "Preparation before employer conversations",
-                  "Responsible recruitment coordination",
-                ].map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2
-                      size={18}
-                      className="mt-1 shrink-0 text-[#08a99d]"
-                    />
-                    <p className="text-sm leading-6 text-slate-600">{item}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-7 border-l-2 border-[#08a99d] bg-[#f8fbff] px-5 py-4">
-                <p className="text-sm leading-7 text-slate-600">
-                  The exact pathway may vary by country, employer requirement,
-                  and candidate readiness, but the goal remains the same:
-                  clarity before progress.
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+                  Process Promise
                 </p>
+
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
+                  Simple enough to understand. Structured enough to trust.
+                </h2>
+
+                <div className="mt-6 space-y-4">
+                  {heroPoints.map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2
+                        size={18}
+                        className="mt-1 shrink-0 text-[#08a99d]"
+                      />
+                      <p className="text-sm leading-6 text-slate-600">
+                        {item}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 rounded-[1.3rem] border border-slate-100 bg-white p-5 shadow-sm">
+                  <div className="mb-4 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
+                  <p className="text-sm leading-7 text-slate-600">
+                    The exact pathway may vary by country, employer requirement,
+                    and candidate readiness, but the goal remains the same:
+                    clarity before progress.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -167,26 +181,30 @@ export default function ProcessPage() {
             </h2>
           </div>
 
-          <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
-            <p>
-              International nurse recruitment involves multiple moving parts:
-              candidate readiness, documents, communication, employer
-              expectations, interview stages, and coordination. Without a clear
-              process, both candidates and employers can feel uncertain.
-            </p>
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
+            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
 
-            <p>
-              CareRadar creates a more organised pathway by helping both sides
-              understand the next step. Nurses receive guidance before important
-              recruitment stages, while employers receive more structured
-              candidate coordination.
-            </p>
+            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+              <p>
+                International nurse recruitment involves multiple moving parts:
+                candidate readiness, documents, communication, employer
+                expectations, interview stages, and coordination. Without a
+                clear process, both candidates and employers can feel uncertain.
+              </p>
 
-            <p>
-              The process is not built around rushing applications. It is built
-              around understanding, preparation, and responsible movement toward
-              suitable opportunities.
-            </p>
+              <p>
+                CareRadar creates a more organised pathway by helping both sides
+                understand the next step. Nurses receive guidance before
+                important recruitment stages, while employers receive more
+                structured candidate coordination.
+              </p>
+
+              <p>
+                The process is not built around rushing applications. It is
+                built around understanding, preparation, and responsible
+                movement toward suitable opportunities.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -216,10 +234,12 @@ export default function ProcessPage() {
               return (
                 <div
                   key={step.title}
-                  className="rounded-[1.5rem] border border-slate-100 bg-white p-6 shadow-sm"
+                  className="group relative overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                  <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-[#08a99d]/5" />
+
+                  <div className="relative flex items-center justify-between gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                       <Icon size={22} />
                     </div>
 
@@ -228,11 +248,11 @@ export default function ProcessPage() {
                     </span>
                   </div>
 
-                  <h3 className="mt-5 text-lg font-semibold text-[#08264a]">
+                  <h3 className="relative mt-5 text-lg font-semibold text-[#08264a]">
                     {step.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-7 text-slate-600">
+                  <p className="relative mt-3 text-sm leading-7 text-slate-600">
                     {step.description}
                   </p>
                 </div>
@@ -244,9 +264,11 @@ export default function ProcessPage() {
 
       {/* DARK SECTION */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d]">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
           <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
-            <div className="p-7 text-white md:p-10">
+            <div className="relative p-7 text-white md:p-10">
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
+
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
                 Built Around Clarity
               </p>
@@ -333,16 +355,22 @@ export default function ProcessPage() {
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
-            <div className="rounded-[1.7rem] border border-slate-100 bg-white p-7 shadow-sm md:p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+            <Link
+              href="/nurses"
+              className="group relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-white p-7 shadow-lg shadow-slate-100 transition hover:-translate-y-1 hover:border-[#08a99d]/30 hover:shadow-xl md:p-8"
+            >
+              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#08a99d] to-[#08264a]" />
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-[#08a99d]/5" />
+
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                 <Stethoscope size={24} />
               </div>
 
-              <h3 className="mt-5 text-2xl font-semibold tracking-tight text-[#061f3d]">
+              <h3 className="relative mt-5 text-2xl font-semibold tracking-tight text-[#061f3d]">
                 Nurse pathway
               </h3>
 
-              <div className="mt-6 space-y-4">
+              <div className="relative mt-6 space-y-4">
                 {nursePath.map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <CheckCircle2
@@ -354,24 +382,31 @@ export default function ProcessPage() {
                 ))}
               </div>
 
-              <Link
-                href="/nurses"
-                className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[#08a99d]"
-              >
-                View nurse page <ArrowRight size={16} />
-              </Link>
-            </div>
+              <div className="relative mt-7 inline-flex items-center gap-2 rounded-full bg-[#08a99d]/10 px-4 py-2 text-sm font-semibold text-[#087d76]">
+                View nurse page
+                <ArrowRight
+                  size={16}
+                  className="transition group-hover:translate-x-1"
+                />
+              </div>
+            </Link>
 
-            <div className="rounded-[1.7rem] border border-slate-100 bg-white p-7 shadow-sm md:p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+            <Link
+              href="/employers"
+              className="group relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-white p-7 shadow-lg shadow-slate-100 transition hover:-translate-y-1 hover:border-[#08a99d]/30 hover:shadow-xl md:p-8"
+            >
+              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#08a99d] to-[#08264a]" />
+              <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-[#08a99d]/5" />
+
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                 <Building2 size={24} />
               </div>
 
-              <h3 className="mt-5 text-2xl font-semibold tracking-tight text-[#061f3d]">
+              <h3 className="relative mt-5 text-2xl font-semibold tracking-tight text-[#061f3d]">
                 Employer pathway
               </h3>
 
-              <div className="mt-6 space-y-4">
+              <div className="relative mt-6 space-y-4">
                 {employerPath.map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <CheckCircle2
@@ -383,20 +418,23 @@ export default function ProcessPage() {
                 ))}
               </div>
 
-              <Link
-                href="/employers"
-                className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[#08a99d]"
-              >
-                View employer page <ArrowRight size={16} />
-              </Link>
-            </div>
+              <div className="relative mt-7 inline-flex items-center gap-2 rounded-full bg-[#08a99d]/10 px-4 py-2 text-sm font-semibold text-[#087d76]">
+                View employer page
+                <ArrowRight
+                  size={16}
+                  className="transition group-hover:translate-x-1"
+                />
+              </div>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* CTA */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
             Start The Process
           </p>

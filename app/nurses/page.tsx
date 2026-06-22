@@ -77,22 +77,30 @@ const idealFor = [
   "Nurses looking for responsible guidance before employer conversations",
 ];
 
+const heroPoints = [
+  "Understand where you currently stand",
+  "Prepare your nursing profile professionally",
+  "Know which documents may be important",
+  "Approach employer conversations with confidence",
+];
+
 export default function NursesPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_72%)] px-5 py-12 md:px-8 md:py-16">
-        <div className="absolute left-[-120px] top-16 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
-        <div className="absolute right-[-120px] top-28 h-72 w-72 rounded-full bg-[#08264a]/10 blur-3xl" />
+      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-10 md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.18]" />
+        <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
+        <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm md:mx-0">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
               <Stethoscope size={14} />
               For Nurses
             </div>
 
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.4rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               Your international nursing journey starts with the right guidance.
             </h1>
 
@@ -112,46 +120,52 @@ export default function NursesPage() {
 
               <Link
                 href="/process"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
               >
                 View Process
               </Link>
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-md">
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xl shadow-slate-100">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-                What You Get
-              </p>
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
 
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
-                A clearer, calmer way to move forward.
-              </h2>
+            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-2xl shadow-slate-200">
+              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
+                  <HeartHandshake size={24} />
+                </div>
 
-              <div className="mt-6 space-y-4">
-                {[
-                  "Understand where you currently stand",
-                  "Prepare your nursing profile professionally",
-                  "Know which documents may be important",
-                  "Approach employer conversations with confidence",
-                ].map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2
-                      size={18}
-                      className="mt-1 shrink-0 text-[#08a99d]"
-                    />
-                    <p className="text-sm leading-6 text-slate-600">{item}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-7 border-l-2 border-[#08a99d] bg-[#f8fbff] px-5 py-4">
-                <p className="text-sm leading-7 text-slate-600">
-                  CareRadar does not treat your application like a number. The
-                  aim is to help you understand the route, prepare properly, and
-                  move with confidence.
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+                  What You Get
                 </p>
+
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
+                  A clearer, calmer way to move forward.
+                </h2>
+
+                <div className="mt-6 space-y-4">
+                  {heroPoints.map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2
+                        size={18}
+                        className="mt-1 shrink-0 text-[#08a99d]"
+                      />
+                      <p className="text-sm leading-6 text-slate-600">
+                        {item}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 rounded-[1.3rem] border border-slate-100 bg-white p-5 shadow-sm">
+                  <div className="mb-4 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
+                  <p className="text-sm leading-7 text-slate-600">
+                    CareRadar does not treat your application like a number. The
+                    aim is to help you understand the route, prepare properly,
+                    and move with confidence.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -171,26 +185,31 @@ export default function NursesPage() {
             </h2>
           </div>
 
-          <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
-            <p>
-              International nurse recruitment involves more than simply sending
-              a resume. Nurses often need to understand their eligibility,
-              clinical experience, documents, communication standards, interview
-              expectations, and employer requirements before moving forward.
-            </p>
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
+            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
 
-            <p>
-              CareRadar helps make this journey more organised. The focus is to
-              guide you through the early recruitment stages with realistic
-              communication, proper preparation, and a clear understanding of
-              what comes next.
-            </p>
+            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+              <p>
+                International nurse recruitment involves more than simply
+                sending a resume. Nurses often need to understand their
+                eligibility, clinical experience, documents, communication
+                standards, interview expectations, and employer requirements
+                before moving forward.
+              </p>
 
-            <p>
-              Whether you are just exploring opportunities or already preparing
-              your documents, CareRadar helps you take the next step with more
-              confidence and less confusion.
-            </p>
+              <p>
+                CareRadar helps make this journey more organised. The focus is
+                to guide you through the early recruitment stages with realistic
+                communication, proper preparation, and a clear understanding of
+                what comes next.
+              </p>
+
+              <p>
+                Whether you are just exploring opportunities or already
+                preparing your documents, CareRadar helps you take the next step
+                with more confidence and less confusion.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -220,9 +239,9 @@ export default function NursesPage() {
               return (
                 <div
                   key={item.title}
-                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm"
+                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                     <Icon size={22} />
                   </div>
 
@@ -242,9 +261,11 @@ export default function NursesPage() {
 
       {/* DARK SECTION */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d]">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
           <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
-            <div className="p-7 text-white md:p-10">
+            <div className="relative p-7 text-white md:p-10">
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
+
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
                 Why Nurses Choose Guidance
               </p>
@@ -334,7 +355,7 @@ export default function NursesPage() {
             {journeySteps.map((step, index) => (
               <div
                 key={step.title}
-                className="flex gap-4 rounded-[1.3rem] border border-slate-100 bg-white p-5 shadow-sm"
+                className="flex gap-4 rounded-[1.4rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#08264a] text-sm font-semibold text-white">
                   {index + 1}
@@ -356,7 +377,9 @@ export default function NursesPage() {
 
       {/* IDEAL FOR */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-slate-100 bg-white p-7 shadow-xl shadow-slate-100 md:p-10">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-7 shadow-xl shadow-slate-100 md:p-10">
+          <div className="mx-auto mb-6 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+
           <div className="grid gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
@@ -385,7 +408,9 @@ export default function NursesPage() {
 
       {/* CTA */}
       <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
             Apply As A Nurse
           </p>

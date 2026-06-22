@@ -77,9 +77,10 @@ export default function AboutPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_72%)] px-5 py-12 md:px-8 md:py-16">
-        <div className="absolute left-[-120px] top-16 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
-        <div className="absolute right-[-120px] top-28 h-72 w-72 rounded-full bg-[#08264a]/10 blur-3xl" />
+      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-10 md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.18]" />
+        <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
+        <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1fr_0.9fr]">
           <div className="text-center md:text-left">
@@ -87,7 +88,7 @@ export default function AboutPage() {
               About CareRadar
             </p>
 
-            <h1 className="mx-auto mt-4 max-w-4xl text-[2.4rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-4 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               A recruitment company built around care, clarity, and trust.
             </h1>
 
@@ -108,22 +109,23 @@ export default function AboutPage() {
 
               <Link
                 href="/employers"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
               >
                 For Employers
               </Link>
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-sm md:max-w-md">
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-xl shadow-slate-100">
-              <div className="rounded-[1.5rem] bg-[#f8fbff] px-5 py-7 text-center">
+          <div className="relative mx-auto w-full max-w-sm md:max-w-md">
+            <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
+            <div className="relative rounded-[2rem] border border-white bg-white p-4 shadow-2xl shadow-slate-200">
+              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] px-5 py-7 text-center">
                 <Image
                   src="/images/careradar-logo.jpeg"
                   alt="CareRadar Logo"
                   width={190}
                   height={190}
-                  className="mx-auto h-40 w-40 rounded-full object-contain md:h-48 md:w-48"
+                  className="mx-auto h-36 w-36 rounded-full object-contain md:h-44 md:w-44"
                   priority
                 />
 
@@ -160,30 +162,34 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
-            <p>
-              International healthcare recruitment can be overwhelming. Nurses
-              often need guidance on eligibility, documentation, interviews,
-              country-specific expectations, and the practical steps involved in
-              moving forward. Employers need dependable candidates, clear
-              communication, and a recruitment process they can trust.
-            </p>
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
+            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
 
-            <p>
-              CareRadar was created to sit between both sides with structure and
-              care. The name reflects direction — helping nurses and employers
-              understand where they are, what comes next, and how to move
-              through the journey with more confidence.
-            </p>
+            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+              <p>
+                International healthcare recruitment can be overwhelming. Nurses
+                often need guidance on eligibility, documentation, interviews,
+                country-specific expectations, and the practical steps involved
+                in moving forward. Employers need dependable candidates, clear
+                communication, and a recruitment process they can trust.
+              </p>
 
-            <p>
-              The company does not position recruitment as a rushed transaction.
-              It positions recruitment as a guided pathway. That is why the
-              tagline matters:{" "}
-              <span className="font-semibold text-[#08264a]">
-                we really do care.
-              </span>
-            </p>
+              <p>
+                CareRadar was created to sit between both sides with structure
+                and care. The name reflects direction — helping nurses and
+                employers understand where they are, what comes next, and how to
+                move through the journey with more confidence.
+              </p>
+
+              <p>
+                The company does not position recruitment as a rushed
+                transaction. It positions recruitment as a guided pathway. That
+                is why the tagline matters:{" "}
+                <span className="font-semibold text-[#08264a]">
+                  we really do care.
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -214,10 +220,10 @@ export default function AboutPage() {
               return (
                 <article
                   key={founder.name}
-                  className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100"
+                  className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200"
                 >
                   <div className="flex h-full flex-col">
-                    <div className="relative flex h-[300px] w-full items-center justify-center bg-[#f8fbff] p-4 sm:h-[340px]">
+                    <div className="relative flex h-[260px] w-full items-center justify-center bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_55%,#eafffb_100%)] p-4 sm:h-[300px]">
                       <Image
                         src={founder.image}
                         alt={founder.name}
@@ -229,7 +235,7 @@ export default function AboutPage() {
 
                     <div className="flex flex-1 flex-col p-6 md:p-8">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                           <Icon size={22} />
                         </div>
 
@@ -264,9 +270,11 @@ export default function AboutPage() {
 
       {/* DARK PURPOSE SECTION */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d]">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
           <div className="grid md:grid-cols-3">
-            <div className="p-7 text-white md:col-span-1 md:p-10">
+            <div className="relative p-7 text-white md:col-span-1 md:p-10">
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
+
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
                 Purpose
               </p>
@@ -326,7 +334,7 @@ export default function AboutPage() {
       {/* MISSION VISION */}
       <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
         <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
-          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
               Mission
             </p>
@@ -342,7 +350,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
               Vision
             </p>
@@ -358,7 +366,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
               Promise
             </p>
@@ -401,9 +409,9 @@ export default function AboutPage() {
               return (
                 <div
                   key={value.title}
-                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm"
+                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
                     <Icon size={22} />
                   </div>
 
@@ -423,7 +431,9 @@ export default function AboutPage() {
 
       {/* CTA */}
       <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
             Work With CareRadar
           </p>
