@@ -423,8 +423,7 @@ export default function ContactPageClient() {
             )}
 
             <p className="mt-4 rounded-2xl bg-[#f8fbff] px-4 py-3 text-xs leading-6 text-slate-500">
-              Form enquiries will be saved to a shared Google Sheet once the
-              sheet connection is configured.
+              Your enquiry will be submitted to the CareRadar team for review.
             </p>
           </form>
         </div>
