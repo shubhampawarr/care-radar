@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
-  BriefcaseBusiness,
   Building2,
   Compass,
   HeartHandshake,
@@ -51,7 +50,6 @@ const founders = [
     name: "Akshat Gupta",
     role: "Co-Founder",
     image: "/images/akshat-gupta.jpeg",
-    icon: BriefcaseBusiness,
     bio: [
       "Akshat Gupta brings a multidisciplinary background across finance, consulting, and international business. His experience gives him a strong understanding of how organisations grow, how markets evolve, and how the right talent can shape long-term success.",
       "At CareRadar, Akshat is focused on building a trusted healthcare recruitment platform that supports skilled nursing professionals and healthcare providers through a more structured, transparent, and human process.",
@@ -63,7 +61,6 @@ const founders = [
     name: "Ron Rüdiger",
     role: "Co-Founder",
     image: "/images/ron-rudiger.jpeg",
-    icon: Users,
     bio: [
       "Ron Rüdiger brings several years of experience in human resources leadership, having worked as Head of HR across corporate and mid-sized organisational environments.",
       "Throughout his career, he has led recruitment initiatives, developed and optimised HR structures, advised leadership teams, and supported organisations through periods of growth and transformation.",
@@ -214,56 +211,49 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            {founders.map((founder) => {
-              const Icon = founder.icon;
+            {founders.map((founder) => (
+              <article
+                key={founder.name}
+                className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200"
+              >
+                <div className="flex h-full flex-col">
+                  <div className="relative flex h-[260px] w-full items-center justify-center bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_55%,#eafffb_100%)] p-4 sm:h-[300px]">
+                    <Image
+                      src={founder.image}
+                      alt={founder.name}
+                      fill
+                      className="object-contain p-4"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
 
-              return (
-                <article
-                  key={founder.name}
-                  className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200"
-                >
-                  <div className="flex h-full flex-col">
-                    <div className="relative flex h-[260px] w-full items-center justify-center bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_55%,#eafffb_100%)] p-4 sm:h-[300px]">
-                      <Image
-                        src={founder.image}
-                        alt={founder.name}
-                        fill
-                        className="object-contain p-4"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
+                  <div className="flex flex-1 flex-col p-6 md:p-8">
+                    <div className="text-center">
+                      <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
+                        {founder.name}
+                      </h3>
+
+                      <p className="mt-1 text-sm font-semibold text-[#08a99d]">
+                        {founder.role}
+                      </p>
+
+                      <div className="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
                     </div>
 
-                    <div className="flex flex-1 flex-col p-6 md:p-8">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                          <Icon size={22} />
-                        </div>
-
-                        <div>
-                          <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
-                            {founder.name}
-                          </h3>
-                          <p className="mt-1 text-sm font-semibold text-[#08a99d]">
-                            {founder.role}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-6 space-y-4">
-                        {founder.bio.map((paragraph) => (
-                          <p
-                            key={paragraph}
-                            className="text-sm leading-7 text-slate-600"
-                          >
-                            {paragraph}
-                          </p>
-                        ))}
-                      </div>
+                    <div className="mt-6 space-y-4">
+                      {founder.bio.map((paragraph) => (
+                        <p
+                          key={paragraph}
+                          className="text-sm leading-7 text-slate-600"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
                     </div>
                   </div>
-                </article>
-              );
-            })}
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
