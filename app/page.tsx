@@ -1,118 +1,115 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
   Building2,
-  CheckCircle2,
-  ClipboardCheck,
-  FileCheck2,
-  Globe2,
+  Compass,
   HeartHandshake,
   ShieldCheck,
   Stethoscope,
+  Users,
 } from "lucide-react";
 
-const trustPoints = [
-  "Guidance for qualified nurses exploring international opportunities",
-  "Recruitment support for hospitals, clinics, and healthcare organisations",
-  "Structured process covering screening, preparation, and coordination",
-  "Care-led communication for candidates and employers",
-];
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Learn about CareRadar, an international nurse recruitment company built around care, clarity, ethical guidance, and healthcare-focused recruitment support.",
+};
 
-const pathways = [
+const values = [
   {
-    title: "Nurses looking for international opportunities",
+    title: "Care First",
     description:
-      "CareRadar helps nurses understand the overseas recruitment journey with support around eligibility, profile preparation, documentation, interview readiness, and employer coordination.",
-    icon: Stethoscope,
-    href: "/nurses",
-    cta: "Explore nurse pathway",
+      "Every nurse and employer interaction should feel respectful, patient, and properly guided.",
+    icon: HeartHandshake,
   },
   {
-    title: "Healthcare employers looking to recruit nurses",
+    title: "Clarity Before Promises",
     description:
-      "We support healthcare organisations with a more focused recruitment process by helping identify suitable nursing candidates and coordinating the early stages of international hiring.",
-    icon: Building2,
-    href: "/employers",
-    cta: "Explore employer support",
-  },
-];
-
-const processSteps = [
-  {
-    title: "Initial enquiry and registration",
-    description:
-      "The first step is understanding whether the visitor is a nurse or employer and what support they need.",
+      "CareRadar focuses on realistic guidance, clear next steps, and responsible communication.",
+    icon: Compass,
   },
   {
-    title: "Profile review and eligibility understanding",
+    title: "Ethical Recruitment",
     description:
-      "CareRadar reviews the basic situation so the next steps are realistic, not vague or confusing.",
+      "The process is built around dignity, transparency, and long-term suitability.",
+    icon: ShieldCheck,
   },
   {
-    title: "Document and interview preparation guidance",
+    title: "Healthcare Focus",
     description:
-      "The candidate journey is strengthened through clearer preparation before employer interaction.",
-  },
-  {
-    title: "Employer matching and recruitment coordination",
-    description:
-      "Suitable candidates and employers are connected through a more organised recruitment pathway.",
+      "CareRadar is designed specifically for nursing and healthcare recruitment pathways.",
+    icon: BadgeCheck,
   },
 ];
 
-export default function Home() {
+const founders = [
+  {
+    name: "Akshat Gupta",
+    role: "Co-Founder",
+    image: "/images/akshat-gupta.jpeg",
+    bio: [
+      "Akshat Gupta brings a multidisciplinary background across finance, consulting, and international business. His experience gives him a strong understanding of how organisations grow, how markets evolve, and how the right talent can shape long-term success.",
+      "At CareRadar, Akshat is focused on building a trusted healthcare recruitment platform that supports skilled nursing professionals and healthcare providers through a more structured, transparent, and human process.",
+      "His approach goes beyond recruitment by placing equal importance on candidate support, professional growth, integration, and long-term partnerships built on trust, quality, and mutual success.",
+      "He believes that addressing healthcare workforce challenges requires more than efficient hiring processes. It requires genuine care for the people whose lives, careers, and organisations are shaped by these opportunities.",
+    ],
+  },
+  {
+    name: "Ron Rüdiger",
+    role: "Co-Founder",
+    image: "/images/ron-rudiger.jpeg",
+    bio: [
+      "Ron Rüdiger brings several years of experience in human resources leadership, having worked as Head of HR across corporate and mid-sized organisational environments.",
+      "Throughout his career, he has led recruitment initiatives, developed and optimised HR structures, advised leadership teams, and supported organisations through periods of growth and transformation.",
+      "His work is guided by a clear belief: the long-term success of any organisation depends on the people who strengthen its culture, shape its performance, and drive it forward.",
+      "At CareRadar, Ron brings this people-first perspective into international healthcare recruitment, helping build a process that values both organisational needs and candidate journeys.",
+    ],
+  },
+];
+
+export default function AboutPage() {
   return (
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-10 md:px-8 md:py-16">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.22]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.18]" />
         <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
         <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.06fr_0.94fr]">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1fr_0.9fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
-              <HeartHandshake size={14} />
-              International Nurse Recruitment
-            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+              About CareRadar
+            </p>
 
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
-              Helping nurses and healthcare employers move forward with care.
+            <h1 className="mx-auto mt-4 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+              A recruitment company built around care, clarity, and trust.
             </h1>
 
             <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-7 text-slate-600 md:mx-0 md:text-lg md:leading-8">
-              CareRadar supports qualified nurses exploring international
-              healthcare careers and helps employers connect with nursing talent
-              through a structured, transparent, and human recruitment process.
+              CareRadar supports qualified nurses and healthcare employers
+              through a structured international recruitment journey. The focus
+              is simple: guide people clearly, communicate responsibly, and keep
+              care at the centre of every step.
             </p>
 
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row md:justify-start">
               <Link
-                href="/contact"
+                href="/nurses"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-[#08264a] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-[#08a99d]"
               >
-                Apply as a Nurse <ArrowRight size={17} />
+                For Nurses <ArrowRight size={17} />
               </Link>
 
               <Link
                 href="/employers"
                 className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
               >
-                Hire Nurses
+                For Employers
               </Link>
-            </div>
-
-            <div className="mx-auto mt-8 max-w-2xl rounded-[1.4rem] border border-slate-100 bg-white/90 p-5 text-left shadow-lg shadow-slate-100 backdrop-blur md:mx-0">
-              <div className="mb-4 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
-              <p className="text-sm leading-7 text-slate-600">
-                The recruitment journey can feel complex for both sides. Nurses
-                need clarity about requirements, documents, interviews, and
-                realistic opportunities. Employers need reliable candidates,
-                proper screening, and clear coordination. CareRadar sits between
-                both with a care-first approach.
-              </p>
             </div>
           </div>
 
@@ -132,7 +129,7 @@ export default function Home() {
                 <div className="mx-auto mt-5 h-px w-28 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
 
                 <p className="mt-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#08a99d]">
-                  CareRadar Promise
+                  Brand Promise
                 </p>
 
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#061f3d]">
@@ -140,281 +137,304 @@ export default function Home() {
                 </h2>
 
                 <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-slate-600">
-                  A recruitment experience built on dignity, guidance, and
-                  dependable support.
+                  A simple promise behind every candidate conversation and every
+                  employer requirement.
                 </p>
-
-                <div className="mt-6 grid grid-cols-3 gap-2">
-                  {["Care", "Clarity", "Trust"].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-2xl border border-slate-100 bg-white px-3 py-3 shadow-sm"
-                    >
-                      <p className="text-xs font-semibold text-[#08264a]">
-                        {item}
-                      </p>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* TRUST POINTS */}
-      <section className="bg-white px-5 py-8 md:px-8 md:py-10">
-        <div className="mx-auto max-w-7xl rounded-[1.6rem] border border-slate-100 bg-white p-4 shadow-lg shadow-slate-100 md:p-5">
-          <div className="grid gap-3 md:grid-cols-4">
-            {trustPoints.map((point) => (
-              <div
-                key={point}
-                className="flex items-start gap-3 rounded-2xl bg-[#f8fbff] p-4"
+      {/* STORY */}
+      <section className="bg-white px-5 py-12 md:px-8 md:py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+              Our Story
+            </p>
+
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
+              Recruitment should feel organised, honest, and human.
+            </h2>
+          </div>
+
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
+            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
+
+            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+              <p>
+                International healthcare recruitment can be overwhelming. Nurses
+                often need guidance on eligibility, documentation, interviews,
+                country-specific expectations, and the practical steps involved
+                in moving forward. Employers need dependable candidates, clear
+                communication, and a recruitment process they can trust.
+              </p>
+
+              <p>
+                CareRadar was created to sit between both sides with structure
+                and care. The name reflects direction — helping nurses and
+                employers understand where they are, what comes next, and how to
+                move through the journey with more confidence.
+              </p>
+
+              <p>
+                The company does not position recruitment as a rushed
+                transaction. It positions recruitment as a guided pathway. That
+                is why the tagline matters:{" "}
+                <span className="font-semibold text-[#08264a]">
+                  we really do care.
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOUNDERS */}
+      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+              Leadership
+            </p>
+
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
+              Meet the people behind CareRadar.
+            </h2>
+
+            <p className="mt-4 text-sm leading-7 text-slate-600 md:text-base">
+              CareRadar is led by professionals with experience across
+              international business, consulting, finance, recruitment, and
+              human resources.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {founders.map((founder) => (
+              <article
+                key={founder.name}
+                className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200"
               >
-                <CheckCircle2
-                  size={18}
-                  className="mt-1 shrink-0 text-[#08a99d]"
-                />
-                <p className="text-sm leading-6 text-slate-600">{point}</p>
-              </div>
+                <div className="flex h-full flex-col">
+                  <div className="relative flex h-[260px] w-full items-center justify-center bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_55%,#eafffb_100%)] p-4 sm:h-[300px]">
+                    <Image
+                      src={founder.image}
+                      alt={founder.name}
+                      fill
+                      className="object-contain p-4"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
+
+                  <div className="flex flex-1 flex-col p-6 md:p-8">
+                    <div className="text-center">
+                      <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
+                        {founder.name}
+                      </h3>
+
+                      <p className="mt-1 text-sm font-semibold text-[#08a99d]">
+                        {founder.role}
+                      </p>
+
+                      <div className="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+                    </div>
+
+                    <div className="mt-6 space-y-4">
+                      {founder.bio.map((paragraph) => (
+                        <p
+                          key={paragraph}
+                          className="text-sm leading-7 text-slate-600"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* INTRO */}
-      <section className="bg-white px-5 py-12 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
-          <div>
+      {/* DARK PURPOSE SECTION */}
+      <section className="bg-white px-5 py-14 md:px-8 md:py-16">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
+          <div className="grid md:grid-cols-3">
+            <div className="relative p-7 text-white md:col-span-1 md:p-10">
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
+
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
+                Purpose
+              </p>
+
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+                A clearer pathway for international nurse recruitment.
+              </h2>
+
+              <p className="mt-5 text-sm leading-7 text-slate-300">
+                CareRadar exists to make the process more understandable for
+                nurses and more dependable for employers.
+              </p>
+            </div>
+
+            <div className="border-t border-white/10 p-7 md:col-span-2 md:border-l md:border-t-0 md:p-10">
+              <div className="grid gap-8 md:grid-cols-2">
+                <div>
+                  <Stethoscope size={28} className="text-[#10c4b6]" />
+                  <h3 className="mt-4 text-xl font-semibold text-white">
+                    For nurses
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    CareRadar helps nurses understand the international
+                    recruitment journey before they make important career
+                    decisions. This includes profile readiness, documentation
+                    understanding, interview preparation, and employer
+                    coordination.
+                  </p>
+                </div>
+
+                <div>
+                  <Users size={28} className="text-[#10c4b6]" />
+                  <h3 className="mt-4 text-xl font-semibold text-white">
+                    For employers
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    CareRadar supports healthcare organisations looking for
+                    nursing talent by bringing structure to early recruitment
+                    stages, candidate communication, and suitability-based
+                    coordination.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 h-px bg-white/10" />
+
+              <p className="mt-8 text-sm leading-7 text-slate-300 md:text-base">
+                The result is a more balanced recruitment experience — one that
+                respects the nurse’s journey while also understanding the
+                employer’s responsibility to patient care and service quality.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MISSION VISION */}
+      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
+        <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-              What CareRadar Does
+              Mission
             </p>
 
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-              A focused recruitment bridge for nurses and healthcare providers.
-            </h2>
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[#061f3d]">
+              To guide nurses with clarity and care.
+            </h3>
+
+            <p className="mt-4 text-sm leading-7 text-slate-600">
+              CareRadar’s mission is to support qualified nurses as they explore
+              international opportunities with better preparation, clearer
+              expectations, and dependable guidance.
+            </p>
           </div>
 
-          <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
-            <p>
-              CareRadar is built for international nurse recruitment. The goal
-              is not just to collect applications or pass profiles forward, but
-              to make the journey clearer for nurses and more dependable for
-              healthcare employers.
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+              Vision
             </p>
 
-            <p>
-              For nurses, this means guidance before important steps such as
-              profile screening, documentation, interview preparation, and
-              employer conversations. For employers, this means a recruitment
-              partner that understands the need for responsible communication,
-              candidate suitability, and organised coordination.
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[#061f3d]">
+              To become a trusted healthcare recruitment bridge.
+            </h3>
+
+            <p className="mt-4 text-sm leading-7 text-slate-600">
+              The long-term vision is to support healthcare systems with
+              suitable nursing talent while helping candidates access
+              meaningful, well-guided opportunities abroad.
+            </p>
+          </div>
+
+          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+              Promise
             </p>
 
-            <p>
-              The brand stands on a simple belief: recruitment should feel
-              professional, structured, and human. That is why CareRadar’s
-              promise is direct — we really do care.
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[#061f3d]">
+              To communicate clearly from start to finish.
+            </h3>
+
+            <p className="mt-4 text-sm leading-7 text-slate-600">
+              CareRadar believes that recruitment should never feel vague.
+              Every candidate and employer should understand the next step and
+              the reason behind it.
             </p>
           </div>
         </div>
       </section>
 
-      {/* PATHWAYS */}
-      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl">
-          <div className="mx-auto max-w-3xl text-center">
+      {/* VALUES */}
+      <section className="bg-white px-5 py-14 md:px-8 md:py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+          <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-              Two Pathways
+              Values
             </p>
 
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-              Clear support for both sides of recruitment.
+              The principles behind every recruitment journey.
             </h2>
 
-            <p className="mt-4 text-sm leading-7 text-slate-600 md:text-base">
-              CareRadar guides each visitor toward the right pathway — whether
-              they are a nurse exploring opportunities or a healthcare employer
-              looking to hire.
+            <p className="mt-5 text-sm leading-7 text-slate-600 md:text-base">
+              CareRadar’s values are designed to create trust, not pressure.
+              The focus is long-term suitability over quick promises.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
-            {pathways.map((item) => {
-              const Icon = item.icon;
+          <div className="grid gap-4 sm:grid-cols-2">
+            {values.map((value) => {
+              const Icon = value.icon;
 
               return (
-                <Link
-                  href={item.href}
-                  key={item.title}
-                  className="group relative overflow-hidden rounded-[1.8rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 transition hover:-translate-y-1 hover:border-[#08a99d]/30 hover:shadow-xl md:p-8"
+                <div
+                  key={value.title}
+                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
                 >
-                  <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#08a99d] to-[#08264a]" />
-                  <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-[#08a99d]/5" />
-
-                  <div className="relative flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                      <Icon size={24} />
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-semibold tracking-tight text-[#08264a] md:text-2xl">
-                        {item.title}
-                      </h3>
-
-                      <p className="mt-3 text-sm leading-7 text-slate-600">
-                        {item.description}
-                      </p>
-
-                      <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#08a99d]/10 px-4 py-2 text-sm font-semibold text-[#087d76]">
-                        {item.cta}
-                        <ArrowRight
-                          size={16}
-                          className="transition group-hover:translate-x-1"
-                        />
-                      </div>
-                    </div>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
+                    <Icon size={22} />
                   </div>
-                </Link>
+
+                  <h3 className="mt-5 text-lg font-semibold text-[#08264a]">
+                    {value.title}
+                  </h3>
+
+                  <p className="mt-3 text-sm leading-7 text-slate-600">
+                    {value.description}
+                  </p>
+                </div>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* DARK CALM SECTION */}
-      <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
-          <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
-            <div className="relative p-7 text-white md:p-10">
-              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
-
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
-                Why It Matters
-              </p>
-
-              <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-                International healthcare recruitment needs more than speed.
-              </h2>
-
-              <p className="mt-5 text-sm leading-7 text-slate-300 md:text-base">
-                For nurses, moving abroad can shape an entire career and family
-                future. For employers, every hiring decision affects patient
-                care, team stability, and service quality. CareRadar focuses on
-                careful matching, structured guidance, and responsible
-                communication.
-              </p>
-
-              <Link
-                href="/process"
-                className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#08a99d] px-6 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-[#061f3d]"
-              >
-                View recruitment process <ArrowRight size={17} />
-              </Link>
-            </div>
-
-            <div className="border-t border-white/10 p-7 md:border-l md:border-t-0 md:p-10">
-              <div className="space-y-6">
-                <div>
-                  <ShieldCheck size={26} className="text-[#10c4b6]" />
-                  <h3 className="mt-3 text-lg font-semibold text-white">
-                    Ethical recruitment mindset
-                  </h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-300">
-                    We position the process around honest expectations,
-                    candidate dignity, and dependable employer coordination.
-                  </p>
-                </div>
-
-                <div className="h-px bg-white/10" />
-
-                <div>
-                  <Globe2 size={26} className="text-[#10c4b6]" />
-                  <h3 className="mt-3 text-lg font-semibold text-white">
-                    International pathway clarity
-                  </h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-300">
-                    Nurses receive clearer direction on the journey ahead, while
-                    employers receive better organised recruitment support.
-                  </p>
-                </div>
-
-                <div className="h-px bg-white/10" />
-
-                <div>
-                  <FileCheck2 size={26} className="text-[#10c4b6]" />
-                  <h3 className="mt-3 text-lg font-semibold text-white">
-                    Preparation before placement
-                  </h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-300">
-                    The focus is on readiness — profile, documents,
-                    communication, interview preparation, and suitable matching.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PROCESS SNAPSHOT */}
+      {/* CTA */}
       <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-              Process Snapshot
-            </p>
-
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-              Simple enough to understand. Structured enough to trust.
-            </h2>
-
-            <p className="mt-5 text-sm leading-7 text-slate-600 md:text-base">
-              The full recruitment process can vary depending on country,
-              employer requirements, documentation, and candidate readiness. But
-              the CareRadar journey always begins with clarity.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {processSteps.map((step, index) => (
-              <div
-                key={step.title}
-                className="flex gap-4 rounded-[1.4rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#08264a] text-sm font-semibold text-white">
-                  {index + 1}
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-[#08264a]">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_45%,#eafffb_100%)] p-7 text-center shadow-xl shadow-slate-100 md:p-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
           <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
 
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-            Start Your Journey
+            Work With CareRadar
           </p>
 
           <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-            Speak with CareRadar about your next step.
+            A recruitment conversation should begin with clarity.
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
-            Whether you are a nurse exploring international opportunities or a
-            healthcare employer looking for recruitment support, CareRadar can
-            help you understand the right pathway.
+            Whether you are a nurse or a healthcare employer, CareRadar can help
+            you understand the right pathway before moving forward.
           </p>
 
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -426,10 +446,10 @@ export default function Home() {
             </Link>
 
             <Link
-              href="/nurses"
+              href="/process"
               className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
             >
-              Explore nurse pathway
+              View process
             </Link>
           </div>
         </div>
