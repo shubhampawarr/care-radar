@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const quickLinks = [
   { label: "About", href: "/about" },
@@ -71,35 +71,32 @@ export default function Footer() {
               Contact
             </h3>
 
-            <div className="mt-4 grid gap-2 text-sm text-slate-300 md:space-y-4">
-              <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <Phone size={17} className="mt-0.5 shrink-0 text-[#10c4b6]" />
-                <div>
-                  <p className="font-semibold text-white">Phone / WhatsApp</p>
-                  <p className="mt-0.5 text-xs text-slate-400 md:text-sm">
-                    To be added
-                  </p>
-                </div>
+            <div className="mt-4 space-y-3 text-sm text-slate-300">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <p className="font-semibold text-white">Akshat Gupta</p>
+                <a
+                  href="mailto:akshat.gupta@careradar.de"
+                  className="mt-1 inline-block break-all text-xs text-slate-400 transition hover:text-white md:text-sm"
+                >
+                  akshat.gupta@careradar.de
+                </a>
               </div>
 
-              <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <Mail size={17} className="mt-0.5 shrink-0 text-[#10c4b6]" />
-                <div>
-                  <p className="font-semibold text-white">Email</p>
-                  <p className="mt-0.5 text-xs text-slate-400 md:text-sm">
-                    To be added
-                  </p>
-                </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <p className="font-semibold text-white">Ron Rüdiger</p>
+                <a
+                  href="mailto:ron.ruediger@careradar.de"
+                  className="mt-1 inline-block break-all text-xs text-slate-400 transition hover:text-white md:text-sm"
+                >
+                  ron.ruediger@careradar.de
+                </a>
               </div>
 
-              <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <MapPin size={17} className="mt-0.5 shrink-0 text-[#10c4b6]" />
-                <div>
-                  <p className="font-semibold text-white">Location</p>
-                  <p className="mt-0.5 text-xs text-slate-400 md:text-sm">
-                    To be added
-                  </p>
-                </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <p className="font-semibold text-white">Phone / WhatsApp</p>
+                <p className="mt-1 text-xs text-slate-400 md:text-sm">
+                  To be added
+                </p>
               </div>
             </div>
           </div>
