@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
-  Building2,
   Compass,
   HeartHandshake,
   ShieldCheck,
@@ -52,9 +51,9 @@ const founders = [
     image: "/images/akshat-gupta.jpeg",
     bio: [
       "Akshat Gupta brings a multidisciplinary background across finance, consulting, and international business. His experience gives him a strong understanding of how organisations grow, how markets evolve, and how the right talent can shape long-term success.",
-      "At CareRadar, Akshat is focused on building a trusted healthcare recruitment platform that supports skilled nursing professionals and healthcare providers through a more structured, transparent, and human process.",
       "His approach goes beyond recruitment by placing equal importance on candidate support, professional growth, integration, and long-term partnerships built on trust, quality, and mutual success.",
       "He believes that addressing healthcare workforce challenges requires more than efficient hiring processes. It requires genuine care for the people whose lives, careers, and organisations are shaped by these opportunities.",
+      "At CareRadar, Akshat is focused on building a trusted healthcare recruitment platform that supports skilled nursing professionals and healthcare providers through a more structured, transparent, and human process.",
     ],
   },
   {
@@ -63,9 +62,10 @@ const founders = [
     image: "/images/ron-rudiger.jpeg",
     bio: [
       "Ron Rüdiger brings several years of experience in human resources leadership, having worked as Head of HR across corporate and mid-sized organisational environments.",
-      "Throughout his career, he has led recruitment initiatives, developed and optimised HR structures, advised leadership teams, and supported organisations through periods of growth and transformation.",
-      "His work is guided by a clear belief: the long-term success of any organisation depends on the people who strengthen its culture, shape its performance, and drive it forward.",
-      "At CareRadar, Ron brings this people-first perspective into international healthcare recruitment, helping build a process that values both organisational needs and candidate journeys.",
+      "Throughout his career, he has led recruitment initiatives, developed and optimised HR structures, advised executive leadership teams, and supported organisations through periods of growth and transformation.",
+      "Having hired and supported professionals across a wide range of roles and industries, Ron has developed a strong understanding of what successful recruitment requires from both an employer and candidate perspective.",
+      "He believes that sustainable hiring is not about filling vacancies quickly, but about building long-term partnerships that strengthen organisational culture, enhance performance, and create lasting value for everyone involved.",
+      "At CareRadar, Ron applies this philosophy to international healthcare recruitment. His focus is on creating transparent, ethical, and sustainable recruitment processes that support candidates on their journey to build a successful future in Germany while delivering long-term value for healthcare organisations.",
     ],
   },
 ];
