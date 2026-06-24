@@ -137,8 +137,7 @@ const pageText = {
   de: {
     hero: {
       eyebrow: "Internationale Pflegekräfte-Rekrutierung",
-      title:
-        "Wir begleiten Pflegekräfte und Arbeitgeber im Gesundheitswesen mit Sorgfalt in den nächsten Schritt.",
+      title: "Pflegekräfte und Arbeitgeber klar weiterbringen.",
       description:
         "CareRadar unterstützt qualifizierte Pflegekräfte auf dem Weg zu internationalen Karrierechancen und hilft Arbeitgebern im Gesundheitswesen, passende Pflegefachkräfte über einen strukturierten, transparenten und menschlichen Rekrutierungsprozess zu finden.",
       nurseCta: "Als Pflegekraft bewerben",
@@ -149,7 +148,7 @@ const pageText = {
       promiseTitle: "We really do care.",
       promiseDescription:
         "Ein Rekrutierungserlebnis, das auf Würde, Orientierung und verlässlicher Unterstützung basiert.",
-      values: ["Sorgfalt", "Klarheit", "Vertrauen"],
+      values: ["Sorgfalt", "Klarheit", "Verlass"],
     },
     trustPoints: [
       "Begleitung für qualifizierte Pflegekräfte mit internationalen Karriereplänen",
@@ -300,7 +299,7 @@ export default async function Home({ params }: HomeProps) {
               {text.hero.eyebrow}
             </div>
 
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-5 max-w-4xl text-[2rem] font-semibold leading-[1.12] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               {text.hero.title}
             </h1>
 
@@ -363,9 +362,9 @@ export default async function Home({ params }: HomeProps) {
                   {text.hero.values.map((item) => (
                     <div
                       key={item}
-                      className="rounded-2xl border border-slate-100 bg-white px-3 py-3 shadow-sm"
+                      className="flex min-h-[68px] items-center justify-center rounded-2xl border border-slate-100 bg-white px-1.5 py-3 text-center shadow-sm"
                     >
-                      <p className="text-xs font-semibold text-[#08264a]">
+                      <p className="text-[11px] font-semibold leading-tight tracking-tight text-[#08264a] sm:text-xs">
                         {item}
                       </p>
                     </div>
@@ -558,7 +557,9 @@ export default async function Home({ params }: HomeProps) {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-[#08264a]">{step.title}</h3>
+                  <h3 className="font-semibold text-[#08264a]">
+                    {step.title}
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     {step.description}
                   </p>
