@@ -369,7 +369,7 @@ export default async function AboutPage({ params }: AboutProps) {
               {text.hero.eyebrow}
             </p>
 
-            <h1 className="mx-auto mt-4 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
+            <h1 className="mx-auto mt-5 max-w-4xl break-words text-[2rem] font-semibold leading-[1.12] tracking-tight text-[#061f3d] [overflow-wrap:anywhere] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
               {text.hero.title}
             </h1>
           </div>
