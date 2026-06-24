@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   description:
     "CareRadar helps qualified nurses explore international healthcare opportunities and supports employers with ethical nurse recruitment solutions.",
   icons: {
-    icon: "/images/careradar-logo.jpeg",
-    shortcut: "/images/careradar-logo.jpeg",
-    apple: "/images/careradar-logo.jpeg",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
   },
 };
 
