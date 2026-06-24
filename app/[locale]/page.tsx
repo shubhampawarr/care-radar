@@ -149,7 +149,7 @@ const pageText = {
       promiseTitle: "We really do care.",
       promiseDescription:
         "Ein Rekrutierungserlebnis, das auf Würde, Orientierung und verlässlicher Unterstützung basiert.",
-      values: ["Fürsorge", "Klarheit", "Vertrauen"],
+      values: ["Sorgfalt", "Klarheit", "Vertrauen"],
     },
     trustPoints: [
       "Begleitung für qualifizierte Pflegekräfte mit internationalen Karriereplänen",

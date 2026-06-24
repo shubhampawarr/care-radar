@@ -37,7 +37,7 @@ svg {
   max-width: 100%;
 }
 
-/* German/mobile overflow protection */
+/* General overflow safety */
 h1,
 h2,
 h3,
@@ -47,27 +47,13 @@ h6,
 p,
 a,
 button,
-span,
 li,
 label,
 input,
 textarea,
-select,
-div {
-  overflow-wrap: anywhere;
+select {
+  overflow-wrap: break-word;
   word-break: normal;
-}
-
-/* Better text wrapping for long German words */
-html[lang="de"] h1,
-html[lang="de"] h2,
-html[lang="de"] h3,
-html[lang="de"] p,
-html[lang="de"] a,
-html[lang="de"] button,
-html[lang="de"] span,
-html[lang="de"] li {
-  hyphens: auto;
 }
 
 /* Mobile typography safety */
@@ -78,20 +64,20 @@ html[lang="de"] li {
   }
 
   h1 {
-    font-size: clamp(1.75rem, 8.8vw, 2.25rem) !important;
-    line-height: 1.12 !important;
+    font-size: clamp(1.75rem, 8.2vw, 2.2rem) !important;
+    line-height: 1.14 !important;
     letter-spacing: -0.04em;
   }
 
   h2 {
-    font-size: clamp(1.55rem, 7.5vw, 2rem) !important;
-    line-height: 1.16 !important;
+    font-size: clamp(1.5rem, 7vw, 1.95rem) !important;
+    line-height: 1.18 !important;
     letter-spacing: -0.035em;
   }
 
   h3 {
-    font-size: clamp(1.1rem, 5.2vw, 1.4rem) !important;
-    line-height: 1.22 !important;
+    font-size: clamp(1.1rem, 5vw, 1.35rem) !important;
+    line-height: 1.25 !important;
   }
 
   p {

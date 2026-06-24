@@ -115,7 +115,7 @@ const pageText = {
     ],
     hero: {
       eyebrow: "CareRadar kontaktieren",
-      title: "Beginnen Sie mit einem klaren Rekrutierungsgespräch.",
+      title: "Starten Sie mit einem klaren Gespräch.",
       description:
         "Ob Sie Pflegekraft mit internationalen Karriereplänen sind oder ein Arbeitgeber im Gesundheitswesen Rekrutierungsunterstützung sucht — CareRadar hilft Ihnen, den nächsten Schritt zu verstehen.",
       primary: "Anfrage senden",
@@ -133,7 +133,7 @@ const pageText = {
     },
     optionsSection: {
       eyebrow: "Wie können wir helfen?",
-      title: "Kontaktieren Sie CareRadar für die passende Rekrutierungsunterstützung.",
+      title: "Kontaktieren Sie CareRadar für passende Unterstützung.",
       description:
         "Wählen Sie die Anfrageart, die zu Ihrer Situation passt, damit das Team mit dem richtigen Kontext antworten kann.",
     },
