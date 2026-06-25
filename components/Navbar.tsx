@@ -8,7 +8,7 @@ import { useState } from "react";
 
 const navText = {
   en: {
-    tagline: "We really do care",
+    tagline: "we really do care.",
     applyNow: "Apply Now",
     languageEnglish: "English",
     languageGerman: "Deutsch",
@@ -22,7 +22,7 @@ const navText = {
     ],
   },
   de: {
-    tagline: "We really do care",
+    tagline: "we really do care.",
     applyNow: "Jetzt bewerben",
     languageEnglish: "English",
     languageGerman: "Deutsch",
@@ -67,28 +67,29 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100/80 bg-white/85 backdrop-blur-2xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
         <Link
           href={`/${currentLocale}`}
           onClick={() => setIsOpen(false)}
-          className="group flex items-center gap-3"
+          className="group flex min-w-0 items-center gap-2.5 md:gap-3"
         >
-          <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition group-hover:shadow-md">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition group-hover:shadow-md md:h-12 md:w-12">
             <Image
               src="/images/careradar-logo.jpeg"
               alt="CareRadar Logo"
               width={42}
               height={42}
-              className="h-10 w-10 rounded-full object-contain"
+              className="h-9 w-9 rounded-full object-contain md:h-10 md:w-10"
               priority
             />
           </div>
 
-          <div className="leading-none">
-            <p className="text-xl font-semibold tracking-tight text-[#061f3d]">
+          <div className="min-w-0 leading-none">
+            <p className="truncate text-lg font-semibold tracking-tight text-[#061f3d] md:text-xl">
               Care<span className="text-[#08a99d]">Radar</span>
             </p>
-            <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-400">
+
+            <p className="mt-1.5 text-[9px] font-semibold lowercase tracking-[0.08em] text-slate-400 sm:text-[10px] md:text-[10px] md:tracking-[0.12em]">
               {text.tagline}
             </p>
           </div>
@@ -152,45 +153,49 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsOpen((value) => !value)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#08264a] shadow-sm md:hidden"
-          aria-label="Toggle navigation"
-        >
-          {isOpen ? <X size={21} /> : <Menu size={21} />}
-        </button>
+        <div className="flex shrink-0 items-center gap-2 md:hidden">
+          <div className="flex items-center rounded-full border border-slate-100 bg-white p-1 shadow-sm">
+            <Link
+              href={englishHref}
+              onClick={() => setIsOpen(false)}
+              aria-label="Switch to English"
+              className={`rounded-full px-2.5 py-1.5 text-[10px] font-bold transition ${
+                currentLocale === "en"
+                  ? "bg-[#08264a] text-white"
+                  : "text-slate-500 hover:bg-[#f7fbff] hover:text-[#08a99d]"
+              }`}
+            >
+              EN
+            </Link>
+
+            <Link
+              href={germanHref}
+              onClick={() => setIsOpen(false)}
+              aria-label="Switch to German"
+              className={`rounded-full px-2.5 py-1.5 text-[10px] font-bold transition ${
+                currentLocale === "de"
+                  ? "bg-[#08264a] text-white"
+                  : "text-slate-500 hover:bg-[#f7fbff] hover:text-[#08a99d]"
+              }`}
+            >
+              DE
+            </Link>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsOpen((value) => !value)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#08264a] shadow-sm"
+            aria-label="Toggle navigation"
+          >
+            {isOpen ? <X size={21} /> : <Menu size={21} />}
+          </button>
+        </div>
       </div>
 
       {isOpen && (
         <div className="border-t border-slate-100 bg-white px-5 py-4 shadow-xl shadow-slate-100 md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-2">
-            <div className="mb-2 flex items-center rounded-2xl border border-slate-100 bg-[#f7fbff] p-1">
-              <Link
-                href={englishHref}
-                onClick={() => setIsOpen(false)}
-                className={`flex-1 rounded-xl px-4 py-2 text-center text-xs font-semibold transition ${
-                  currentLocale === "en"
-                    ? "bg-[#08264a] text-white"
-                    : "text-slate-600"
-                }`}
-              >
-                {text.languageEnglish}
-              </Link>
-
-              <Link
-                href={germanHref}
-                onClick={() => setIsOpen(false)}
-                className={`flex-1 rounded-xl px-4 py-2 text-center text-xs font-semibold transition ${
-                  currentLocale === "de"
-                    ? "bg-[#08264a] text-white"
-                    : "text-slate-600"
-                }`}
-              >
-                {text.languageGerman}
-              </Link>
-            </div>
-
             {text.links.map((link) => {
               const localizedHref = getLocalizedHref(currentLocale, link.href);
 

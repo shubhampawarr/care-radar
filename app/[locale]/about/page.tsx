@@ -156,7 +156,7 @@ const pageText = {
     },
     brandPromise: {
       label: "Markenversprechen",
-      title: "We really do care.",
+      title: "We Really Do Care.",
       description:
         "Ein einfaches Versprechen hinter jedem Gespräch mit Kandidaten und jeder Anforderung von Arbeitgebern.",
     },
@@ -164,12 +164,12 @@ const pageText = {
       eyebrow: "Führung",
       title: "Lernen Sie die Menschen hinter CareRadar kennen.",
       description:
-        "CareRadar wird von Fachleuten geführt, die Erfahrung in internationalem Geschäft, Beratung, Finanzen, Rekrutierung und Human Resources mitbringen.",
+        "CareRadar wird von Fachleuten geführt, die Erfahrung in internationalem Geschäft, Beratung, Finanzen, Rekrutierung und Personalwesen mitbringen.",
     },
     founders: [
       {
         name: "Akshat Gupta",
-        role: "Co-Founder",
+        role: "Gründer",
         image: "/images/akshat-gupta.jpeg",
         bio: [
           "Akshat Gupta bringt einen vielseitigen Hintergrund in den Bereichen Finanzen, Beratung und internationales Geschäft mit. Seine Erfahrung gibt ihm ein starkes Verständnis dafür, wie Organisationen wachsen, wie sich Märkte entwickeln und wie die richtigen Talente langfristigen Erfolg prägen können.",
@@ -180,11 +180,11 @@ const pageText = {
       },
       {
         name: "Ron Rüdiger",
-        role: "Co-Founder",
+        role: "Gründer",
         image: "/images/ron-rudiger.jpeg",
         bio: [
-          "Ron Rüdiger bringt mehrere Jahre Erfahrung in der HR-Führung mit und war als Head of HR in Konzernstrukturen sowie mittelständischen Organisationsumfeldern tätig.",
-          "Im Laufe seiner Karriere leitete er Rekrutierungsinitiativen, entwickelte und optimierte HR-Strukturen, beriet Geschäftsführungs- und Führungsteams und begleitete Organisationen in Wachstums- und Transformationsphasen.",
+          "Ron Rüdiger bringt mehrere Jahre Erfahrung im Personalwesen mit und war als Personalleiter in Konzernstrukturen sowie mittelständischen Organisationsumfeldern tätig.",
+          "Im Laufe seiner Karriere leitete er Rekrutierungsinitiativen, entwickelte und optimierte Personalstrukturen, beriet Geschäftsführungs- und Führungsteams und begleitete Organisationen in Wachstums- und Transformationsphasen.",
           "Durch die Einstellung und Betreuung von Fachkräften in einer Vielzahl von Rollen und Branchen hat Ron ein starkes Verständnis dafür entwickelt, was erfolgreiche Rekrutierung sowohl aus Arbeitgeber- als auch aus Kandidatenperspektive erfordert.",
           "Er ist überzeugt, dass nachhaltige Einstellung nicht bedeutet, offene Stellen schnell zu besetzen, sondern langfristige Partnerschaften aufzubauen, die Organisationskultur stärken, Leistung verbessern und dauerhaften Mehrwert für alle Beteiligten schaffen.",
           "Bei CareRadar überträgt Ron diese Philosophie auf die internationale Rekrutierung im Gesundheitswesen. Sein Fokus liegt darauf, transparente, ethische und nachhaltige Rekrutierungsprozesse zu schaffen, die Kandidaten auf ihrem Weg in eine erfolgreiche Zukunft in Deutschland unterstützen und gleichzeitig langfristigen Mehrwert für Gesundheitsorganisationen schaffen.",
@@ -225,7 +225,8 @@ const pageText = {
       },
       {
         eyebrow: "Vision",
-        title: "Eine vertrauenswürdige Brücke in der Gesundheitsrekrutierung werden.",
+        title:
+          "Eine vertrauenswürdige Brücke in der Gesundheitsrekrutierung werden.",
         description:
           "Die langfristige Vision ist es, Gesundheitssysteme mit geeigneten Pflegefachkräften zu unterstützen und Kandidaten Zugang zu sinnvollen, gut begleiteten Chancen im Ausland zu ermöglichen.",
       },
