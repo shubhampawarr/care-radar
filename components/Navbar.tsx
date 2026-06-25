@@ -3,34 +3,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
 const navText = {
   en: {
     tagline: "we really do care.",
-    applyNow: "Apply Now",
-    languageEnglish: "English",
-    languageGerman: "Deutsch",
+    portalCta: "Login / Create Account",
+    greeting: "Hi",
+    logout: "Logout",
     links: [
       { label: "Home", href: "/" },
       { label: "About", href: "/about" },
-      { label: "Nurses", href: "/nurses" },
-      { label: "Employers", href: "/employers" },
       { label: "Process", href: "/process" },
       { label: "Contact", href: "/contact" },
     ],
   },
   de: {
     tagline: "we really do care.",
-    applyNow: "Jetzt bewerben",
-    languageEnglish: "English",
-    languageGerman: "Deutsch",
+    portalCta: "Anmelden / Registrieren",
+    greeting: "Hallo",
+    logout: "Abmelden",
     links: [
       { label: "Startseite", href: "/" },
       { label: "Über uns", href: "/about" },
-      { label: "Für Pflegekräfte", href: "/nurses" },
-      { label: "Für Arbeitgeber", href: "/employers" },
       { label: "Prozess", href: "/process" },
       { label: "Kontakt", href: "/contact" },
     ],
@@ -54,9 +52,35 @@ function getLocalizedHref(locale: string, href: string) {
   return `/${locale}${href}`;
 }
 
+function getUserFirstName(user: User | null) {
+  if (!user) return "";
+
+  const firstName = user.user_metadata?.first_name;
+
+  if (typeof firstName === "string" && firstName.trim()) {
+    return firstName.trim();
+  }
+
+  const fullName = user.user_metadata?.full_name;
+
+  if (typeof fullName === "string" && fullName.trim()) {
+    return fullName.trim().split(" ")[0];
+  }
+
+  if (user.email) {
+    return user.email.split("@")[0];
+  }
+
+  return "";
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
   const pathname = usePathname();
+  const router = useRouter();
 
   const currentLocale = getCurrentLocale(pathname);
   const currentPathWithoutLocale = removeLocaleFromPath(pathname);
@@ -64,6 +88,46 @@ export default function Navbar() {
 
   const englishHref = getLocalizedHref("en", currentPathWithoutLocale);
   const germanHref = getLocalizedHref("de", currentPathWithoutLocale);
+
+  const firstName = getUserFirstName(user);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+      setIsAuthLoading(false);
+    }
+
+    loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setIsAuthLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleLogout() {
+    const supabase = createClient();
+
+    await supabase.auth.signOut();
+
+    setUser(null);
+    setIsOpen(false);
+
+    router.push(`/${currentLocale}`);
+    router.refresh();
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100/80 bg-white/85 backdrop-blur-2xl">
@@ -145,12 +209,31 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <Link
-            href={`/${currentLocale}/contact`}
-            className="group inline-flex items-center justify-center rounded-full bg-[#08a99d] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#08a99d]/15 transition hover:bg-[#08264a]"
-          >
-            {text.applyNow}
-          </Link>
+          {!isAuthLoading && user ? (
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/${currentLocale}/dashboard`}
+                className="rounded-full border border-slate-100 bg-white px-4 py-2.5 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d]/30 hover:text-[#08a99d]"
+              >
+                {text.greeting} {firstName}
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full bg-[#08a99d] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#08a99d]/15 transition hover:bg-[#08264a]"
+              >
+                {text.logout}
+              </button>
+            </div>
+          ) : (
+            <Link
+              href={`/${currentLocale}/login`}
+              className="group inline-flex items-center justify-center rounded-full bg-[#08a99d] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#08a99d]/15 transition hover:bg-[#08264a]"
+            >
+              {text.portalCta}
+            </Link>
+          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2 md:hidden">
@@ -220,13 +303,33 @@ export default function Navbar() {
               );
             })}
 
-            <Link
-              href={`/${currentLocale}/contact`}
-              onClick={() => setIsOpen(false)}
-              className="mt-2 rounded-2xl bg-[#08a99d] px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-[#08a99d]/15"
-            >
-              {text.applyNow}
-            </Link>
+            {!isAuthLoading && user ? (
+              <>
+                <Link
+                  href={`/${currentLocale}/dashboard`}
+                  onClick={() => setIsOpen(false)}
+                  className="mt-2 rounded-2xl border border-slate-100 bg-[#f7fbff] px-4 py-3 text-center text-sm font-semibold text-[#08264a]"
+                >
+                  {text.greeting} {firstName}
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-2xl bg-[#08a99d] px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-[#08a99d]/15"
+                >
+                  {text.logout}
+                </button>
+              </>
+            ) : (
+              <Link
+                href={`/${currentLocale}/login`}
+                onClick={() => setIsOpen(false)}
+                className="mt-2 rounded-2xl bg-[#08a99d] px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-[#08a99d]/15"
+              >
+                {text.portalCta}
+              </Link>
+            )}
           </div>
         </div>
       )}
