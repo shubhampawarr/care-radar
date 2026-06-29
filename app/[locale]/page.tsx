@@ -26,15 +26,15 @@ const pageText = {
       note:
         "CareRadar is built as an information and trust platform first. Candidates can understand the process, routes, costs, timelines, and support before moving into the account area.",
       promiseLabel: "CareRadar Promise",
-      promiseTitle: "We really do care.",
+      promiseTitle: "we really do care.",
       promiseDescription:
         "A structured pathway with clarity, dignity, and long-term support.",
       values: ["Care", "Clarity", "Trust"],
     },
     trustPoints: [
-      "Qualification-based pathways for Degree, GNM, and ANM candidates",
+      "Qualification-based pathways for B.Sc., GNM, and ANM candidates",
       "Clear process guidance before portal-based applications",
-      "€0 recruitment fee promise for candidates",
+      "0€ recruitment fee promise for candidates",
       "Founder-led support built around responsible recruitment",
     ],
     intro: {
@@ -139,34 +139,34 @@ const pageText = {
   },
   de: {
     hero: {
-      eyebrow: "Internationale Pflegewege",
-      title: "Ein klarerer Weg von der Pflegequalifikation nach Deutschland.",
+      eyebrow: "Internationale Pflegelaufbahn",
+      title: "Ein klarer Weg von Ihrer Pflegequalifikation zur Karriere in Deutschland.",
       description:
         "CareRadar hilft Pflegekräften, ihren Weg zur Arbeit in Deutschland zu verstehen, und unterstützt Arbeitgeber sowie Partner mit einem strukturierten, ethischen und menschlichen Rekrutierungsansatz.",
       primary: "Prozess ansehen",
       secondary: "Konto erstellen",
       note:
-        "CareRadar ist zuerst als Informations- und Vertrauensplattform aufgebaut. Kandidaten können Prozess, Wege, Kosten, Zeitrahmen und Unterstützung verstehen, bevor sie in den Kontobereich wechseln.",
+        "Kandidaten können hier ihre Prozesse, Kosten, Zeitrahmen und Unterstützungsangebote verstehen, bevor sie in den Kontobereich wechseln.",
       promiseLabel: "CareRadar Versprechen",
-      promiseTitle: "We really do care.",
+      promiseTitle: "we really do care.",
       promiseDescription:
         "Ein strukturierter Weg mit Klarheit, Würde und langfristiger Unterstützung.",
       values: ["Sorgfalt", "Klarheit", "Vertrauen"],
     },
     trustPoints: [
-      "Qualifikationsbasierte Wege für Degree-, GNM- und ANM-Kandidaten",
-      "Klare Prozessführung vor portalbasierten Bewerbungen",
-      "€0 Rekrutierungsgebühren für Kandidaten",
-      "Gründergeführte Unterstützung mit verantwortungsvollem Ansatz",
+      "Qualifikationsbasierte Wege für B.Sc., GNM- und ANM-Kandidaten",
+      "Klare Prozessbegleitung vor der Bewerbung im Portal",
+      "0€ Rekrutierungsgebühren für Kandidaten",
+      "Persönliche Betreuung durch die Gründer - für eine faire Vermittlung",
     ],
     intro: {
       eyebrow: "Was CareRadar macht",
       title:
-        "Eine informationsorientierte Plattform für Pflegekarrieren in Deutschland.",
+        "Eine Informationsseite für Pflegekarrieren in Deutschland",
       paragraphs: [
         "CareRadar hilft Pflegekandidaten zu verstehen, wohin ihre aktuelle Qualifikation in Deutschland führen kann. Statt einen verwirrenden Rekrutierungsprozess zu zeigen, erklärt die Website den Weg in einfacher Sprache.",
-        "Die öffentliche Website konzentriert sich auf Vertrauen, Unternehmensinformationen, Gründerprofil und den Prozess. Detaillierte Kandidatenprofile, Dokumente, Bewerbungsstatus und Admin-Workflows gehören später in Dashboard und Portal.",
-        "So bleibt die Website für Besucher einfach, während CareRadar eine starke Grundlage für das vollständige Rekrutierungsportal in der nächsten Phase erhält.",
+        "Die Website konzentriert sich auf Vertrauen, Unternehmensinformationen, die Glaubwürdigkeit der Gründer und den Prozessablauf.",
+        "So bleibt die Website für Besucher einfach, während CareRadar eine starke Grundlage für das vollständige Rekrutierungsportal schafft.",
       ],
     },
     help: {
@@ -176,21 +176,21 @@ const pageText = {
         "Die öffentliche Website gibt jedem Besucher einen klaren ersten Schritt, ohne ihn mit Bewerbungsformularen zu überfordern.",
       items: [
         {
-          title: "Pflegekandidaten",
+          title: "Pflegekräfte",
           description:
-            "Verstehen Sie, welcher Weg zu Ihrer Qualifikation, Sprachphase und Ihrem langfristigen Ziel in Deutschland passen kann.",
+            "Verstehen Sie, welcher Weg zu Ihrem Sprachniveau und Ihren langfristigen Zielen in Deutschland passt.",
           type: "nurse",
         },
         {
           title: "Arbeitgeber im Gesundheitswesen",
           description:
-            "Erfahren Sie, wie CareRadar strukturierte internationale Rekrutierung und Kandidatenkoordination unterstützen kann.",
+            "Erfahren Sie, wie CareRadar Ihr Unternehmen durch strukturierte internationale Rekrutierung und professionelle Kandidatenkoordination unterstützt.",
           type: "employer",
         },
         {
           title: "Partner und Institutionen",
           description:
-            "Erkunden Sie Zusammenarbeit bei Training, Kandidatenpools, Wegvorbereitung und Unterstützung.",
+            "Entdecken Sie Möglichkeiten der Zusammenarbeit in den Bereichen Schulungen, Kandidatengewinnung sowie der Vorbereitung und Unterstützung von Pflegekräften.",
           type: "partner",
         },
       ],
@@ -200,19 +200,19 @@ const pageText = {
       title:
         "Internationale Rekrutierung im Gesundheitswesen braucht Klarheit vor Aktion.",
       description:
-        "Für Pflegekräfte betrifft der Schritt ins Ausland Karriere, Familie, Einkommen und Identität. Für Arbeitgeber beeinflusst jede Rekrutierungsentscheidung Patientenversorgung und Teamstabilität. CareRadar setzt auf realistische Orientierung, bevor jemand weitergeführt wird.",
+      "Für Pflegekräfte betrifft der Schritt ins Ausland Karriere, Familie, Einkommen und Identität. Für Arbeitgeber beeinflusst jede Rekrutierungsentscheidung Patientenversorgung und Teamstabilität. CareRadar setzt auf realistische Orientierung, bevor der nächste Schritt erfolgt.",
       cta: "Prozess ansehen",
       cards: [
         {
           title: "Realistische Wegführung",
           description:
-            "Kandidaten können verstehen, ob sie zur Degree-, GNM- oder ANM-Route passen, bevor sie den nächsten Schritt gehen.",
+            "Kandidaten können verstehen, ob sie zur B.Sc.-, GNM- oder ANM-Route passen, bevor sie den nächsten Schritt gehen.",
           type: "globe",
         },
         {
           title: "Keine Rekrutierungsgebühr",
           description:
-            "Die öffentliche Botschaft bleibt klar: Kandidaten zahlen keine Rekrutierungsgebühren, um in den Weg einzusteigen.",
+            "Die Botschaft bleibt klar: Für Kandidaten fallen keine Vermittlungsgebühren an.",
           type: "money",
         },
         {

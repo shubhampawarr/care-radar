@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 const footerText = {
   en: {
-    tagline: "We really do care",
+    tagline: "we really do care",
     description:
       "CareRadar supports nurses and healthcare employers through a structured, transparent, and care-led international recruitment journey.",
     explore: "Explore",
@@ -29,7 +29,7 @@ const footerText = {
     ],
   },
   de: {
-    tagline: "We really do care",
+    tagline: "we really do care",
     description:
       "CareRadar begleitet Pflegekräfte und Arbeitgeber im Gesundheitswesen durch einen strukturierten, transparenten und fürsorglichen internationalen Rekrutierungsprozess.",
     explore: "Entdecken",

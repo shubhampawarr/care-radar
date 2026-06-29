@@ -131,7 +131,7 @@ const pageText = {
     },
     cost: {
       eyebrow: "Candidate Cost",
-      title: "You pay €0 in recruitment fees.",
+      title: "You pay 0€ in recruitment fees.",
       description:
         "From start to finish, candidates pay no recruitment fee. Employer-funded support may include language training, qualification recognition, flights, and first accommodation support, subject to the final agreed programme structure.",
       points: [
@@ -164,7 +164,7 @@ const pageText = {
     salary: {
       eyebrow: "Salary Progression",
       title: "Indicative monthly pay along this route",
-      free: "€0 recruitment fees",
+      free: "0€ recruitment fees",
       note: "Gross monthly salary estimates. Final pay may vary by employer, tariff, shift/weekend allowances, and individual recognition route.",
     },
     disclaimer:
@@ -183,7 +183,7 @@ const pageText = {
       eyebrow: "CareRadar Prozess",
       title: "Ihr Weg in die Pflege in Deutschland.",
       description:
-        "Wählen Sie Ihre aktuelle Pflegequalifikation und folgen Sie dem Weg zur Arbeit in Deutschland. Der Weg zeigt Sprachvorbereitung, Anerkennung, Arbeitsmöglichkeiten, Lernaufwand, Gehaltsstufen und langfristige Entwicklung.",
+        "Wählen Sie Ihre aktuelle Pflegequalifikation und entdecken Sie Ihren Weg in eine Pflegekarriere in Deutschland. Der Weg zeigt Sprachvorbereitung, Anerkennung, Arbeitsmöglichkeiten, Lernaufwand, Gehaltsstufen und langfristige Entwicklung.",
       primary: "Konto erstellen",
       secondary: "CareRadar kontaktieren",
     },
@@ -206,7 +206,7 @@ const pageText = {
     },
     cost: {
       eyebrow: "Kosten für Kandidaten",
-      title: "Sie zahlen €0 Rekrutierungsgebühren.",
+      title: "Sie zahlen 0€ Rekrutierungsgebühren.",
       description:
         "Von Anfang bis Ende zahlen Kandidaten keine Rekrutierungsgebühr. Arbeitgeberfinanzierte Unterstützung kann Sprachtraining, Anerkennung, Flüge und Unterstützung bei der ersten Unterkunft umfassen, abhängig von der finalen Programmstruktur.",
       points: [
@@ -222,7 +222,6 @@ const pageText = {
       description:
         "CareRadar basiert auf Klarheit, strukturierter Begleitung und langfristiger Unterstützung für Kandidaten auf dem Weg in eine Pflegekarriere in Deutschland.",
       items: [
-        "Ein echter, konkreter Jobweg vor der Verpflichtung",
         "Unterstützung in jeder wichtigen Phase",
         "Faire Gehaltserwartungen nach deutschen Gesundheitsstrukturen",
         "Begleitung auch nach der Ankunft, nicht nur vor der Abreise",
@@ -239,14 +238,14 @@ const pageText = {
     salary: {
       eyebrow: "Gehaltsentwicklung",
       title: "Richtwerte für monatliches Gehalt entlang dieser Route",
-      free: "€0 Rekrutierungsgebühren",
+      free: "0€ Rekrutierungsgebühren",
       note: "Bruttomonatsgehalt als Richtwert. Das finale Gehalt kann je nach Arbeitgeber, Tarif, Schicht-/Wochenendzuschlägen und individuellem Anerkennungsweg variieren.",
     },
     disclaimer:
       "Zeitrahmen, Gehälter, Lernaufwand, Anerkennungswege und finale Ergebnisse sind Richtwerte. Sie können je nach Arbeitgeber, Tarif, Behördenentscheidung, individuellem Profil, Dokumentation und finalem Anerkennungsweg variieren.",
     cta: {
       eyebrow: "Nächster Schritt",
-      title: "Bereit, Ihre Route zu verstehen?",
+      title: "Bereit, Ihren Weg zu gehen?",
       description:
         "Erstellen Sie ein Konto oder kontaktieren Sie CareRadar, um zu verstehen, welcher Weg zu Ihrer Qualifikation und Ihren Karrierezielen passen kann.",
       primary: "Konto erstellen",

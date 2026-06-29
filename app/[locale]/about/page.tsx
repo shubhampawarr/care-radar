@@ -27,7 +27,7 @@ const pageText = {
     },
     brandPromise: {
       label: "Brand Promise",
-      title: "We really do care.",
+      title: "we really do care.",
       description:
         "A simple promise behind every candidate conversation and every employer requirement.",
     },
@@ -86,26 +86,6 @@ const pageText = {
       closing:
         "The result is a more balanced recruitment experience — one that respects the nurse’s journey while also understanding the employer’s responsibility to patient care and service quality.",
     },
-    missionCards: [
-      {
-        eyebrow: "Mission",
-        title: "To guide nurses with clarity and care.",
-        description:
-          "CareRadar’s mission is to support qualified nurses as they explore international opportunities with better preparation, clearer expectations, and dependable guidance.",
-      },
-      {
-        eyebrow: "Vision",
-        title: "To become a trusted healthcare recruitment bridge.",
-        description:
-          "The long-term vision is to support healthcare systems with suitable nursing talent while helping candidates access meaningful, well-guided opportunities abroad.",
-      },
-      {
-        eyebrow: "Promise",
-        title: "To communicate clearly from start to finish.",
-        description:
-          "CareRadar believes that recruitment should never feel vague. Every candidate and employer should understand the next step and the reason behind it.",
-      },
-    ],
     valuesSection: {
       eyebrow: "Values",
       title: "The principles behind every recruitment journey.",
@@ -156,7 +136,7 @@ const pageText = {
     },
     brandPromise: {
       label: "Markenversprechen",
-      title: "We Really Do Care.",
+      title: "we really do care.",
       description:
         "Ein einfaches Versprechen hinter jedem Gespräch mit Kandidaten und jeder Anforderung von Arbeitgebern.",
     },
@@ -164,7 +144,7 @@ const pageText = {
       eyebrow: "Führung",
       title: "Lernen Sie die Menschen hinter CareRadar kennen.",
       description:
-        "CareRadar wird von Fachleuten geführt, die Erfahrung in internationalem Geschäft, Beratung, Finanzen, Rekrutierung und Personalwesen mitbringen.",
+        "CareRadar wird von Fachleuten geführt, die Erfahrung in internationaler Geschäftsentwicklung, Unternehmensberatung, Finanzen, Rekrutierung und Personalwesen mitbringen.",
     },
     founders: [
       {
@@ -184,7 +164,7 @@ const pageText = {
         image: "/images/ron-rudiger.jpeg",
         bio: [
           "Ron Rüdiger bringt mehrere Jahre Erfahrung im Personalwesen mit und war als Personalleiter in Konzernstrukturen sowie mittelständischen Organisationsumfeldern tätig.",
-          "Im Laufe seiner Karriere leitete er Rekrutierungsinitiativen, entwickelte und optimierte Personalstrukturen, beriet Geschäftsführungs- und Führungsteams und begleitete Organisationen in Wachstums- und Transformationsphasen.",
+          "Im Laufe seiner Karriere leitete er Rekrutierungsinitiativen, entwickelte und optimierte Personalstrukturen, beriet Geschäftsführungen und Führungskräfte und begleitete Organisationen in Wachstums- und Transformationsphasen.",
           "Durch die Einstellung und Betreuung von Fachkräften in einer Vielzahl von Rollen und Branchen hat Ron ein starkes Verständnis dafür entwickelt, was erfolgreiche Rekrutierung sowohl aus Arbeitgeber- als auch aus Kandidatenperspektive erfordert.",
           "Er ist überzeugt, dass nachhaltige Einstellung nicht bedeutet, offene Stellen schnell zu besetzen, sondern langfristige Partnerschaften aufzubauen, die Organisationskultur stärken, Leistung verbessern und dauerhaften Mehrwert für alle Beteiligten schaffen.",
           "Bei CareRadar überträgt Ron diese Philosophie auf die internationale Rekrutierung im Gesundheitswesen. Sein Fokus liegt darauf, transparente, ethische und nachhaltige Rekrutierungsprozesse zu schaffen, die Kandidaten auf ihrem Weg in eine erfolgreiche Zukunft in Deutschland unterstützen und gleichzeitig langfristigen Mehrwert für Gesundheitsorganisationen schaffen.",
@@ -203,8 +183,7 @@ const pageText = {
     },
     purpose: {
       eyebrow: "Zweck",
-      title:
-        "Ein klarerer Weg für internationale Pflegekräfte-Rekrutierung.",
+      title: "Ein klarerer Weg für internationale Pflegekräfte-Rekrutierung.",
       description:
         "CareRadar wurde geschaffen, um den Prozess für Pflegekräfte verständlicher und für Arbeitgeber verlässlicher zu machen.",
       nursesTitle: "Für Pflegekräfte",
@@ -216,27 +195,6 @@ const pageText = {
       closing:
         "Das Ergebnis ist eine ausgewogenere Rekrutierungserfahrung — eine, die den Weg der Pflegekraft respektiert und gleichzeitig die Verantwortung des Arbeitgebers für Patientenversorgung und Servicequalität versteht.",
     },
-    missionCards: [
-      {
-        eyebrow: "Mission",
-        title: "Pflegekräfte mit Klarheit und Fürsorge begleiten.",
-        description:
-          "Die Mission von CareRadar ist es, qualifizierte Pflegekräfte bei internationalen Möglichkeiten mit besserer Vorbereitung, klareren Erwartungen und verlässlicher Orientierung zu unterstützen.",
-      },
-      {
-        eyebrow: "Vision",
-        title:
-          "Eine vertrauenswürdige Brücke in der Gesundheitsrekrutierung werden.",
-        description:
-          "Die langfristige Vision ist es, Gesundheitssysteme mit geeigneten Pflegefachkräften zu unterstützen und Kandidaten Zugang zu sinnvollen, gut begleiteten Chancen im Ausland zu ermöglichen.",
-      },
-      {
-        eyebrow: "Versprechen",
-        title: "Von Anfang bis Ende klar kommunizieren.",
-        description:
-          "CareRadar ist überzeugt, dass Rekrutierung nie unklar wirken sollte. Jede Kandidatin, jeder Kandidat und jeder Arbeitgeber sollte den nächsten Schritt und den Grund dafür verstehen.",
-      },
-    ],
     valuesSection: {
       eyebrow: "Werte",
       title: "Die Prinzipien hinter jeder Rekrutierungsreise.",
@@ -534,30 +492,6 @@ export default async function AboutPage({ params }: AboutProps) {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* MISSION VISION */}
-      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
-          {text.missionCards.map((card) => (
-            <div
-              key={card.eyebrow}
-              className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-                {card.eyebrow}
-              </p>
-
-              <h3 className="mt-4 text-2xl font-semibold tracking-tight text-[#061f3d]">
-                {card.title}
-              </h3>
-
-              <p className="mt-4 text-sm leading-7 text-slate-600">
-                {card.description}
-              </p>
-            </div>
-          ))}
         </div>
       </section>
 
