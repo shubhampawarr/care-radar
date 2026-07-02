@@ -35,7 +35,7 @@ const pageText = {
       eyebrow: "Leadership",
       title: "Meet the people behind CareRadar.",
       description:
-        "CareRadar is led by professionals with experience across international business, consulting, finance, recruitment, and human resources.",
+        "CareRadar is led by professionals with experience across international business, consulting, finance, recruitment, human resources, strategy, and operations.",
     },
     founders: [
       {
@@ -59,6 +59,17 @@ const pageText = {
           "Having hired and supported professionals across a wide range of roles and industries, Ron has developed a strong understanding of what successful recruitment requires from both an employer and candidate perspective.",
           "He believes that sustainable hiring is not about filling vacancies quickly, but about building long-term partnerships that strengthen organisational culture, enhance performance, and create lasting value for everyone involved.",
           "At CareRadar, Ron applies this philosophy to international healthcare recruitment. His focus is on creating transparent, ethical, and sustainable recruitment processes that support candidates on their journey to build a successful future in Germany while delivering long-term value for healthcare organisations.",
+        ],
+      },
+      {
+        name: "Monika Labinaitė",
+        role: "Director of Strategy & Operations",
+        image: "/images/monika-labinaite.jpeg",
+        bio: [
+          "Monika Labinaitė brings extensive experience in process management, quality management, and international compliance. After completing her law degree with a specialization in International and European Law, she worked for international companies, where she optimized operational processes and quality standards.",
+          "Throughout her career, she has led cross-functional projects, developed more efficient business processes, and coordinated collaboration with international partners. Her analytical mindset and strong focus on sustainable process improvement enable her to structure and optimize complex operational workflows effectively.",
+          "At CareRadar, Monika serves as Director of Strategy & Operations, applying her expertise to the strategic development and continuous optimization of operational processes throughout the entire candidate journey.",
+          "Her focus is on creating transparent, efficient, and quality-driven processes that support international healthcare professionals on their path to Germany while providing healthcare organizations and international partners with a reliable foundation for long-term, successful collaboration.",
         ],
       },
     ],
@@ -144,7 +155,7 @@ const pageText = {
       eyebrow: "Führung",
       title: "Lernen Sie die Menschen hinter CareRadar kennen.",
       description:
-        "CareRadar wird von Fachleuten geführt, die Erfahrung in internationaler Geschäftsentwicklung, Unternehmensberatung, Finanzen, Rekrutierung und Personalwesen mitbringen.",
+        "CareRadar wird von Fachleuten geführt, die Erfahrung in internationaler Geschäftsentwicklung, Unternehmensberatung, Finanzen, Rekrutierung, Personalwesen, Strategie und Operations mitbringen.",
     },
     founders: [
       {
@@ -168,6 +179,17 @@ const pageText = {
           "Durch die Einstellung und Betreuung von Fachkräften in einer Vielzahl von Rollen und Branchen hat Ron ein starkes Verständnis dafür entwickelt, was erfolgreiche Rekrutierung sowohl aus Arbeitgeber- als auch aus Kandidatenperspektive erfordert.",
           "Er ist überzeugt, dass nachhaltige Einstellung nicht bedeutet, offene Stellen schnell zu besetzen, sondern langfristige Partnerschaften aufzubauen, die Organisationskultur stärken, Leistung verbessern und dauerhaften Mehrwert für alle Beteiligten schaffen.",
           "Bei CareRadar überträgt Ron diese Philosophie auf die internationale Rekrutierung im Gesundheitswesen. Sein Fokus liegt darauf, transparente, ethische und nachhaltige Rekrutierungsprozesse zu schaffen, die Kandidaten auf ihrem Weg in eine erfolgreiche Zukunft in Deutschland unterstützen und gleichzeitig langfristigen Mehrwert für Gesundheitsorganisationen schaffen.",
+        ],
+      },
+      {
+        name: "Monika Labinaitė",
+        role: "Leiterin Strategie & Operations",
+        image: "/images/monika-labinaite.jpeg",
+        bio: [
+          "Monika Labinaitė verfügt über umfassende Erfahrung in den Bereichen Prozessmanagement, Qualitätsmanagement und internationales Compliance-Management. Nach ihrem Jurastudium mit Schwerpunkt Internationales und Europäisches Recht war sie für internationale Unternehmen tätig und optimierte dort operative Prozesse sowie Qualitätsstandards.",
+          "Im Laufe ihrer Karriere leitete sie bereichsübergreifende Projekte, entwickelte effizientere Geschäftsprozesse und koordinierte die Zusammenarbeit mit internationalen Partnern. Ihre analytische Arbeitsweise und ihr Fokus auf nachhaltige Prozessverbesserungen ermöglichen es ihr, komplexe Abläufe strukturiert und effizient zu gestalten.",
+          "Bei CareRadar ist Monika als Leiterin Strategie & Operations tätig und überträgt ihre Erfahrung auf die strategische Weiterentwicklung operativer Prozesse entlang der gesamten Candidate Journey.",
+          "Ihr Fokus liegt darauf, transparente, effiziente und qualitätsorientierte Abläufe zu schaffen, die internationale Pflegefachkräfte auf ihrem Weg nach Deutschland optimal begleiten und gleichzeitig Gesundheitsorganisationen sowie internationalen Partnern eine verlässliche Grundlage für langfristige und erfolgreiche Zusammenarbeit bieten.",
         ],
       },
     ],
@@ -328,8 +350,14 @@ export default async function AboutPage({ params }: AboutProps) {
               {text.hero.eyebrow}
             </p>
 
-            <h1 className="mx-auto mt-5 max-w-4xl break-words text-[2rem] font-semibold leading-[1.12] tracking-tight text-[#061f3d] [overflow-wrap:anywhere] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.04]">
-              {text.hero.title}
+            <h1
+              className={`mx-auto mt-5 max-w-4xl font-semibold leading-[1.12] tracking-tight text-[#061f3d] md:mx-0 md:leading-[1.08] ${
+                locale === "de"
+                  ? "text-[1.45rem] sm:text-[1.9rem] md:text-[2.35rem] xl:text-[2.75rem]"
+                  : "text-[2rem] sm:text-5xl md:text-6xl"
+              }`}
+              >
+                {text.hero.title}
             </h1>
           </div>
 
@@ -354,7 +382,7 @@ export default async function AboutPage({ params }: AboutProps) {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
             {text.founders.map((founder) => (
               <article
                 key={founder.name}
@@ -367,11 +395,11 @@ export default async function AboutPage({ params }: AboutProps) {
                       alt={founder.name}
                       fill
                       className="object-contain p-4"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      sizes="(max-width: 1024px) 100vw, 33vw"
                     />
                   </div>
 
-                  <div className="flex flex-1 flex-col p-6 md:p-8">
+                  <div className="flex flex-1 flex-col p-6 md:p-7">
                     <div className="text-center">
                       <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
                         {founder.name}

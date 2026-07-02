@@ -7,50 +7,50 @@ import { usePathname } from "next/navigation";
 
 const footerText = {
   en: {
-    tagline: "we really do care",
+    tagline: "we really do care.",
     description:
       "CareRadar supports nurses and healthcare employers through a structured, transparent, and care-led international recruitment journey.",
     explore: "Explore",
     contact: "Contact",
     phone: "Phone / WhatsApp",
-    toBeAdded: "To be added",
+    generalEmail: "General Email",
     rights: "All rights reserved.",
     links: [
+      { label: "Home", href: "/" },
       { label: "About", href: "/about" },
-      { label: "Nurses", href: "/nurses" },
-      { label: "Employers", href: "/employers" },
       { label: "Process", href: "/process" },
       { label: "Contact", href: "/contact" },
+      { label: "Legal", href: "/impressum" },
+      { label: "Privacy Policy", href: "/datenschutz" },
     ],
     bottomLinks: [
-      { label: "About", href: "/about" },
-      { label: "Process", href: "/process" },
-      { label: "Contact", href: "/contact" },
+      { label: "Legal", href: "/impressum" },
+      { label: "Privacy Policy", href: "/datenschutz" },
     ],
   },
   de: {
-    tagline: "we really do care",
+    tagline: "we really do care.",
     description:
       "CareRadar begleitet Pflegekräfte und Arbeitgeber im Gesundheitswesen durch einen strukturierten, transparenten und fürsorglichen internationalen Rekrutierungsprozess.",
     explore: "Entdecken",
     contact: "Kontakt",
     phone: "Telefon / WhatsApp",
-    toBeAdded: "Wird ergänzt",
+    generalEmail: "Allgemeine E-Mail",
     rights: "Alle Rechte vorbehalten.",
     links: [
+      { label: "Startseite", href: "/" },
       { label: "Über uns", href: "/about" },
-      { label: "Für Pflegekräfte", href: "/nurses" },
-      { label: "Für Arbeitgeber", href: "/employers" },
       { label: "Prozess", href: "/process" },
       { label: "Kontakt", href: "/contact" },
+      { label: "Impressum", href: "/impressum" },
+      { label: "Datenschutzerklärung", href: "/datenschutz" },
     ],
     bottomLinks: [
-      { label: "Über uns", href: "/about" },
-      { label: "Prozess", href: "/process" },
-      { label: "Kontakt", href: "/contact" },
+      { label: "Impressum", href: "/impressum" },
+      { label: "Datenschutzerklärung", href: "/datenschutz" },
     ],
   },
-};
+} as const;
 
 function getCurrentLocale(pathname: string) {
   if (pathname.startsWith("/de")) return "de";
@@ -109,7 +109,7 @@ export default function Footer() {
             <div className="mt-4 grid grid-cols-2 gap-2 md:flex md:flex-col md:gap-3">
               {text.links.map((link) => (
                 <Link
-                  key={link.href}
+                  key={`${link.label}-${link.href}`}
                   href={getLocalizedHref(currentLocale, link.href)}
                   className="group inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300 transition hover:text-white md:bg-transparent md:px-0 md:py-0"
                 >
@@ -151,24 +151,37 @@ export default function Footer() {
 
               <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
                 <p className="font-semibold text-white">{text.phone}</p>
-                <p className="mt-1 text-xs text-slate-400 md:text-sm">
-                  {text.toBeAdded}
-                </p>
+                <a
+                  href="tel:+4917631457123"
+                  className="mt-1 inline-block text-xs text-slate-400 transition hover:text-white md:text-sm"
+                >
+                  +49 176 31457123
+                </a>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
+                <p className="font-semibold text-white">{text.generalEmail}</p>
+                <a
+                  href="mailto:info@careradar.de"
+                  className="mt-1 inline-block break-all text-xs text-slate-400 transition hover:text-white md:text-sm"
+                >
+                  info@careradar.de
+                </a>
               </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-white/10 px-5 py-4 md:px-10 md:py-5">
-          <div className="flex flex-col gap-2 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
             <p>
               © {new Date().getFullYear()} CareRadar. {text.rights}
             </p>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
               {text.bottomLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={`${link.label}-${link.href}`}
                   href={getLocalizedHref(currentLocale, link.href)}
                   className="transition hover:text-white"
                 >
