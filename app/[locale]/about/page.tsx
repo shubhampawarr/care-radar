@@ -144,6 +144,10 @@ const pageText = {
       eyebrow: "Über CareRadar",
       title:
         "Ein Rekrutierungsunternehmen, das auf Fürsorge, Klarheit und Vertrauen aufgebaut ist.",
+      mobileTitleLines: [
+        "Ein Rekrutierungsunternehmen.",
+        "Aufgebaut auf Fürsorge, Klarheit und Vertrauen.",
+      ],
     },
     brandPromise: {
       label: "Markenversprechen",
@@ -188,8 +192,8 @@ const pageText = {
         bio: [
           "Monika Labinaitė verfügt über umfassende Erfahrung in den Bereichen Prozessmanagement, Qualitätsmanagement und internationales Compliance-Management. Nach ihrem Jurastudium mit Schwerpunkt Internationales und Europäisches Recht war sie für internationale Unternehmen tätig und optimierte dort operative Prozesse sowie Qualitätsstandards.",
           "Im Laufe ihrer Karriere leitete sie bereichsübergreifende Projekte, entwickelte effizientere Geschäftsprozesse und koordinierte die Zusammenarbeit mit internationalen Partnern. Ihre analytische Arbeitsweise und ihr Fokus auf nachhaltige Prozessverbesserungen ermöglichen es ihr, komplexe Abläufe strukturiert und effizient zu gestalten.",
-          "Bei CareRadar ist Monika als Leiterin Strategie & Operations tätig und überträgt ihre Erfahrung auf die strategische Weiterentwicklung operativer Prozesse entlang der gesamten Candidate Journey.",
           "Ihr Fokus liegt darauf, transparente, effiziente und qualitätsorientierte Abläufe zu schaffen, die internationale Pflegefachkräfte auf ihrem Weg nach Deutschland optimal begleiten und gleichzeitig Gesundheitsorganisationen sowie internationalen Partnern eine verlässliche Grundlage für langfristige und erfolgreiche Zusammenarbeit bieten.",
+          "Bei CareRadar ist Monika als Leiterin Strategie & Operations tätig und überträgt ihre Erfahrung auf die strategische Weiterentwicklung operativer Prozesse entlang der gesamten Candidate Journey.",
         ],
       },
     ],
@@ -286,6 +290,13 @@ type BrandPromiseText = {
   description: string;
 };
 
+type Founder = {
+  name: string;
+  role: string;
+  image: string;
+  bio: readonly string[];
+};
+
 function BrandPromiseBox({
   mobile = false,
   text,
@@ -331,10 +342,59 @@ function BrandPromiseBox({
   );
 }
 
+function LeaderCard({
+  founder,
+  imageSizes,
+}: {
+  founder: Founder;
+  imageSizes: string;
+}) {
+  return (
+    <article className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200">
+      <div className="flex h-full flex-col">
+        <div className="relative flex h-[260px] w-full items-center justify-center bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_55%,#eafffb_100%)] p-4 sm:h-[300px]">
+          <Image
+            src={founder.image}
+            alt={founder.name}
+            fill
+            className="object-contain p-4"
+            sizes={imageSizes}
+          />
+        </div>
+
+        <div className="flex flex-1 flex-col p-6 md:p-7">
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
+              {founder.name}
+            </h3>
+
+            <p className="mt-1 text-sm font-semibold text-[#08a99d]">
+              {founder.role}
+            </p>
+
+            <div className="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+          </div>
+
+          <div className="mt-6 space-y-4">
+            {founder.bio.map((paragraph) => (
+              <p key={paragraph} className="text-sm leading-7 text-slate-600">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default async function AboutPage({ params }: AboutProps) {
   const { locale: rawLocale } = await params;
   const locale = getSafeLocale(rawLocale);
   const text = pageText[locale];
+
+  const topFounders = text.founders.slice(0, 2);
+  const supportingLeaders = text.founders.slice(2);
 
   return (
     <>
@@ -353,11 +413,25 @@ export default async function AboutPage({ params }: AboutProps) {
             <h1
               className={`mx-auto mt-5 max-w-4xl font-semibold leading-[1.1] tracking-tight text-[#061f3d] md:mx-0 md:leading-[1.05] ${
                 locale === "de"
-                  ? "text-[1.55rem] sm:text-[2rem] md:text-[2.8rem] lg:text-[3.25rem] xl:text-[3.55rem]"
+                  ? "text-[1.35rem] sm:text-[1.85rem] md:text-[2.8rem] lg:text-[3.25rem] xl:text-[3.55rem]"
                   : "text-[2rem] sm:text-5xl md:text-6xl"
               }`}
             >
-              {text.hero.title}
+              {locale === "de" && "mobileTitleLines" in text.hero ? (
+                <>
+                  <span className="md:hidden">
+                    {text.hero.mobileTitleLines.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </span>
+
+                  <span className="hidden md:inline">{text.hero.title}</span>
+                </>
+              ) : (
+                text.hero.title
+              )}
             </h1>
           </div>
 
@@ -382,51 +456,29 @@ export default async function AboutPage({ params }: AboutProps) {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {text.founders.map((founder) => (
-              <article
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {topFounders.map((founder) => (
+              <LeaderCard
                 key={founder.name}
-                className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200"
-              >
-                <div className="flex h-full flex-col">
-                  <div className="relative flex h-[260px] w-full items-center justify-center bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_55%,#eafffb_100%)] p-4 sm:h-[300px]">
-                    <Image
-                      src={founder.image}
-                      alt={founder.name}
-                      fill
-                      className="object-contain p-4"
-                      sizes="(max-width: 1024px) 100vw, 33vw"
-                    />
-                  </div>
-
-                  <div className="flex flex-1 flex-col p-6 md:p-7">
-                    <div className="text-center">
-                      <h3 className="text-2xl font-semibold tracking-tight text-[#061f3d]">
-                        {founder.name}
-                      </h3>
-
-                      <p className="mt-1 text-sm font-semibold text-[#08a99d]">
-                        {founder.role}
-                      </p>
-
-                      <div className="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
-                    </div>
-
-                    <div className="mt-6 space-y-4">
-                      {founder.bio.map((paragraph) => (
-                        <p
-                          key={paragraph}
-                          className="text-sm leading-7 text-slate-600"
-                        >
-                          {paragraph}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </article>
+                founder={founder}
+                imageSizes="(max-width: 1024px) 100vw, 50vw"
+              />
             ))}
           </div>
+
+          {supportingLeaders.length > 0 && (
+            <div className="mt-6 flex justify-center">
+              <div className="grid w-full max-w-2xl gap-6">
+                {supportingLeaders.map((founder) => (
+                  <LeaderCard
+                    key={founder.name}
+                    founder={founder}
+                    imageSizes="(max-width: 768px) 100vw, 672px"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
