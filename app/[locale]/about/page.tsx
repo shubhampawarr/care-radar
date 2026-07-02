@@ -143,7 +143,7 @@ const pageText = {
     hero: {
       eyebrow: "Über CareRadar",
       title:
-        "Ein Unternehmen, das auf Fürsorge, Klarheit und Vertrauen gründet.",
+         "Ein Unternehmen, das auf Fürsorge, Klarheit und Vertrauen aufbaut.",
     },
     brandPromise: {
       label: "Markenversprechen",
