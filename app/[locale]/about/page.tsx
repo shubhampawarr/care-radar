@@ -143,11 +143,7 @@ const pageText = {
     hero: {
       eyebrow: "Über CareRadar",
       title:
-        "Ein Rekrutierungsunternehmen, das auf Fürsorge, Klarheit und Vertrauen aufgebaut ist.",
-      mobileTitleLines: [
-        "Ein Rekrutierungsunternehmen.",
-        "Aufgebaut auf Fürsorge, Klarheit und Vertrauen.",
-      ],
+        "Ein Unternehmen, das auf Fürsorge, Klarheit und Vertrauen gründet.",
     },
     brandPromise: {
       label: "Markenversprechen",
@@ -410,28 +406,8 @@ export default async function AboutPage({ params }: AboutProps) {
               {text.hero.eyebrow}
             </p>
 
-            <h1
-              className={`mx-auto mt-5 max-w-4xl font-semibold leading-[1.1] tracking-tight text-[#061f3d] md:mx-0 md:leading-[1.05] ${
-                locale === "de"
-                  ? "text-[1.35rem] sm:text-[1.85rem] md:text-[2.8rem] lg:text-[3.25rem] xl:text-[3.55rem]"
-                  : "text-[2rem] sm:text-5xl md:text-6xl"
-              }`}
-            >
-              {locale === "de" && "mobileTitleLines" in text.hero ? (
-                <>
-                  <span className="md:hidden">
-                    {text.hero.mobileTitleLines.map((line) => (
-                      <span key={line} className="block">
-                        {line}
-                      </span>
-                    ))}
-                  </span>
-
-                  <span className="hidden md:inline">{text.hero.title}</span>
-                </>
-              ) : (
-                text.hero.title
-              )}
+            <h1 className="mx-auto mt-5 max-w-4xl text-[2rem] font-semibold leading-[1.1] tracking-tight text-[#061f3d] sm:text-5xl md:mx-0 md:text-6xl md:leading-[1.05]">
+              {text.hero.title}
             </h1>
           </div>
 
