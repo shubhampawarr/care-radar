@@ -68,8 +68,8 @@ const pageText = {
         bio: [
           "Monika Labinaitė brings extensive experience in process management, quality management, and international compliance. After completing her law degree with a specialization in International and European Law, she worked for international companies, where she optimized operational processes and quality standards.",
           "Throughout her career, she has led cross-functional projects, developed more efficient business processes, and coordinated collaboration with international partners. Her analytical mindset and strong focus on sustainable process improvement enable her to structure and optimize complex operational workflows effectively.",
-          "At CareRadar, Monika serves as Director of Strategy & Operations, applying her expertise to the strategic development and continuous optimization of operational processes throughout the entire candidate journey.",
           "Her focus is on creating transparent, efficient, and quality-driven processes that support international healthcare professionals on their path to Germany while providing healthcare organizations and international partners with a reliable foundation for long-term, successful collaboration.",
+          "At CareRadar, Monika serves as Director of Strategy & Operations, applying her expertise to the strategic development and continuous optimization of operational processes throughout the entire candidate journey.",
         ],
       },
     ],
