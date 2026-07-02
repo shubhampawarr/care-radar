@@ -351,13 +351,13 @@ export default async function AboutPage({ params }: AboutProps) {
             </p>
 
             <h1
-              className={`mx-auto mt-5 max-w-4xl font-semibold leading-[1.12] tracking-tight text-[#061f3d] md:mx-0 md:leading-[1.08] ${
+              className={`mx-auto mt-5 max-w-4xl font-semibold leading-[1.1] tracking-tight text-[#061f3d] md:mx-0 md:leading-[1.05] ${
                 locale === "de"
-                  ? "text-[1.45rem] sm:text-[1.9rem] md:text-[2.35rem] xl:text-[2.75rem]"
+                  ? "text-[1.55rem] sm:text-[2rem] md:text-[2.8rem] lg:text-[3.25rem] xl:text-[3.55rem]"
                   : "text-[2rem] sm:text-5xl md:text-6xl"
               }`}
-              >
-                {text.hero.title}
+            >
+              {text.hero.title}
             </h1>
           </div>
 
