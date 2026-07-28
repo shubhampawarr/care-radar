@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const footerText = {
@@ -68,127 +67,115 @@ export default function Footer() {
   const text = footerText[currentLocale];
 
   return (
-    <footer className="bg-white px-4 pb-4 md:px-8 md:pb-5">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.5rem] bg-[#061f3d] text-white shadow-xl shadow-slate-200 md:rounded-[2rem]">
-        <div className="grid gap-7 px-5 py-7 md:grid-cols-[1.2fr_0.8fr_1fr] md:gap-10 md:px-10 md:py-12">
-          <div>
-            <Link
-              href={`/${currentLocale}`}
-              className="inline-flex items-center gap-3"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white md:h-14 md:w-14">
-                <Image
-                  src="/images/careradar-logo.jpeg"
-                  alt="CareRadar Logo"
-                  width={46}
-                  height={46}
-                  className="h-9 w-9 rounded-full object-contain md:h-11 md:w-11"
-                />
-              </div>
-
-              <div>
-                <p className="text-xl font-semibold tracking-tight md:text-2xl">
-                  Care<span className="text-[#10c4b6]">Radar</span>
-                </p>
-                <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.24em] text-slate-400 md:text-[10px]">
-                  {text.tagline}
-                </p>
-              </div>
-            </Link>
-
-            <p className="mt-4 max-w-md text-sm leading-6 text-slate-300 md:mt-6 md:leading-7">
-              {text.description}
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#10c4b6]">
-              {text.explore}
-            </h3>
-
-            <div className="mt-4 grid grid-cols-2 gap-2 md:flex md:flex-col md:gap-3">
-              {text.links.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={getLocalizedHref(currentLocale, link.href)}
-                  className="group inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300 transition hover:text-white md:bg-transparent md:px-0 md:py-0"
-                >
-                  <span>{link.label}</span>
-                  <ArrowRight
-                    size={14}
-                    className="hidden opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100 md:block"
-                  />
-                </Link>
-              ))}
+    <footer className="w-full bg-[#061f3d] text-white">
+      <div className="mx-auto grid max-w-7xl gap-6 px-5 py-8 sm:px-8 md:grid-cols-[1.15fr_0.75fr_1fr] md:gap-8 md:py-9 lg:px-10">
+        <div>
+          <Link
+            href={`/${currentLocale}`}
+            className="inline-flex items-center gap-2.5"
+          >
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
+              <Image
+                src="/images/careradar-logo.jpeg"
+                alt="CareRadar Logo"
+                width={32}
+                height={32}
+                className="h-7 w-7 rounded-full object-contain"
+              />
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#10c4b6]">
-              {text.contact}
-            </h3>
-
-            <div className="mt-4 space-y-3 text-sm text-slate-300">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <p className="font-semibold text-white">Akshat Gupta</p>
-                <a
-                  href="mailto:akshat.gupta@careradar.de"
-                  className="mt-1 inline-block break-all text-xs text-slate-400 transition hover:text-white md:text-sm"
-                >
-                  akshat.gupta@careradar.de
-                </a>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <p className="font-semibold text-white">Ron Rüdiger</p>
-                <a
-                  href="mailto:ron.ruediger@careradar.de"
-                  className="mt-1 inline-block break-all text-xs text-slate-400 transition hover:text-white md:text-sm"
-                >
-                  ron.ruediger@careradar.de
-                </a>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <p className="font-semibold text-white">{text.phone}</p>
-                <a
-                  href="tel:+4917631457123"
-                  className="mt-1 inline-block text-xs text-slate-400 transition hover:text-white md:text-sm"
-                >
-                  +49 176 31457123
-                </a>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:p-4">
-                <p className="font-semibold text-white">{text.generalEmail}</p>
-                <a
-                  href="mailto:info@careradar.de"
-                  className="mt-1 inline-block break-all text-xs text-slate-400 transition hover:text-white md:text-sm"
-                >
-                  info@careradar.de
-                </a>
-              </div>
+            <div>
+              <p className="text-lg font-semibold tracking-tight">
+                Care<span className="text-[#10c4b6]">Radar</span>
+              </p>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                {text.tagline}
+              </p>
             </div>
+          </Link>
+          <p className="mt-3 max-w-sm text-xs leading-5 text-slate-400">
+            {text.description}
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#10c4b6]">
+            {text.explore}
+          </h3>
+          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5">
+            {text.links.map((link) => (
+              <Link
+                key={`${link.label}-${link.href}`}
+                href={getLocalizedHref(currentLocale, link.href)}
+                className="text-xs text-slate-300 transition hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
 
-        <div className="border-t border-white/10 px-5 py-4 md:px-10 md:py-5">
-          <div className="flex flex-col gap-3 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
-            <p>
-              © {new Date().getFullYear()} CareRadar. {text.rights}
-            </p>
-
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {text.bottomLinks.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={getLocalizedHref(currentLocale, link.href)}
-                  className="transition hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
+        <div>
+          <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#10c4b6]">
+            {text.contact}
+          </h3>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-xs font-semibold text-white">Akshat Gupta</p>
+              <a
+                href="mailto:akshat.gupta@careradar.de"
+                className="mt-0.5 block break-all text-[11px] text-slate-400 transition hover:text-white"
+              >
+                akshat.gupta@careradar.de
+              </a>
             </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-xs font-semibold text-white">Ron Rüdiger</p>
+              <a
+                href="mailto:ron.ruediger@careradar.de"
+                className="mt-0.5 block break-all text-[11px] text-slate-400 transition hover:text-white"
+              >
+                ron.ruediger@careradar.de
+              </a>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-xs font-semibold text-white">{text.phone}</p>
+              <a
+                href="tel:+4917631457123"
+                className="mt-0.5 block text-[11px] text-slate-400 transition hover:text-white"
+              >
+                +49 176 31457123
+              </a>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-xs font-semibold text-white">
+                {text.generalEmail}
+              </p>
+              <a
+                href="mailto:info@careradar.de"
+                className="mt-0.5 block break-all text-[11px] text-slate-400 transition hover:text-white"
+              >
+                info@careradar.de
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-3 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
+          <p>
+            © {new Date().getFullYear()} CareRadar. {text.rights}
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            {text.bottomLinks.map((link) => (
+              <Link
+                key={`${link.label}-${link.href}`}
+                href={getLocalizedHref(currentLocale, link.href)}
+                className="transition hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

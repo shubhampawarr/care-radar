@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Compass,
-  HeartHandshake,
-  ShieldCheck,
-  Stethoscope,
-  Users,
-} from "lucide-react";
-import { getSafeLocale, type Locale } from "@/lib/locale";
+import PhotoPanel from "@/components/PhotoPanel";
+import { getSafeLocale } from "@/lib/locale";
+import type { SiteImageKey } from "@/lib/site-images";
 
-const valueIcons = [HeartHandshake, Compass, ShieldCheck, BadgeCheck];
+const valueImageKeys: SiteImageKey[] = [
+  "nurseCare",
+  "documentsPreparation",
+  "recruitmentHandshake",
+  "healthcareFocus",
+];
 
 const pageText = {
   en: {
@@ -59,17 +56,6 @@ const pageText = {
           "Having hired and supported professionals across a wide range of roles and industries, Ron has developed a strong understanding of what successful recruitment requires from both an employer and candidate perspective.",
           "He believes that sustainable hiring is not about filling vacancies quickly, but about building long-term partnerships that strengthen organisational culture, enhance performance, and create lasting value for everyone involved.",
           "At CareRadar, Ron applies this philosophy to international healthcare recruitment. His focus is on creating transparent, ethical, and sustainable recruitment processes that support candidates on their journey to build a successful future in Germany while delivering long-term value for healthcare organisations.",
-        ],
-      },
-      {
-        name: "Monika Labinaitė",
-        role: "Director of Strategy & Operations",
-        image: "/images/monika-labinaite.jpeg",
-        bio: [
-          "Monika Labinaitė brings extensive experience in process management, quality management, and international compliance. After completing her law degree with a specialization in International and European Law, she worked for international companies, where she optimized operational processes and quality standards.",
-          "Throughout her career, she has led cross-functional projects, developed more efficient business processes, and coordinated collaboration with international partners. Her analytical mindset and strong focus on sustainable process improvement enable her to structure and optimize complex operational workflows effectively.",
-          "Her focus is on creating transparent, efficient, and quality-driven processes that support international healthcare professionals on their path to Germany while providing healthcare organizations and international partners with a reliable foundation for long-term, successful collaboration.",
-          "At CareRadar, Monika serves as Director of Strategy & Operations, applying her expertise to the strategic development and continuous optimization of operational processes throughout the entire candidate journey.",
         ],
       },
     ],
@@ -125,14 +111,6 @@ const pageText = {
         },
       ],
     },
-    cta: {
-      eyebrow: "Work With CareRadar",
-      title: "A recruitment conversation should begin with clarity.",
-      description:
-        "Whether you are a nurse or a healthcare employer, CareRadar can help you understand the right pathway before moving forward.",
-      primary: "Contact CareRadar",
-      secondary: "View process",
-    },
   },
   de: {
     metadata: {
@@ -179,17 +157,6 @@ const pageText = {
           "Durch die Einstellung und Betreuung von Fachkräften in einer Vielzahl von Rollen und Branchen hat Ron ein starkes Verständnis dafür entwickelt, was erfolgreiche Rekrutierung sowohl aus Arbeitgeber- als auch aus Kandidatenperspektive erfordert.",
           "Er ist überzeugt, dass nachhaltige Einstellung nicht bedeutet, offene Stellen schnell zu besetzen, sondern langfristige Partnerschaften aufzubauen, die Organisationskultur stärken, Leistung verbessern und dauerhaften Mehrwert für alle Beteiligten schaffen.",
           "Bei CareRadar überträgt Ron diese Philosophie auf die internationale Rekrutierung im Gesundheitswesen. Sein Fokus liegt darauf, transparente, ethische und nachhaltige Rekrutierungsprozesse zu schaffen, die Kandidaten auf ihrem Weg in eine erfolgreiche Zukunft in Deutschland unterstützen und gleichzeitig langfristigen Mehrwert für Gesundheitsorganisationen schaffen.",
-        ],
-      },
-      {
-        name: "Monika Labinaitė",
-        role: "Leiterin Strategie & Operations",
-        image: "/images/monika-labinaite.jpeg",
-        bio: [
-          "Monika Labinaitė verfügt über umfassende Erfahrung in den Bereichen Prozessmanagement, Qualitätsmanagement und internationales Compliance-Management. Nach ihrem Jurastudium mit Schwerpunkt Internationales und Europäisches Recht war sie für internationale Unternehmen tätig und optimierte dort operative Prozesse sowie Qualitätsstandards.",
-          "Im Laufe ihrer Karriere leitete sie bereichsübergreifende Projekte, entwickelte effizientere Geschäftsprozesse und koordinierte die Zusammenarbeit mit internationalen Partnern. Ihre analytische Arbeitsweise und ihr Fokus auf nachhaltige Prozessverbesserungen ermöglichen es ihr, komplexe Abläufe strukturiert und effizient zu gestalten.",
-          "Ihr Fokus liegt darauf, transparente, effiziente und qualitätsorientierte Abläufe zu schaffen, die internationale Pflegefachkräfte auf ihrem Weg nach Deutschland optimal begleiten und gleichzeitig Gesundheitsorganisationen sowie internationalen Partnern eine verlässliche Grundlage für langfristige und erfolgreiche Zusammenarbeit bieten.",
-          "Bei CareRadar ist Monika als Leiterin Strategie & Operations tätig und überträgt ihre Erfahrung auf die strategische Weiterentwicklung operativer Prozesse entlang der gesamten Candidate Journey.",
         ],
       },
     ],
@@ -245,14 +212,6 @@ const pageText = {
         },
       ],
     },
-    cta: {
-      eyebrow: "Mit CareRadar arbeiten",
-      title: "Ein Rekrutierungsgespräch sollte mit Klarheit beginnen.",
-      description:
-        "Ob Sie Pflegekraft oder Arbeitgeber im Gesundheitswesen sind — CareRadar hilft Ihnen, den passenden Weg zu verstehen, bevor Sie den nächsten Schritt gehen.",
-      primary: "CareRadar kontaktieren",
-      secondary: "Prozess ansehen",
-    },
   },
 } as const;
 
@@ -261,11 +220,6 @@ type AboutProps = {
     locale: string;
   }>;
 };
-
-function localizedHref(locale: Locale, href: string) {
-  if (href === "/") return `/${locale}`;
-  return `/${locale}${href}`;
-}
 
 export async function generateMetadata({
   params,
@@ -308,30 +262,33 @@ function BrandPromiseBox({
     >
       <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
 
-      <div className="relative rounded-[2rem] border border-white bg-white p-4 shadow-2xl shadow-slate-200">
-        <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] px-5 py-7 text-center">
-          <Image
-            src="/images/careradar-logo.jpeg"
-            alt="CareRadar Logo"
-            width={190}
-            height={190}
-            className="mx-auto h-36 w-36 rounded-full object-contain md:h-44 md:w-44"
-            priority
-          />
-
-          <div className="mx-auto mt-5 h-px w-28 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
-
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#08a99d]">
-            {text.label}
-          </p>
-
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#061f3d]">
-            {text.title}
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-slate-600">
-            {text.description}
-          </p>
+      <div className="relative rounded-[2rem] border border-white bg-white shadow-2xl shadow-slate-200 overflow-hidden">
+        <PhotoPanel
+          imageKey="healthcareTeam"
+          className="aspect-[4/5] w-full"
+          overlay="gradient"
+          priority
+          sizes="(max-width: 768px) 90vw, 420px"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+          <div className="rounded-[1.4rem] border border-white/20 bg-white/10 p-4 backdrop-blur-md text-center">
+            <Image
+              src="/images/careradar-logo.jpeg"
+              alt="CareRadar Logo"
+              width={56}
+              height={56}
+              className="mx-auto h-14 w-14 rounded-full border border-white/30 object-contain"
+            />
+            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#5eead4]">
+              {text.label}
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+              {text.title}
+            </h2>
+            <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-white/85">
+              {text.description}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -389,9 +346,6 @@ export default async function AboutPage({ params }: AboutProps) {
   const locale = getSafeLocale(rawLocale);
   const text = pageText[locale];
 
-  const topFounders = text.founders.slice(0, 2);
-  const supportingLeaders = text.founders.slice(2);
-
   return (
     <>
       {/* HERO */}
@@ -433,7 +387,7 @@ export default async function AboutPage({ params }: AboutProps) {
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            {topFounders.map((founder) => (
+            {text.founders.map((founder) => (
               <LeaderCard
                 key={founder.name}
                 founder={founder}
@@ -441,20 +395,6 @@ export default async function AboutPage({ params }: AboutProps) {
               />
             ))}
           </div>
-
-          {supportingLeaders.length > 0 && (
-            <div className="mt-6 flex justify-center">
-              <div className="grid w-full max-w-2xl gap-6">
-                {supportingLeaders.map((founder) => (
-                  <LeaderCard
-                    key={founder.name}
-                    founder={founder}
-                    imageSizes="(max-width: 768px) 100vw, 672px"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -465,21 +405,23 @@ export default async function AboutPage({ params }: AboutProps) {
 
       {/* STORY */}
       <section className="bg-white px-5 py-12 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2 md:items-center">
+          <div className="overflow-hidden rounded-[1.7rem] border border-slate-100 shadow-xl shadow-slate-100">
+            <PhotoPanel
+              imageKey="internationalCareer"
+              className="aspect-[4/3] w-full"
+              overlay="light"
+              sizes="(max-width: 768px) 100vw, 45vw"
+            />
+          </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
               {text.story.eyebrow}
             </p>
-
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
               {text.story.title}
             </h2>
-          </div>
-
-          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
-            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
-
-            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+            <div className="mt-6 space-y-5 text-sm leading-8 text-slate-600 md:text-base">
               {text.story.paragraphs.map((paragraph, index) => (
                 <p key={paragraph}>
                   {paragraph}
@@ -500,8 +442,14 @@ export default async function AboutPage({ params }: AboutProps) {
 
       {/* DARK PURPOSE SECTION */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
-          <div className="grid md:grid-cols-3">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
+          <PhotoPanel
+            imageKey="germanyHealthcare"
+            className="absolute inset-0 opacity-20"
+            overlay="none"
+            sizes="100vw"
+          />
+          <div className="relative grid md:grid-cols-3">
             <div className="relative p-7 text-white md:col-span-1 md:p-10">
               <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
 
@@ -521,7 +469,14 @@ export default async function AboutPage({ params }: AboutProps) {
             <div className="border-t border-white/10 p-7 md:col-span-2 md:border-l md:border-t-0 md:p-10">
               <div className="grid gap-8 md:grid-cols-2">
                 <div>
-                  <Stethoscope size={28} className="text-[#10c4b6]" />
+                  <div className="overflow-hidden rounded-2xl border border-white/10">
+                    <PhotoPanel
+                      imageKey="nurseCandidate"
+                      className="aspect-[16/10] w-full"
+                      overlay="dark"
+                      sizes="(max-width: 768px) 100vw, 30vw"
+                    />
+                  </div>
                   <h3 className="mt-4 text-xl font-semibold text-white">
                     {text.purpose.nursesTitle}
                   </h3>
@@ -531,7 +486,14 @@ export default async function AboutPage({ params }: AboutProps) {
                 </div>
 
                 <div>
-                  <Users size={28} className="text-[#10c4b6]" />
+                  <div className="overflow-hidden rounded-2xl border border-white/10">
+                    <PhotoPanel
+                      imageKey="hospitalEmployer"
+                      className="aspect-[16/10] w-full"
+                      overlay="dark"
+                      sizes="(max-width: 768px) 100vw, 30vw"
+                    />
+                  </div>
                   <h3 className="mt-4 text-xl font-semibold text-white">
                     {text.purpose.employersTitle}
                   </h3>
@@ -569,63 +531,27 @@ export default async function AboutPage({ params }: AboutProps) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {text.valuesSection.values.map((value, index) => {
-              const Icon = valueIcons[index] ?? HeartHandshake;
-
-              return (
-                <div
-                  key={value.title}
-                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                    <Icon size={22} />
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-semibold text-[#08264a]">
+            {text.valuesSection.values.map((value, index) => (
+              <div
+                key={value.title}
+                className="overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
+              >
+                <PhotoPanel
+                  imageKey={valueImageKeys[index] ?? "healthcareTeam"}
+                  className="aspect-[16/10] w-full"
+                  overlay="gradient"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-[#08264a]">
                     {value.title}
                   </h3>
-
                   <p className="mt-3 text-sm leading-7 text-slate-600">
                     {value.description}
                   </p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
-          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
-
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-            {text.cta.eyebrow}
-          </p>
-
-          <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-            {text.cta.title}
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
-            {text.cta.description}
-          </p>
-
-          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href={localizedHref(locale, "/contact")}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#08264a] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#08a99d]"
-            >
-              {text.cta.primary} <ArrowRight size={17} />
-            </Link>
-
-            <Link
-              href={localizedHref(locale, "/process")}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
-            >
-              {text.cta.secondary}
-            </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

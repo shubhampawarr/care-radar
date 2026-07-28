@@ -1,18 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeEuro,
-  Building2,
-  CheckCircle2,
-  FileCheck2,
-  Globe2,
-  HeartHandshake,
-  ShieldCheck,
-  Stethoscope,
-  UsersRound,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import PhotoPanel from "@/components/PhotoPanel";
 import { getSafeLocale, type Locale } from "@/lib/locale";
+import type { SiteImageKey } from "@/lib/site-images";
 
 const pageText = {
   en: {
@@ -274,17 +265,17 @@ function localizedHref(locale: Locale, href: string) {
   return `/${locale}${href}`;
 }
 
-function getHelpIcon(type: string) {
-  if (type === "employer") return Building2;
-  if (type === "partner") return UsersRound;
-  return Stethoscope;
-}
+const helpImageKeys: Record<string, SiteImageKey> = {
+  nurse: "nurseCandidate",
+  employer: "hospitalEmployer",
+  partner: "partnersInstitutions",
+};
 
-function getWhyIcon(type: string) {
-  if (type === "money") return BadgeEuro;
-  if (type === "file") return FileCheck2;
-  return Globe2;
-}
+const whyImageKeys: Record<string, SiteImageKey> = {
+  globe: "germanyHealthcare",
+  money: "recruitmentHandshake",
+  file: "documentsPreparation",
+};
 
 export default async function Home({ params }: HomeProps) {
   const { locale: rawLocale } = await params;
@@ -301,8 +292,7 @@ export default async function Home({ params }: HomeProps) {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.06fr_0.94fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
-              <HeartHandshake size={14} />
+            <div className="mx-auto inline-flex items-center rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
               {text.hero.eyebrow}
             </div>
 
@@ -338,44 +328,48 @@ export default async function Home({ params }: HomeProps) {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-sm md:max-w-md">
+          <div className="relative mx-auto w-full max-w-md">
             <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
-            <div className="relative rounded-[2rem] border border-white bg-white p-4 shadow-2xl shadow-slate-200">
-              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] px-5 py-7 text-center">
-                <Image
-                  src="/images/careradar-logo.jpeg"
-                  alt="CareRadar Logo"
-                  width={190}
-                  height={190}
-                  className="mx-auto h-36 w-36 rounded-full object-contain md:h-44 md:w-44"
-                  priority
-                />
-
-                <div className="mx-auto mt-5 h-px w-28 bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
-
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#08a99d]">
-                  {text.hero.promiseLabel}
-                </p>
-
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#061f3d]">
-                  {text.hero.promiseTitle}
-                </h2>
-
-                <p className="mx-auto mt-3 max-w-xs text-sm leading-6 text-slate-600">
-                  {text.hero.promiseDescription}
-                </p>
-
-                <div className="mt-6 grid grid-cols-3 gap-2">
-                  {text.hero.values.map((item) => (
-                    <div
-                      key={item}
-                      className="flex min-h-[68px] items-center justify-center rounded-2xl border border-slate-100 bg-white px-1.5 py-3 text-center shadow-sm"
-                    >
-                      <p className="text-[11px] font-semibold leading-tight tracking-tight text-[#08264a] sm:text-xs">
-                        {item}
+            <div className="relative overflow-hidden rounded-[2rem] border border-white bg-white shadow-2xl shadow-slate-200">
+              <PhotoPanel
+                imageKey="healthcareTeam"
+                className="aspect-[4/5] w-full"
+                overlay="gradient"
+                priority
+                sizes="(max-width: 768px) 90vw, 420px"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <div className="rounded-[1.4rem] border border-white/20 bg-white/10 p-4 backdrop-blur-md">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src="/images/careradar-logo.jpeg"
+                      alt="CareRadar Logo"
+                      width={48}
+                      height={48}
+                      className="h-12 w-12 rounded-full border border-white/30 object-contain"
+                    />
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5eead4]">
+                        {text.hero.promiseLabel}
+                      </p>
+                      <p className="text-lg font-semibold tracking-tight">
+                        {text.hero.promiseTitle}
                       </p>
                     </div>
-                  ))}
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-white/85">
+                    {text.hero.promiseDescription}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {text.hero.values.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold tracking-tight"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -392,10 +386,7 @@ export default async function Home({ params }: HomeProps) {
                 key={point}
                 className="flex items-start gap-3 rounded-2xl bg-[#f8fbff] p-4"
               >
-                <CheckCircle2
-                  size={18}
-                  className="mt-1 shrink-0 text-[#08a99d]"
-                />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#08a99d]" />
                 <p className="text-sm leading-6 text-slate-600">{point}</p>
               </div>
             ))}
@@ -405,7 +396,16 @@ export default async function Home({ params }: HomeProps) {
 
       {/* INTRO */}
       <section className="bg-white px-5 py-12 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2 md:items-center">
+          <div className="relative overflow-hidden rounded-[1.7rem] border border-slate-100 shadow-xl shadow-slate-100">
+            <PhotoPanel
+              imageKey="nurseCare"
+              className="aspect-[4/3] w-full md:aspect-[5/4]"
+              overlay="light"
+              sizes="(max-width: 768px) 100vw, 45vw"
+            />
+          </div>
+
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
               {text.intro.eyebrow}
@@ -414,12 +414,8 @@ export default async function Home({ params }: HomeProps) {
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
               {text.intro.title}
             </h2>
-          </div>
 
-          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
-            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
-
-            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+            <div className="mt-6 space-y-5 text-sm leading-8 text-slate-600 md:text-base">
               {text.intro.paragraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -446,38 +442,41 @@ export default async function Home({ params }: HomeProps) {
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {text.help.items.map((item) => {
-              const Icon = getHelpIcon(item.type);
-
-              return (
-                <div
-                  key={item.title}
-                  className="group relative overflow-hidden rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-xl hover:shadow-slate-100"
-                >
-                  <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-[#08a99d]/5" />
-
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                    <Icon size={24} />
-                  </div>
-
-                  <h3 className="relative mt-5 text-xl font-semibold tracking-tight text-[#061f3d]">
+            {text.help.items.map((item) => (
+              <div
+                key={item.title}
+                className="group overflow-hidden rounded-[1.7rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-xl hover:shadow-slate-100"
+              >
+                <PhotoPanel
+                  imageKey={helpImageKeys[item.type] ?? "healthcareTeam"}
+                  className="aspect-[16/10] w-full"
+                  overlay="gradient"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold tracking-tight text-[#061f3d]">
                     {item.title}
                   </h3>
-
-                  <p className="relative mt-3 text-sm leading-7 text-slate-600">
+                  <p className="mt-3 text-sm leading-7 text-slate-600">
                     {item.description}
                   </p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* WHY IT MATTERS */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
-          <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
+          <PhotoPanel
+            imageKey="medicalConsultation"
+            className="absolute inset-0 opacity-25"
+            overlay="none"
+            sizes="100vw"
+          />
+          <div className="relative grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
             <div className="relative p-7 text-white md:p-10">
               <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
 
@@ -503,23 +502,26 @@ export default async function Home({ params }: HomeProps) {
 
             <div className="border-t border-white/10 p-7 md:border-l md:border-t-0 md:p-10">
               <div className="space-y-6">
-                {text.why.cards.map((card, index) => {
-                  const Icon = getWhyIcon(card.type);
+                {text.why.cards.map((card, index) => (
+                  <div key={card.title}>
+                    {index > 0 && <div className="mb-6 h-px bg-white/10" />}
 
-                  return (
-                    <div key={card.title}>
-                      {index > 0 && <div className="mb-6 h-px bg-white/10" />}
-
-                      <Icon size={26} className="text-[#10c4b6]" />
-                      <h3 className="mt-3 text-lg font-semibold text-white">
-                        {card.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-7 text-slate-300">
-                        {card.description}
-                      </p>
+                    <div className="overflow-hidden rounded-2xl border border-white/10">
+                      <PhotoPanel
+                        imageKey={whyImageKeys[card.type] ?? "healthcareTeam"}
+                        className="aspect-[21/9] w-full"
+                        overlay="dark"
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                      />
                     </div>
-                  );
-                })}
+                    <h3 className="mt-4 text-lg font-semibold text-white">
+                      {card.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">
+                      {card.description}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -599,28 +601,44 @@ export default async function Home({ params }: HomeProps) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1">
-            <div className="rounded-[1.6rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100">
-              <ShieldCheck size={28} className="text-[#08a99d]" />
-              <h3 className="mt-4 text-lg font-semibold text-[#061f3d]">
-                {locale === "en" ? "Responsible recruitment" : "Verantwortungsvolle Rekrutierung"}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-slate-600">
-                {locale === "en"
-                  ? "A careful approach focused on clarity, preparation, and long-term support."
-                  : "Ein sorgfältiger Ansatz mit Fokus auf Klarheit, Vorbereitung und langfristige Unterstützung."}
-              </p>
+            <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white shadow-lg shadow-slate-100">
+              <PhotoPanel
+                imageKey="recruitmentHandshake"
+                className="aspect-[16/10] w-full"
+                overlay="gradient"
+                sizes="(max-width: 768px) 100vw, 25vw"
+              />
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-[#061f3d]">
+                  {locale === "en"
+                    ? "Responsible recruitment"
+                    : "Verantwortungsvolle Rekrutierung"}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-slate-600">
+                  {locale === "en"
+                    ? "A careful approach focused on clarity, preparation, and long-term support."
+                    : "Ein sorgfältiger Ansatz mit Fokus auf Klarheit, Vorbereitung und langfristige Unterstützung."}
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-[1.6rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100">
-              <HeartHandshake size={28} className="text-[#08a99d]" />
-              <h3 className="mt-4 text-lg font-semibold text-[#061f3d]">
-                {locale === "en" ? "Human guidance" : "Menschliche Begleitung"}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-slate-600">
-                {locale === "en"
-                  ? "Support that understands the personal weight of international career decisions."
-                  : "Unterstützung, die die persönliche Bedeutung internationaler Karriereentscheidungen versteht."}
-              </p>
+            <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white shadow-lg shadow-slate-100">
+              <PhotoPanel
+                imageKey="trainingEducation"
+                className="aspect-[16/10] w-full"
+                overlay="gradient"
+                sizes="(max-width: 768px) 100vw, 25vw"
+              />
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-[#061f3d]">
+                  {locale === "en" ? "Human guidance" : "Menschliche Begleitung"}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-slate-600">
+                  {locale === "en"
+                    ? "Support that understands the personal weight of international career decisions."
+                    : "Unterstützung, die die persönliche Bedeutung internationaler Karriereentscheidungen versteht."}
+                </p>
+              </div>
             </div>
           </div>
         </div>

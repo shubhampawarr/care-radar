@@ -88,77 +88,66 @@ export default function CurrencySwitch({
   }, [onRateChange]);
 
   return (
-    <section className="bg-white px-5 pb-4 md:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7fbff_58%,#ecfffb_100%)] p-4 shadow-lg shadow-slate-100 md:p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#08a99d]">
-                {t.label}
-              </p>
+    <section className="bg-white px-5 pt-6 md:px-8">
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-2">
+        <div className="flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-full border border-slate-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7fbff_58%,#ecfffb_100%)] px-4 py-2 shadow-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#08a99d]">
+            {t.label}
+          </p>
 
-              <div className="mt-3 inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => onCurrencyChange("EUR")}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    currency === "EUR"
-                      ? "bg-[#08264a] text-white shadow-sm"
-                      : "text-slate-600 hover:text-[#08264a]"
-                  }`}
-                >
-                  <BadgeEuro size={16} />
-                  {t.eur}
-                </button>
+          <div className="inline-flex rounded-full border border-slate-200 bg-white p-0.5 shadow-sm">
+            <button
+              type="button"
+              onClick={() => onCurrencyChange("EUR")}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                currency === "EUR"
+                  ? "bg-[#08264a] text-white shadow-sm"
+                  : "text-slate-600 hover:text-[#08264a]"
+              }`}
+            >
+              <BadgeEuro size={13} />
+              {t.eur}
+            </button>
 
-                <button
-                  type="button"
-                  onClick={() => onCurrencyChange("INR")}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    currency === "INR"
-                      ? "bg-[#08a99d] text-white shadow-sm"
-                      : "text-slate-600 hover:text-[#08a99d]"
-                  }`}
-                >
-                  <IndianRupee size={16} />
-                  {t.inr}
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 md:min-w-[330px]">
-              {isLoading ? (
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-500">
-                  <RefreshCw size={16} className="animate-spin" />
-                  {t.loading}
-                </div>
-              ) : rate ? (
-                <>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    {t.rate}
-                  </p>
-                  <p className="mt-1 text-lg font-semibold text-[#061f3d]">
-                    €1 ≈ ₹
-                    {rate.toLocaleString("en-IN", {
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
-                  {date && (
-                    <p className="mt-1 text-xs text-slate-500">
-                      Updated: {date}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <p className="text-sm leading-6 text-slate-500">
-                  {t.unavailable}
-                </p>
-              )}
-            </div>
+            <button
+              type="button"
+              onClick={() => onCurrencyChange("INR")}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                currency === "INR"
+                  ? "bg-[#08a99d] text-white shadow-sm"
+                  : "text-slate-600 hover:text-[#08a99d]"
+              }`}
+            >
+              <IndianRupee size={13} />
+              {t.inr}
+            </button>
           </div>
 
-          <p className="mt-4 text-xs leading-6 text-slate-500">{t.note}</p>
+          <span className="hidden h-4 w-px bg-slate-200 sm:block" />
+
+          {isLoading ? (
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+              <RefreshCw size={13} className="animate-spin" />
+              {t.loading}
+            </span>
+          ) : rate ? (
+            <span className="text-xs font-semibold text-[#061f3d]">
+              {t.rate}: €1 ≈ ₹
+              {rate.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+              {date && (
+                <span className="ml-1.5 font-normal text-slate-400">
+                  ({date})
+                </span>
+              )}
+            </span>
+          ) : (
+            <span className="text-xs text-slate-500">{t.unavailable}</span>
+          )}
         </div>
+
+        <p className="text-center text-[11px] leading-5 text-slate-400">
+          {t.note}
+        </p>
       </div>
     </section>
   );

@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { getSafeLocale } from "@/lib/locale";
 import ProcessPathwayClient from "@/components/ProcessPathwayClient";
+import type { ProcessAudience } from "@/components/ProcessAudienceDoors";
+import { getSafeLocale } from "@/lib/locale";
 
 const metadataText = {
   en: {
     title: "Pathways to Nursing in Germany",
     description:
-      "Explore CareRadar pathways from Indian nursing qualifications to working in Germany, including Degree, GNM, and ANM routes.",
+      "Choose your path as a candidate or employer and explore CareRadar process routes for international nursing recruitment in Germany.",
   },
   de: {
     title: "Wege in die Pflege in Deutschland",
     description:
-      "Entdecken Sie CareRadar-Wege von indischen Pflegequalifikationen zur Arbeit in Deutschland, einschließlich Degree-, GNM- und ANM-Routen.",
+      "Wählen Sie Ihren Weg als Kandidat oder Arbeitgeber und entdecken Sie CareRadar-Prozesswege für internationale Pflegekräfte-Rekrutierung in Deutschland.",
   },
 } as const;
 
@@ -19,7 +20,13 @@ type ProcessProps = {
   params: Promise<{
     locale: string;
   }>;
+  searchParams: Promise<{ audience?: string }>;
 };
+
+function parseAudience(value: string | undefined): ProcessAudience | null {
+  if (value === "candidate" || value === "employer") return value;
+  return null;
+}
 
 export async function generateMetadata({
   params,
@@ -34,9 +41,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProcessPage({ params }: ProcessProps) {
+export default async function ProcessPage({
+  params,
+  searchParams,
+}: ProcessProps) {
   const { locale: rawLocale } = await params;
   const locale = getSafeLocale(rawLocale);
+  const { audience: rawAudience } = await searchParams;
+  const initialAudience = parseAudience(rawAudience);
 
-  return <ProcessPathwayClient locale={locale} />;
+  return (
+    <ProcessPathwayClient locale={locale} initialAudience={initialAudience} />
+  );
 }

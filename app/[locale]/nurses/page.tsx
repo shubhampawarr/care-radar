@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  CheckCircle2,
-  ClipboardCheck,
-  FileCheck2,
-  Globe2,
-  HeartHandshake,
-  Languages,
-  MessageCircle,
-  ShieldCheck,
-  Stethoscope,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import PhotoPanel from "@/components/PhotoPanel";
 import { getSafeLocale, type Locale } from "@/lib/locale";
+import type { SiteImageKey } from "@/lib/site-images";
 
-const supportIcons = [BadgeCheck, ClipboardCheck, FileCheck2, MessageCircle];
-const darkIcons = [Languages, ShieldCheck, Globe2];
+const supportImageKeys: SiteImageKey[] = [
+  "nurseCandidate",
+  "documentsPreparation",
+  "trainingEducation",
+  "internationalCareer",
+];
+const darkImageKeys: SiteImageKey[] = [
+  "medicalConsultation",
+  "germanyHealthcare",
+  "nurseCare",
+];
 
 const pageText = {
   en: {
@@ -328,8 +327,7 @@ export default async function NursesPage({ params }: NursesProps) {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr]">
           <div className="text-center md:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
-              <Stethoscope size={14} />
+            <div className="mx-auto inline-flex items-center rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur md:mx-0">
               {text.hero.eyebrow}
             </div>
 
@@ -360,41 +358,32 @@ export default async function NursesPage({ params }: NursesProps) {
 
           <div className="relative mx-auto w-full max-w-md">
             <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
-
-            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-2xl shadow-slate-200">
-              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                  <HeartHandshake size={24} />
-                </div>
-
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+            <div className="relative overflow-hidden rounded-[2rem] border border-white bg-white shadow-2xl shadow-slate-200">
+              <PhotoPanel
+                imageKey="nurseCandidate"
+                className="aspect-[4/5] w-full"
+                overlay="gradient"
+                priority
+                sizes="(max-width: 768px) 90vw, 420px"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#5eead4]">
                   {text.hero.cardEyebrow}
                 </p>
-
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight">
                   {text.hero.cardTitle}
                 </h2>
-
-                <div className="mt-6 space-y-4">
+                <ul className="mt-4 space-y-2">
                   {text.hero.heroPoints.map((item) => (
-                    <div key={item} className="flex items-start gap-3">
-                      <CheckCircle2
-                        size={18}
-                        className="mt-1 shrink-0 text-[#08a99d]"
-                      />
-                      <p className="text-sm leading-6 text-slate-600">
-                        {item}
-                      </p>
-                    </div>
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-sm leading-6 text-white/90"
+                    >
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#5eead4]" />
+                      {item}
+                    </li>
                   ))}
-                </div>
-
-                <div className="mt-7 rounded-[1.3rem] border border-slate-100 bg-white p-5 shadow-sm">
-                  <div className="mb-4 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
-                  <p className="text-sm leading-7 text-slate-600">
-                    {text.hero.cardNote}
-                  </p>
-                </div>
+                </ul>
               </div>
             </div>
           </div>
@@ -403,21 +392,23 @@ export default async function NursesPage({ params }: NursesProps) {
 
       {/* INTRO */}
       <section className="bg-white px-5 py-12 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2 md:items-center">
+          <div className="overflow-hidden rounded-[1.7rem] border border-slate-100 shadow-xl shadow-slate-100">
+            <PhotoPanel
+              imageKey="nurseCare"
+              className="aspect-[4/3] w-full"
+              overlay="light"
+              sizes="(max-width: 768px) 100vw, 45vw"
+            />
+          </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
               {text.intro.eyebrow}
             </p>
-
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
               {text.intro.title}
             </h2>
-          </div>
-
-          <div className="rounded-[1.7rem] border border-slate-100 bg-white p-6 shadow-lg shadow-slate-100 md:p-8">
-            <div className="mb-5 h-px w-full bg-gradient-to-r from-[#08a99d] via-slate-100 to-transparent" />
-
-            <div className="space-y-5 text-sm leading-8 text-slate-600 md:text-base">
+            <div className="mt-6 space-y-5 text-sm leading-8 text-slate-600 md:text-base">
               {text.intro.paragraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -444,36 +435,41 @@ export default async function NursesPage({ params }: NursesProps) {
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {text.support.areas.map((item, index) => {
-              const Icon = supportIcons[index] ?? BadgeCheck;
-
-              return (
-                <div
-                  key={item.title}
-                  className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                    <Icon size={22} />
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-semibold text-[#08264a]">
+            {text.support.areas.map((item, index) => (
+              <div
+                key={item.title}
+                className="overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100"
+              >
+                <PhotoPanel
+                  imageKey={supportImageKeys[index] ?? "healthcareTeam"}
+                  className="aspect-[4/3] w-full"
+                  overlay="gradient"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                />
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-[#08264a]">
                     {item.title}
                   </h3>
-
                   <p className="mt-3 text-sm leading-7 text-slate-600">
                     {item.description}
                   </p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* DARK SECTION */}
       <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
-          <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
+          <PhotoPanel
+            imageKey="germanyHealthcare"
+            className="absolute inset-0 opacity-20"
+            overlay="none"
+            sizes="100vw"
+          />
+          <div className="relative grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
             <div className="relative p-7 text-white md:p-10">
               <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
 
@@ -499,23 +495,25 @@ export default async function NursesPage({ params }: NursesProps) {
 
             <div className="border-t border-white/10 p-7 md:border-l md:border-t-0 md:p-10">
               <div className="space-y-6">
-                {text.dark.items.map((item, index) => {
-                  const Icon = darkIcons[index] ?? Languages;
-
-                  return (
-                    <div key={item.title}>
-                      {index > 0 && <div className="mb-6 h-px bg-white/10" />}
-
-                      <Icon size={26} className="text-[#10c4b6]" />
-                      <h3 className="mt-3 text-lg font-semibold text-white">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-7 text-slate-300">
-                        {item.description}
-                      </p>
+                {text.dark.items.map((item, index) => (
+                  <div key={item.title}>
+                    {index > 0 && <div className="mb-6 h-px bg-white/10" />}
+                    <div className="overflow-hidden rounded-2xl border border-white/10">
+                      <PhotoPanel
+                        imageKey={darkImageKeys[index] ?? "healthcareTeam"}
+                        className="aspect-[21/9] w-full"
+                        overlay="dark"
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                      />
                     </div>
-                  );
-                })}
+                    <h3 className="mt-4 text-lg font-semibold text-white">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">
+                      {item.description}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -582,10 +580,7 @@ export default async function NursesPage({ params }: NursesProps) {
             <div className="space-y-4">
               {text.ideal.points.map((item) => (
                 <div key={item} className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={18}
-                    className="mt-1 shrink-0 text-[#08a99d]"
-                  />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#08a99d]" />
                   <p className="text-sm leading-7 text-slate-600">{item}</p>
                 </div>
               ))}

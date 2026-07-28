@@ -1,27 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowLeft,
   ArrowRight,
-  BadgeEuro,
   BookOpenCheck,
   BriefcaseBusiness,
-  CheckCircle2,
-  CircleDot,
   ClipboardCheck,
   GraduationCap,
   Landmark,
   Plane,
-  ShieldCheck,
   Sparkles,
   Stethoscope,
   type LucideIcon,
 } from "lucide-react";
 import type { Locale } from "@/lib/locale";
 import CurrencySwitch, { type Currency } from "@/components/CurrencySwitch";
+import ProcessAudienceDoors, {
+  type ProcessAudience,
+} from "@/components/ProcessAudienceDoors";
 
 type PathwayId = "degree" | "gnm" | "anm";
+
+type QualificationChoice = {
+  id: "bsc" | "pbbsc" | "msc" | "gnm" | "anm";
+  label: string;
+  pathwayId: PathwayId;
+};
+
+// Same abbreviations are used verbatim in both locales, so this list isn't localized.
+const qualificationChoices: QualificationChoice[] = [
+  { id: "bsc", label: "B.Sc", pathwayId: "degree" },
+  { id: "pbbsc", label: "PB B.Sc", pathwayId: "degree" },
+  { id: "msc", label: "M.Sc", pathwayId: "degree" },
+  { id: "gnm", label: "GNM", pathwayId: "gnm" },
+  { id: "anm", label: "ANM", pathwayId: "anm" },
+];
+
+const pathwayAccent: Record<PathwayId, string> = {
+  degree: "#08a99d",
+  gnm: "#b88622",
+  anm: "#94a3b8",
+};
+
+type StepKind = "milestone" | "phase";
 
 type StepTone =
   | "blue"
@@ -32,6 +56,7 @@ type StepTone =
   | "grey";
 
 type PathwayStep = {
+  kind: StepKind;
   title: string;
   location: string;
   duration: string;
@@ -102,6 +127,15 @@ const toneClasses: Record<
   },
 };
 
+const toneHex: Record<StepTone, string> = {
+  blue: "#315f86",
+  gold: "#b88622",
+  green: "#177e68",
+  purple: "#655096",
+  darkGreen: "#0f6b55",
+  grey: "#94a3b8",
+};
+
 const pageText = {
   en: {
     hero: {
@@ -113,21 +147,74 @@ const pageText = {
       secondary: "Contact CareRadar",
     },
     selector: {
-      eyebrow: "Choose Your Starting Point",
-      title: "Start with your current qualification.",
+      title: "Your Prospect",
+      eyebrow: "Choose your starting point",
       description:
         "Each qualification route has a different journey. Select the route that best matches your current nursing background.",
+    },
+    audienceDoors: {
+      eyebrow: "CareRadar Process",
+      title: "Which door is yours?",
+      description:
+        "The process looks different for nursing candidates and healthcare employers. Choose the path that matches your role to see the right journey.",
+      hint: "Click a door to enter",
+      candidate: {
+        label: "For Candidates",
+        subtitle: "Nurses exploring careers in Germany",
+        cta: "Enter as candidate",
+      },
+      employer: {
+        label: "For Employers",
+        subtitle: "Hospitals and clinics hiring nurses",
+        cta: "Enter as employer",
+      },
+      backLabel: "Choose a different path",
+    },
+    employerProcess: {
+      eyebrow: "Employer Recruitment Flow",
+      title: "From requirement to candidate coordination",
+      description:
+        "CareRadar helps healthcare employers create a clearer recruitment path before candidates move into deeper selection, interview, or placement stages.",
+      steps: [
+        {
+          title: "Share hiring requirement",
+          description:
+            "Tell CareRadar about your nursing recruitment needs, role expectations, location, and candidate preferences.",
+        },
+        {
+          title: "Understand candidate fit",
+          description:
+            "Candidate profiles can be reviewed with attention to experience, communication, readiness, and basic suitability.",
+        },
+        {
+          title: "Coordinate next steps",
+          description:
+            "CareRadar supports the early recruitment flow between candidates and employer-side requirements.",
+        },
+        {
+          title: "Move toward selection",
+          description:
+            "Suitable candidates can progress toward interviews, documentation, and placement coordination.",
+        },
+      ],
+      primaryCta: "Enquire as Employer",
+      secondaryCta: "View employer services",
     },
     labels: {
       location: "Location",
       duration: "Timeline",
       work: "Work",
       study: "Study",
-      salary: "Salary",
+      salary: "Expected salary",
+      milestoneSalary: "Typical salary from here",
       note: "Note",
       outcome: "Outcome",
       selected: "Selected route",
       indicative: "Indicative",
+      milestone: "Milestone",
+      activities: "Activities",
+      selectRoute: "View this route",
+      startingQualification: "Starting qualification",
     },
     cost: {
       eyebrow: "Candidate Cost",
@@ -188,21 +275,74 @@ const pageText = {
       secondary: "CareRadar kontaktieren",
     },
     selector: {
-      eyebrow: "Startpunkt wählen",
-      title: "Beginnen Sie mit Ihrer aktuellen Qualifikation.",
+      title: "Ihre Aussichten",
+      eyebrow: "Wählen Sie Ihren Startpunkt",
       description:
         "Jede Qualifikation hat einen anderen Weg. Wählen Sie die Route, die am besten zu Ihrem aktuellen Pflegehintergrund passt.",
+    },
+    audienceDoors: {
+      eyebrow: "CareRadar Prozess",
+      title: "Welche Tür gehört zu Ihnen?",
+      description:
+        "Der Prozess sieht für Pflegekandidaten und Arbeitgeber im Gesundheitswesen unterschiedlich aus. Wählen Sie den Weg, der zu Ihrer Rolle passt.",
+      hint: "Klicken Sie auf eine Tür",
+      candidate: {
+        label: "Für Kandidaten",
+        subtitle: "Pflegekräfte mit Karriereziel Deutschland",
+        cta: "Als Kandidat eintreten",
+      },
+      employer: {
+        label: "Für Arbeitgeber",
+        subtitle: "Krankenhäuser und Kliniken, die Pflegekräfte suchen",
+        cta: "Als Arbeitgeber eintreten",
+      },
+      backLabel: "Anderen Weg wählen",
+    },
+    employerProcess: {
+      eyebrow: "Rekrutierungsablauf für Arbeitgeber",
+      title: "Von der Anforderung zur Kandidatenkoordination",
+      description:
+        "CareRadar hilft Arbeitgebern im Gesundheitswesen, einen klareren Rekrutierungsweg zu schaffen, bevor Kandidaten in tiefere Auswahl-, Interview- oder Vermittlungsphasen übergehen.",
+      steps: [
+        {
+          title: "Personalbedarf mitteilen",
+          description:
+            "Teilen Sie CareRadar Ihren Bedarf an Pflegekräften, Rollenerwartungen, Standort und Kandidatenpräferenzen mit.",
+        },
+        {
+          title: "Kandidatenpassung verstehen",
+          description:
+            "Kandidatenprofile können mit Blick auf Erfahrung, Kommunikation, Bereitschaft und grundlegende Eignung geprüft werden.",
+        },
+        {
+          title: "Nächste Schritte koordinieren",
+          description:
+            "CareRadar unterstützt den frühen Rekrutierungsablauf zwischen Kandidaten und Arbeitgeberanforderungen.",
+        },
+        {
+          title: "In Richtung Auswahl gehen",
+          description:
+            "Geeignete Kandidaten können in Richtung Interviews, Dokumentation und Vermittlungskoordination weitergeführt werden.",
+        },
+      ],
+      primaryCta: "Als Arbeitgeber anfragen",
+      secondaryCta: "Arbeitgeber-Leistungen ansehen",
     },
     labels: {
       location: "Ort",
       duration: "Zeitrahmen",
       work: "Arbeit",
       study: "Lernen",
-      salary: "Gehalt",
+      salary: "Erwartetes Gehalt",
+      milestoneSalary: "Typisches Gehalt ab hier",
       note: "Hinweis",
       outcome: "Ergebnis",
       selected: "Ausgewählte Route",
       indicative: "Richtwert",
+      milestone: "Meilenstein",
+      activities: "Aktivitäten",
+      selectRoute: "Diesen Weg ansehen",
+      startingQualification: "Startqualifikation",
     },
     cost: {
       eyebrow: "Kosten für Kandidaten",
@@ -266,6 +406,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
         "For candidates with a nursing degree, the pathway focuses on language preparation, moving to Germany as an assistant in recognition, completing the knowledge exam, and progressing towards full nurse recognition.",
       steps: [
         {
+          kind: "milestone",
           title: "B.Sc / Post-Basic B.Sc / M.Sc",
           location: "India",
           duration: "Starting qualification",
@@ -275,6 +416,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: GraduationCap,
         },
         {
+          kind: "phase",
           title: "Language A1 → B2",
           location: "India",
           duration: "6–12 months",
@@ -286,6 +428,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BookOpenCheck,
         },
         {
+          kind: "phase",
           title: "Assistant in Germany",
           location: "Germany",
           duration: "In recognition",
@@ -296,6 +439,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BriefcaseBusiness,
         },
         {
+          kind: "phase",
           title: "Kenntnisprüfung",
           location: "Germany",
           duration: "4–6 months",
@@ -307,6 +451,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: ClipboardCheck,
         },
         {
+          kind: "milestone",
           title: "Pflegefachkraft",
           location: "Germany",
           duration: "After recognition",
@@ -317,6 +462,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: Stethoscope,
         },
         {
+          kind: "phase",
           title: "Fachweiterbildung",
           location: "Germany",
           duration: "12–24 months",
@@ -329,6 +475,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: Landmark,
         },
         {
+          kind: "milestone",
           title: "Specialist",
           location: "Germany",
           duration: "Long-term progression",
@@ -352,6 +499,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
         "A strong GNM candidate may be able to sit the Kenntnisprüfung instead of the adaptation course. Another option is to complete a Post-Basic B.Sc in India first and then follow the Degree route.",
       steps: [
         {
+          kind: "milestone",
           title: "GNM",
           location: "India",
           duration: "Starting qualification",
@@ -361,6 +509,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: GraduationCap,
         },
         {
+          kind: "phase",
           title: "Language A1 → B2",
           location: "India",
           duration: "6–12 months",
@@ -372,6 +521,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BookOpenCheck,
         },
         {
+          kind: "phase",
           title: "Assistant in Germany",
           location: "Germany",
           duration: "In recognition",
@@ -382,6 +532,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BriefcaseBusiness,
         },
         {
+          kind: "phase",
           title: "Anpassungslehrgang",
           location: "Germany",
           duration: "6–12 months",
@@ -394,6 +545,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: ClipboardCheck,
         },
         {
+          kind: "milestone",
           title: "Pflegefachkraft",
           location: "Germany",
           duration: "After recognition",
@@ -418,6 +570,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
         "ANM cannot directly reach Pflegefachkraft. To get there, upgrade from ANM to GNM in India, then follow the GNM lane.",
       steps: [
         {
+          kind: "milestone",
           title: "ANM",
           location: "India",
           duration: "Starting qualification",
@@ -426,6 +579,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: GraduationCap,
         },
         {
+          kind: "phase",
           title: "Language + relocate",
           location: "India + Germany",
           duration: "8–12 months",
@@ -438,6 +592,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: Plane,
         },
         {
+          kind: "milestone",
           title: "Assistant career",
           location: "Germany",
           duration: "Long-term assistant route",
@@ -461,6 +616,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
         "Für Kandidaten mit Pflegeabschluss konzentriert sich der Weg auf Sprachvorbereitung, Arbeit in Deutschland als Assistenzkraft in Anerkennung, Kenntnisprüfung und Anerkennung als Pflegefachkraft.",
       steps: [
         {
+          kind: "milestone",
           title: "B.Sc / Post-Basic B.Sc / M.Sc",
           location: "Indien",
           duration: "Startqualifikation",
@@ -471,6 +627,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: GraduationCap,
         },
         {
+          kind: "phase",
           title: "Sprache A1 → B2",
           location: "Indien",
           duration: "6–12 Monate",
@@ -482,6 +639,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BookOpenCheck,
         },
         {
+          kind: "phase",
           title: "Assistenz in Deutschland",
           location: "Deutschland",
           duration: "In Anerkennung",
@@ -492,6 +650,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BriefcaseBusiness,
         },
         {
+          kind: "phase",
           title: "Kenntnisprüfung",
           location: "Deutschland",
           duration: "4–6 Monate",
@@ -503,6 +662,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: ClipboardCheck,
         },
         {
+          kind: "milestone",
           title: "Pflegefachkraft",
           location: "Deutschland",
           duration: "Nach Anerkennung",
@@ -513,6 +673,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: Stethoscope,
         },
         {
+          kind: "phase",
           title: "Fachweiterbildung",
           location: "Deutschland",
           duration: "12–24 Monate",
@@ -525,6 +686,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: Landmark,
         },
         {
+          kind: "milestone",
           title: "Spezialist",
           location: "Deutschland",
           duration: "Langfristige Entwicklung",
@@ -548,6 +710,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
         "Ein starker GNM-Kandidat kann eventuell die Kenntnisprüfung statt des Anpassungslehrgangs absolvieren. Eine weitere Option ist ein Post-Basic B.Sc in Indien, um anschließend der Degree-Route zu folgen.",
       steps: [
         {
+          kind: "milestone",
           title: "GNM",
           location: "Indien",
           duration: "Startqualifikation",
@@ -558,6 +721,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: GraduationCap,
         },
         {
+          kind: "phase",
           title: "Sprache A1 → B2",
           location: "Indien",
           duration: "6–12 Monate",
@@ -569,6 +733,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BookOpenCheck,
         },
         {
+          kind: "phase",
           title: "Assistenz in Deutschland",
           location: "Deutschland",
           duration: "In Anerkennung",
@@ -579,6 +744,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: BriefcaseBusiness,
         },
         {
+          kind: "phase",
           title: "Anpassungslehrgang",
           location: "Deutschland",
           duration: "6–12 Monate",
@@ -591,6 +757,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: ClipboardCheck,
         },
         {
+          kind: "milestone",
           title: "Pflegefachkraft",
           location: "Deutschland",
           duration: "Nach Anerkennung",
@@ -615,6 +782,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
         "ANM kann Pflegefachkraft nicht direkt erreichen. Dafür ist ein Upgrade von ANM zu GNM in Indien erforderlich, anschließend folgt die GNM-Route.",
       steps: [
         {
+          kind: "milestone",
           title: "ANM",
           location: "Indien",
           duration: "Startqualifikation",
@@ -623,6 +791,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: GraduationCap,
         },
         {
+          kind: "phase",
           title: "Sprache + Umzug",
           location: "Indien + Deutschland",
           duration: "8–12 Monate",
@@ -635,6 +804,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
           icon: Plane,
         },
         {
+          kind: "milestone",
           title: "Assistenz-Karriere",
           location: "Deutschland",
           duration: "Langfristige Assistenzroute",
@@ -651,6 +821,7 @@ const pathwaysText: Record<Locale, Pathway[]> = {
 
 type ProcessPathwayClientProps = {
   locale: Locale;
+  initialAudience?: ProcessAudience | null;
 };
 
 function localizedHref(locale: Locale, href: string) {
@@ -660,454 +831,360 @@ function localizedHref(locale: Locale, href: string) {
 
 export default function ProcessPathwayClient({
   locale,
+  initialAudience = null,
 }: ProcessPathwayClientProps) {
   const text = pageText[locale];
   const pathways = pathwaysText[locale];
 
-  const [selectedPathwayId, setSelectedPathwayId] =
-    useState<PathwayId>("degree");
+  const [audience, setAudience] = useState<ProcessAudience | null>(
+    initialAudience,
+  );
+  const [selectedChoiceId, setSelectedChoiceId] = useState<
+    QualificationChoice["id"] | null
+  >(null);
   const [currency, setCurrency] = useState<Currency>("EUR");
   const [eurInrRate, setEurInrRate] = useState<number | null>(null);
 
+  // Audience lives only in component state: leaving /process unmounts this
+  // component, so coming back always lands on the doors again.
+  const selectAudience = useCallback((next: ProcessAudience) => {
+    setAudience(next);
+    setSelectedChoiceId(null);
+  }, []);
+
+  const resetAudience = useCallback(() => {
+    setAudience(null);
+    setSelectedChoiceId(null);
+  }, []);
+
+  const selectedChoice = useMemo(
+    () => qualificationChoices.find((choice) => choice.id === selectedChoiceId) ?? null,
+    [selectedChoiceId],
+  );
+
   const selectedPathway = useMemo(() => {
+    if (!selectedChoice) return null;
+    return pathways.find((pathway) => pathway.id === selectedChoice.pathwayId) ?? null;
+  }, [pathways, selectedChoice]);
+
+  const titleWords = text.selector.title.split(" ");
+
+  if (!audience) {
     return (
-      pathways.find((pathway) => pathway.id === selectedPathwayId) ??
-      pathways[0]
+      <ProcessAudienceDoors
+        eyebrow={text.audienceDoors.eyebrow}
+        title={text.audienceDoors.title}
+        description={text.audienceDoors.description}
+        hint={text.audienceDoors.hint}
+        candidate={text.audienceDoors.candidate}
+        employer={text.audienceDoors.employer}
+        onSelect={selectAudience}
+      />
     );
-  }, [pathways, selectedPathwayId]);
+  }
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_76%)] px-5 py-10 md:px-8 md:py-16">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e6eef7_1px,transparent_1px),linear-gradient(to_bottom,#e6eef7_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.18]" />
-        <div className="absolute left-[-130px] top-20 h-72 w-72 rounded-full bg-[#08a99d]/10 blur-3xl" />
-        <div className="absolute right-[-130px] top-28 h-80 w-80 rounded-full bg-[#08264a]/10 blur-3xl" />
-
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="text-center lg:text-left">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#08a99d]/20 bg-white/90 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#087d76] shadow-sm backdrop-blur lg:mx-0">
-              <ClipboardCheck size={14} />
-              {text.hero.eyebrow}
-            </div>
-
-            <h1 className="mx-auto mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-tight text-[#061f3d] sm:text-5xl md:text-6xl lg:mx-0 lg:leading-[1.04]">
-              {text.hero.title}
-            </h1>
-
-            <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-7 text-slate-600 md:text-lg md:leading-8 lg:mx-0">
-              {text.hero.description}
-            </p>
-
-            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-              <Link
-                href={localizedHref(locale, "/login")}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#08264a] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-[#08a99d]"
-              >
-                {text.hero.primary} <ArrowRight size={17} />
-              </Link>
-
-              <Link
-                href={localizedHref(locale, "/contact")}
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
-              >
-                {text.hero.secondary}
-              </Link>
-            </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="absolute -inset-3 rounded-[2.4rem] bg-gradient-to-br from-[#08a99d]/15 via-white to-[#08264a]/10 blur-xl" />
-
-            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-2xl shadow-slate-200">
-              <div className="rounded-[1.5rem] border border-slate-100 bg-[linear-gradient(135deg,#f8fbff_0%,#ffffff_52%,#eafffb_100%)] p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-                  <CircleDot size={24} />
-                </div>
-
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-                  {text.selector.eyebrow}
-                </p>
-
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d]">
-                  {text.selector.title}
-                </h2>
-
-                <p className="mt-3 text-sm leading-7 text-slate-600">
-                  {text.selector.description}
-                </p>
-
-                <div className="mt-6 rounded-2xl border border-[#08a99d]/20 bg-[#08a99d]/10 p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#08a99d] text-white">
-                      <BadgeEuro size={20} />
-                    </div>
-
-                    <div>
-                      <p className="text-sm font-semibold text-[#061f3d]">
-                        {text.salary.free}
-                      </p>
-                      <p className="mt-1 text-xs leading-5 text-slate-600">
-                        {locale === "en"
-                          ? "Salary figures are shown as indicative gross monthly pay."
-                          : "Gehaltsangaben sind Richtwerte für monatliches Bruttogehalt."}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 space-y-3">
-                  {pathways.map((pathway) => {
-                    const isSelected = pathway.id === selectedPathwayId;
-
-                    return (
-                      <button
-                        key={pathway.id}
-                        type="button"
-                        onClick={() => setSelectedPathwayId(pathway.id)}
-                        className={`group w-full overflow-hidden rounded-2xl border p-4 text-left transition ${
-                          isSelected
-                            ? "border-[#08a99d] bg-[linear-gradient(135deg,#ecfffb_0%,#ffffff_100%)] shadow-lg shadow-[#08a99d]/10"
-                            : "border-slate-100 bg-white hover:-translate-y-0.5 hover:border-[#08a99d]/30 hover:bg-[#f7fbff] hover:shadow-md hover:shadow-slate-100"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-sm font-semibold text-[#061f3d] transition group-hover:text-[#08a99d]">
-                              {pathway.subtitle}
-                            </p>
-                            <p className="mt-1 text-xs leading-5 text-slate-500">
-                              {pathway.badge}
-                            </p>
-                          </div>
-
-                          {isSelected && (
-                            <CheckCircle2
-                              size={18}
-                              className="mt-0.5 shrink-0 text-[#08a99d]"
-                            />
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <CurrencySwitch
-        currency={currency}
-        onCurrencyChange={setCurrency}
-        onRateChange={setEurInrRate}
-        locale={locale}
-      />
-
-      {/* PATHWAY */}
-      <section
-        id="pathway"
-        className="bg-white px-5 py-12 md:px-8 md:py-16"
-      >
+      <div className="border-b border-slate-100 bg-white px-5 py-3 md:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <div className="lg:sticky lg:top-28">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-                {text.labels.selected}
-              </p>
+          <button
+            type="button"
+            onClick={resetAudience}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
+          >
+            <ArrowLeft size={16} />
+            {text.audienceDoors.backLabel}
+          </button>
+        </div>
+      </div>
 
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-                {selectedPathway.title}
-              </h2>
-
-              <p className="mt-3 text-lg font-semibold text-[#08a99d]">
-                {selectedPathway.subtitle}
-              </p>
-
-              <p className="mt-5 text-sm leading-8 text-slate-600 md:text-base">
-                {selectedPathway.description}
-              </p>
-
-              <div className="mt-6 rounded-[1.5rem] border border-slate-100 bg-[#f7fbff] p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  {text.labels.outcome}
+      {audience === "employer" ? (
+        <AnimatePresence mode="wait">
+          <motion.section
+            key="employer-process"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="bg-[#f7fbff] px-5 py-12 md:px-8 md:py-16"
+          >
+            <div className="mx-auto max-w-7xl">
+              <div className="mx-auto max-w-3xl text-center">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
+                  {text.employerProcess.eyebrow}
                 </p>
-                <p className="mt-2 text-sm font-semibold leading-6 text-[#08264a]">
-                  {selectedPathway.outcome}
+                <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
+                  {text.employerProcess.title}
+                </h1>
+                <p className="mt-5 text-sm leading-7 text-slate-600 md:text-base">
+                  {text.employerProcess.description}
                 </p>
               </div>
 
-              {selectedPathway.extraNote && (
-                <div className="mt-4 rounded-[1.5rem] border border-[#b88622]/20 bg-[#fbf5e7] p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a6419]">
-                    {text.labels.note}
-                  </p>
-                  <p className="mt-2 text-sm leading-7 text-[#5f4513]">
-                    {selectedPathway.extraNote}
-                  </p>
-                </div>
-              )}
-
-              <SalaryProgress
-                pathway={selectedPathway}
-                locale={locale}
-                currency={currency}
-                eurInrRate={eurInrRate}
-              />
-            </div>
-
-            <div className="relative">
-              <div className="absolute left-5 top-0 hidden h-full w-px bg-slate-200 md:block" />
-
-              <div className="space-y-5">
-                {selectedPathway.steps.map((step, index) => {
-                  const tone = toneClasses[step.tone];
-                  const Icon = step.icon;
-
-                  return (
-                    <div
-                      key={`${selectedPathway.id}-${step.title}`}
-                      className={`relative overflow-hidden rounded-[1.7rem] border p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl md:ml-10 md:p-6 ${tone.card}`}
-                    >
-                      <div
-                        className={`absolute left-0 top-0 h-full w-1 ${tone.border}`}
-                      />
-                      <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-white/40" />
-
-                      <div
-                        className={`absolute -left-[3.7rem] top-6 hidden h-10 w-10 items-center justify-center rounded-full shadow-sm md:flex ${tone.icon}`}
-                      >
-                        {index + 1}
-                      </div>
-
-                      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="flex items-start gap-4">
-                          <div
-                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${tone.icon}`}
-                          >
-                            <Icon size={23} />
-                          </div>
-
-                          <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="text-xl font-semibold tracking-tight text-[#061f3d]">
-                                {step.title}
-                              </h3>
-
-                              <span
-                                className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${tone.pill}`}
-                              >
-                                {text.labels.indicative}
-                              </span>
-                            </div>
-
-                            <p className="mt-3 text-sm leading-7 text-slate-600">
-                              {step.summary}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="relative mt-5 grid gap-3 sm:grid-cols-2">
-                        <InfoBlock
-                          label={text.labels.location}
-                          value={step.location}
-                        />
-                        <InfoBlock
-                          label={text.labels.duration}
-                          value={step.duration}
-                        />
-                        {step.work && (
-                          <InfoBlock
-                            label={text.labels.work}
-                            value={step.work}
-                          />
-                        )}
-                        {step.study && (
-                          <InfoBlock
-                            label={text.labels.study}
-                            value={step.study}
-                          />
-                        )}
-                        {step.salary && (
-                          <InfoBlock
-                            label={text.labels.salary}
-                            value={formatSalaryValue(
-                              step.salary,
-                              currency,
-                              eurInrRate,
-                              locale
-                            )}
-                          />
-                        )}
-                        {step.note && (
-                          <InfoBlock
-                            label={text.labels.note}
-                            value={step.note}
-                          />
-                        )}
-                      </div>
+              <div className="mt-10 space-y-4">
+                {text.employerProcess.steps.map((step, index) => (
+                  <motion.div
+                    key={step.title}
+                    initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: 0.1 * index,
+                      duration: 0.45,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="flex gap-4 rounded-[1.4rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:border-[#08a99d]/25 hover:shadow-lg hover:shadow-slate-100 md:p-6"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#08264a] text-sm font-semibold text-white">
+                      {index + 1}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* STUDY + COST */}
-      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[2rem] border border-[#655096]/20 bg-[#f0ecfb] p-7 shadow-xl shadow-slate-100 md:p-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#655096] text-white">
-              <GraduationCap size={24} />
-            </div>
-
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#655096]">
-              {text.studyFirst.eyebrow}
-            </p>
-
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d]">
-              {text.studyFirst.title}
-            </h2>
-
-            <p className="mt-4 text-sm leading-7 text-slate-700">
-              {text.studyFirst.description}
-            </p>
-
-            <div className="mt-6 rounded-[1.5rem] border border-[#655096]/20 bg-white/70 p-5">
-              <p className="text-sm leading-7 text-slate-700">
-                {text.studyFirst.details}
-              </p>
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-7 shadow-xl shadow-slate-100 md:p-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#08a99d]/10 text-[#08a99d] ring-1 ring-[#08a99d]/10">
-              <BadgeEuro size={24} />
-            </div>
-
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-              {text.cost.eyebrow}
-            </p>
-
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#061f3d]">
-              {text.cost.title}
-            </h2>
-
-            <p className="mt-4 text-sm leading-7 text-slate-600">
-              {text.cost.description}
-            </p>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {text.cost.points.map((point) => (
-                <div
-                  key={point}
-                  className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-[#f7fbff] p-4"
-                >
-                  <ShieldCheck
-                    size={18}
-                    className="mt-0.5 shrink-0 text-[#08a99d]"
-                  />
-                  <p className="text-sm font-semibold leading-6 text-[#08264a]">
-                    {point}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PROMISE */}
-      <section className="bg-white px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#061f3d] shadow-2xl shadow-slate-200">
-          <div className="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="relative p-7 text-white md:p-10">
-              <div className="absolute left-0 top-0 h-full w-1 bg-[#08a99d]" />
-
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#10c4b6]">
-                {text.promises.eyebrow}
-              </p>
-
-              <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-                {text.promises.title}
-              </h2>
-
-              <p className="mt-5 text-sm leading-7 text-slate-300 md:text-base">
-                {text.promises.description}
-              </p>
-
-              <Link
-                href={localizedHref(locale, "/login")}
-                className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#08a99d] px-6 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-[#061f3d]"
-              >
-                {text.cta.primary} <ArrowRight size={17} />
-              </Link>
-            </div>
-
-            <div className="border-t border-white/10 p-7 md:p-10 lg:border-l lg:border-t-0">
-              <div className="space-y-5">
-                {text.promises.items.map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2
-                      size={20}
-                      className="mt-0.5 shrink-0 text-[#10c4b6]"
-                    />
-                    <p className="text-sm leading-7 text-slate-200">{item}</p>
-                  </div>
+                    <div>
+                      <h3 className="font-semibold text-[#08264a]">
+                        {step.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        {step.description}
+                      </p>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
 
-              <div className="mt-7 rounded-[1.5rem] border border-white/10 bg-white/10 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#10c4b6]">
-                  {text.labels.note}
-                </p>
-                <p className="mt-2 text-sm leading-7 text-slate-300">
-                  {text.disclaimer}
-                </p>
+              <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+                <Link
+                  href={localizedHref(locale, "/contact")}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#08264a] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:bg-[#08a99d]"
+                >
+                  {text.employerProcess.primaryCta} <ArrowRight size={17} />
+                </Link>
+                <Link
+                  href={localizedHref(locale, "/employers")}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] shadow-sm transition hover:border-[#08a99d] hover:text-[#08a99d]"
+                >
+                  {text.employerProcess.secondaryCta}
+                </Link>
               </div>
+            </div>
+          </motion.section>
+        </AnimatePresence>
+      ) : (
+        <>
+      {/* HERO — dark premium: staggered headline + glass pills strung on a glowing thread */}
+      <section className="relative overflow-hidden bg-[#061f3d] px-5 py-12 md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_-10%,#0d3a66_0%,#061f3d_52%,#040f22_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_72%)]" />
+        <motion.div
+          className="absolute -left-28 top-6 h-80 w-80 rounded-full bg-[#08a99d]/25 blur-3xl"
+          animate={{ x: [0, 18, 0], y: [0, 26, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute -bottom-16 -right-28 h-96 w-96 rounded-full bg-[#2563eb]/15 blur-3xl"
+          animate={{ x: [0, -16, 0], y: [0, -22, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <div className="relative mx-auto max-w-4xl text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-xs font-semibold uppercase tracking-[0.3em] text-[#5eead4]"
+          >
+            {text.selector.eyebrow}
+          </motion.p>
+
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            {titleWords.map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                className={`inline-block ${
+                  index === titleWords.length - 1
+                    ? "bg-gradient-to-r from-[#2dd4bf] to-[#5eead4] bg-clip-text text-transparent"
+                    : ""
+                }`}
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.55,
+                  delay: 0.1 + index * 0.12,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+                {index < titleWords.length - 1 ? " " : ""}
+              </motion.span>
+            ))}
+          </h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-300/90 md:text-[15px] md:leading-7"
+          >
+            {text.selector.description}
+          </motion.p>
+
+          {/* the thread: pills strung on a glowing line */}
+          <div className="relative mt-10">
+            <motion.div
+              className="pointer-events-none absolute left-0 right-0 top-1/2 hidden h-px -translate-y-1/2 sm:block"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, rgba(45,212,191,0.65) 18%, rgba(45,212,191,0.65) 82%, transparent)",
+              }}
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 0.9, delay: 0.5, ease: "easeOut" }}
+            />
+
+            <div className="relative flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              {qualificationChoices.map((choice, index) => {
+                const isSelected = choice.id === selectedChoiceId;
+                const hex = pathwayAccent[choice.pathwayId];
+
+                return (
+                  <motion.button
+                    key={choice.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedChoiceId(choice.id);
+                      requestAnimationFrame(() => {
+                        document
+                          .getElementById("pathway")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      });
+                    }}
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      delay: 0.55 + index * 0.08,
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 18,
+                    }}
+                    whileHover={{ y: -3 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative rounded-full px-5 py-2.5 text-sm font-bold tracking-tight backdrop-blur transition-colors duration-300"
+                    style={
+                      isSelected
+                        ? {
+                            backgroundColor: hex,
+                            color: "#04162c",
+                            boxShadow: `0 0 26px ${hex}59, 0 0 0 1px ${hex}`,
+                          }
+                        : {
+                            backgroundColor: "rgba(255,255,255,0.06)",
+                            color: "#e2e8f0",
+                            boxShadow: "0 0 0 1px rgba(255,255,255,0.16)",
+                          }
+                    }
+                  >
+                    {isSelected && (
+                      <motion.span
+                        className="pointer-events-none absolute inset-0 rounded-full"
+                        style={{ boxShadow: `0 0 0 1.5px ${hex}` }}
+                        initial={{ opacity: 0.7, scale: 1 }}
+                        animate={{ opacity: 0, scale: 1.35 }}
+                        transition={{
+                          duration: 1.4,
+                          repeat: Infinity,
+                          ease: "easeOut",
+                        }}
+                      />
+                    )}
+                    {choice.label}
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-[#f7fbff] px-5 py-14 md:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-7 text-center shadow-xl shadow-slate-100 md:p-12">
-          <div className="mx-auto mb-5 h-px max-w-md bg-gradient-to-r from-transparent via-[#08a99d] to-transparent" />
+      {/* PATHWAY — only appears once a qualification is selected, animates in */}
+      <AnimatePresence mode="wait">
+        {selectedPathway && selectedChoice && (
+          <motion.div
+            key={selectedChoice.id}
+            initial={{ opacity: 0, y: 56 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -24 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <CurrencySwitch
+              currency={currency}
+              onCurrencyChange={setCurrency}
+              onRateChange={setEurInrRate}
+              locale={locale}
+            />
 
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#08a99d]">
-            {text.cta.eyebrow}
-          </p>
+            <section id="pathway" className="bg-white px-5 py-8 md:px-8 md:py-10">
+              <div className="mx-auto max-w-7xl">
+                <div className="mx-auto max-w-3xl text-center">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-[#f7fbff] px-4 py-1.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#08a99d]">
+                      {text.labels.selected}
+                    </p>
+                    <span className="h-1 w-1 rounded-full bg-slate-300" />
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      {text.labels.startingQualification}: {selectedChoice.label}
+                    </p>
+                  </div>
 
-          <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-[#061f3d] md:text-5xl">
-            {text.cta.title}
-          </h2>
+                  <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#061f3d] md:text-4xl">
+                    {selectedPathway.title}
+                    <span className="text-[#08a99d]"> · </span>
+                    <span className="text-[#08a99d]">{selectedPathway.subtitle}</span>
+                  </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
-            {text.cta.description}
-          </p>
+                  <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+                    {selectedPathway.description}
+                  </p>
+                </div>
 
-          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href={localizedHref(locale, "/login")}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#08264a] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#08a99d]"
-            >
-              {text.cta.primary} <ArrowRight size={17} />
-            </Link>
+                <div
+                  className={`mx-auto mt-6 grid gap-3 ${
+                    selectedPathway.extraNote
+                      ? "max-w-4xl sm:grid-cols-2"
+                      : "max-w-xl"
+                  }`}
+                >
+                  <div className="rounded-2xl border border-slate-100 bg-[#f7fbff] p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      {text.labels.outcome}
+                    </p>
+                    <p className="mt-1.5 text-sm font-semibold leading-6 text-[#08264a]">
+                      {selectedPathway.outcome}
+                    </p>
+                  </div>
 
-            <Link
-              href={localizedHref(locale, "/contact")}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-[#08264a] transition hover:border-[#08a99d] hover:text-[#08a99d]"
-            >
-              {text.cta.secondary}
-            </Link>
-          </div>
-        </div>
-      </section>
+                  {selectedPathway.extraNote && (
+                    <div className="rounded-2xl border border-[#b88622]/20 bg-[#fbf5e7] p-4">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a6419]">
+                        {text.labels.note}
+                      </p>
+                      <p className="mt-1.5 text-sm leading-6 text-[#5f4513]">
+                        {selectedPathway.extraNote}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <PathwayTimeline
+                  pathway={selectedPathway}
+                  text={text}
+                  currency={currency}
+                  eurInrRate={eurInrRate}
+                  locale={locale}
+                />
+              </div>
+            </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+        </>
+      )}
     </>
   );
 }
@@ -1125,70 +1202,209 @@ function InfoBlock({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SalaryProgress({
+function PathwayTimeline({
   pathway,
-  locale,
+  text,
   currency,
   eurInrRate,
+  locale,
 }: {
   pathway: Pathway;
-  locale: Locale;
+  text: (typeof pageText)[Locale];
   currency: Currency;
   eurInrRate: number | null;
+  locale: Locale;
 }) {
-  const salarySteps = pathway.steps.filter((step) => step.salary);
-  const text = pageText[locale].salary;
-
-  if (salarySteps.length === 0) {
-    return null;
-  }
+  const gradientStops = pathway.steps
+    .map((step, index) => {
+      const pct =
+        pathway.steps.length > 1
+          ? (index / (pathway.steps.length - 1)) * 100
+          : 0;
+      return `${toneHex[step.tone]} ${pct}%`;
+    })
+    .join(", ");
 
   return (
-    <div className="mt-7 overflow-hidden rounded-[1.7rem] border border-[#08a99d]/20 bg-[linear-gradient(135deg,#ecfffb_0%,#ffffff_50%,#f7fbff_100%)] p-5 shadow-lg shadow-slate-100">
-      <div className="flex flex-col gap-4 md:items-start md:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#08a99d]">
-            {text.eyebrow}
-          </p>
-
-          <h3 className="mt-2 text-xl font-semibold tracking-tight text-[#061f3d]">
-            {text.title}
-          </h3>
-        </div>
-
-        <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#08a99d] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#08a99d]/20">
-          <BadgeEuro size={18} />
-          {text.free}
-        </div>
+    <div className="relative mt-8">
+      <div className="mx-auto mb-5 flex max-w-max items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400 shadow-sm">
+        <ArrowRight size={12} className="text-[#08a99d]" />
+        {text.labels.duration}
       </div>
 
-      <div className="mt-5 grid gap-3">
-        {salarySteps.map((step) => (
-          <div
-            key={`${pathway.id}-${step.title}-salary`}
-            className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-              {step.title}
-            </p>
+      <div className="relative">
+        {/* edge fade affordances for horizontal scroll */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-white to-transparent md:w-16" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-white to-transparent md:w-16" />
 
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-[#061f3d]">
-              {formatSalaryValue(
-                step.salary ?? "",
-                currency,
-                eurInrRate,
-                locale
-              )}
-            </p>
+        <div className="relative overflow-x-auto pb-6">
+          <div className="relative flex min-w-max items-start px-8">
+            {/* the horizontal spine, spans the full scrollable width, draws in on mount */}
+            <motion.div
+              className="pointer-events-none absolute left-8 right-8 top-[124px] h-[3px] rounded-full opacity-90 shadow-sm"
+              style={{
+                backgroundImage: `linear-gradient(to right, ${gradientStops})`,
+                transformOrigin: "left",
+              }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.9, ease: "easeOut" }}
+            />
 
-            <p className="mt-2 text-xs font-semibold text-[#08a99d]">
-              {step.location}
-            </p>
+            {pathway.steps.map((step, index) => {
+              const tone = toneClasses[step.tone];
+              const hex = toneHex[step.tone];
+              const Icon = step.icon;
+              const isMilestone = step.kind === "milestone";
+
+              const activities: { label: string; value: string }[] = [];
+              if (step.work)
+                activities.push({ label: text.labels.work, value: step.work });
+              if (step.study)
+                activities.push({ label: text.labels.study, value: step.study });
+              if (step.salary)
+                activities.push({
+                  label: text.labels.salary,
+                  value: formatSalaryValue(step.salary, currency, eurInrRate, locale),
+                });
+              if (step.note)
+                activities.push({ label: text.labels.note, value: step.note });
+
+              return (
+                <motion.div
+                  key={`${pathway.id}-${step.title}`}
+                  className={`relative flex shrink-0 flex-col items-center px-4 text-center ${
+                    isMilestone ? "w-[210px]" : "w-[252px]"
+                  }`}
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 + index * 0.06 }}
+                >
+                  {/* ABOVE THE LINE: milestones surface their icon + title here */}
+                  <div className="flex h-24 w-full flex-col items-center justify-end gap-1.5">
+                    {isMilestone && (
+                      <>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.16em] ${tone.pill}`}
+                        >
+                          {text.labels.milestone}
+                        </span>
+                        <h3 className="text-sm font-semibold leading-tight tracking-tight text-[#061f3d]">
+                          {step.title}
+                        </h3>
+                      </>
+                    )}
+                  </div>
+
+                  {/* ON THE LINE: the marker itself */}
+                  <div className="relative z-10 flex h-14 w-full items-center justify-center">
+                    {isMilestone ? (
+                      <motion.div
+                        className="flex h-14 w-14 items-center justify-center rounded-full shadow-lg ring-[6px] ring-white"
+                        style={{ backgroundColor: hex }}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          delay: 0.3 + index * 0.07,
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 16,
+                        }}
+                      >
+                        <Icon size={24} className="text-white" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        className="h-4 w-4 rounded-full shadow ring-[6px] ring-white"
+                        style={{ backgroundColor: hex }}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          delay: 0.3 + index * 0.07,
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 16,
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  {/* BELOW THE LINE: duration (and location) */}
+                  <div className="flex w-full flex-col items-center gap-1 pt-3">
+                    {isMilestone ? (
+                      <span className="text-[11px] italic text-slate-400">
+                        {step.duration}
+                      </span>
+                    ) : (
+                      <span
+                        className="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em]"
+                        style={{ backgroundColor: `${hex}1a`, color: hex }}
+                      >
+                        {step.duration}
+                      </span>
+                    )}
+                    <span className="text-[10px] uppercase tracking-[0.1em] text-slate-400">
+                      {step.location}
+                    </span>
+                  </div>
+
+                  {/* CARD: activities / objectives for this stage */}
+                  <div
+                    className={`mt-4 w-full rounded-[1.25rem] border p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${tone.card}`}
+                  >
+                    {!isMilestone && (
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${tone.icon}`}
+                        >
+                          <Icon size={17} />
+                        </div>
+                        <h4 className="text-sm font-semibold leading-tight tracking-tight text-[#061f3d]">
+                          {step.title}
+                        </h4>
+                      </div>
+                    )}
+
+                    <p
+                      className={`text-xs leading-5 text-slate-600 ${!isMilestone ? "mt-3" : ""}`}
+                    >
+                      {step.summary}
+                    </p>
+
+                    {isMilestone && step.salary && (
+                      <div className="mt-3 rounded-xl bg-white/80 px-3 py-2">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-400">
+                          {text.labels.milestoneSalary}
+                        </p>
+                        <p className="text-xs font-semibold text-[#08264a]">
+                          {formatSalaryValue(
+                            step.salary,
+                            currency,
+                            eurInrRate,
+                            locale,
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {!isMilestone && activities.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {activities.map((activity) => (
+                          <InfoBlock
+                            key={activity.label}
+                            label={activity.label}
+                            value={activity.value}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-        ))}
+        </div>
       </div>
-
-      <p className="mt-4 text-xs leading-6 text-slate-500">{text.note}</p>
     </div>
   );
 }

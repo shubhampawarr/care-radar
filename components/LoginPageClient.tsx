@@ -3,9 +3,18 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { ArrowRight, LockKeyhole, UserPlus } from "lucide-react";
+import {
+  ArrowRight,
+  LockKeyhole,
+  UserPlus,
+  HeartPulse,
+  Building2,
+  ShieldCheck,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Locale } from "@/lib/locale";
+
+type Role = "nurse" | "employer" | "admin";
 
 const pageText = {
   en: {
@@ -13,8 +22,12 @@ const pageText = {
     title: "Login or create your CareRadar account.",
     description:
       "Access to the CareRadar portal is being prepared. This page sets the foundation for login and registration.",
+    candidateTab: "Candidate",
+    employerTab: "Employer",
+    adminTab: "Admin",
     loginTab: "Login",
     registerTab: "Create Account",
+    adminNotice: "Admin accounts are created internally and cannot be self-registered.",
     firstName: "First name",
     lastName: "Last name",
     email: "Email address",
@@ -33,8 +46,13 @@ const pageText = {
     title: "Anmelden oder registrieren.",
     description:
       "Der Zugang zum CareRadar Portal wird vorbereitet. Diese Seite bildet die Grundlage für Anmeldung und Registrierung.",
+    candidateTab: "Pflegekraft",
+    employerTab: "Arbeitgeber",
+    adminTab: "Admin",
     loginTab: "Anmelden",
     registerTab: "Registrieren",
+    adminNotice:
+      "Admin-Konten werden intern erstellt und können nicht selbst registriert werden.",
     firstName: "Vorname",
     lastName: "Nachname",
     email: "E-Mail-Adresse",
@@ -63,6 +81,7 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
   const text = pageText[locale];
   const router = useRouter();
 
+  const [role, setRole] = useState<Role>("nurse");
   const [mode, setMode] = useState<"login" | "register">("login");
 
   const [firstName, setFirstName] = useState("");
@@ -83,6 +102,14 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
     setError("");
   }
 
+  function selectRole(nextRole: Role) {
+    setRole(nextRole);
+    if (nextRole === "admin") {
+      setMode("login");
+    }
+    resetForm();
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -94,13 +121,11 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
 
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { data: signInData, error: signInError } =
+          await supabase.auth.signInWithPassword({ email, password });
 
-        if (error) {
-          setError(error.message);
+        if (signInError) {
+          setError(signInError.message);
           return;
         }
 
@@ -108,32 +133,49 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
         setPassword("");
         setMessage(text.loginSuccess);
 
-        router.push(localizedHref(locale, "/dashboard"));
+        const userId = signInData.user?.id;
+
+        let destination = "/dashboard/nurse";
+
+        if (userId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", userId)
+            .single();
+
+          if (profile?.role === "employer") destination = "/dashboard/employer";
+          if (profile?.role === "admin") destination = "/dashboard/admin";
+        }
+
+        router.push(localizedHref(locale, destination));
         router.refresh();
         return;
       }
 
+      // Registration only applies to nurse/employer — admin tab hides this mode.
       const trimmedFirstName = firstName.trim();
       const trimmedLastName = lastName.trim();
 
-      const { error } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo:
             typeof window !== "undefined"
-              ? `${window.location.origin}/${locale}/dashboard`
+              ? `${window.location.origin}/${locale}/dashboard/${role}`
               : undefined,
           data: {
             first_name: trimmedFirstName,
             last_name: trimmedLastName,
             full_name: `${trimmedFirstName} ${trimmedLastName}`.trim(),
+            requested_role: role,
           },
         },
       });
 
-      if (error) {
-        setError(error.message);
+      if (signUpError) {
+        setError(signUpError.message);
         return;
       }
 
@@ -146,6 +188,12 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
       setIsSubmitting(false);
     }
   }
+
+  const roleTabs: { value: Role; label: string; icon: typeof HeartPulse }[] = [
+    { value: "nurse", label: text.candidateTab, icon: HeartPulse },
+    { value: "employer", label: text.employerTab, icon: Building2 },
+    { value: "admin", label: text.adminTab, icon: ShieldCheck },
+  ];
 
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_78%)] px-5 py-16 md:px-8 md:py-24">
@@ -185,42 +233,71 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
         </div>
 
         <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-2xl shadow-slate-200 md:p-7">
-          <div className="grid grid-cols-2 rounded-2xl bg-[#f7fbff] p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setMode("login");
-                resetForm();
-              }}
-              className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
-                mode === "login"
-                  ? "bg-[#08264a] text-white shadow-sm"
-                  : "text-slate-600 hover:text-[#08a99d]"
-              }`}
-            >
-              <LockKeyhole size={17} />
-              {text.loginTab}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setMode("register");
-                resetForm();
-              }}
-              className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
-                mode === "register"
-                  ? "bg-[#08264a] text-white shadow-sm"
-                  : "text-slate-600 hover:text-[#08a99d]"
-              }`}
-            >
-              <UserPlus size={17} />
-              {text.registerTab}
-            </button>
+          {/* Role selector: candidate / employer / admin */}
+          <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-[#f7fbff] p-1.5">
+            {roleTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => selectRole(tab.value)}
+                  className={`flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-xs font-semibold transition sm:flex-row sm:text-sm ${
+                    role === tab.value
+                      ? "bg-white text-[#08264a] shadow-sm ring-1 ring-slate-100"
+                      : "text-slate-500 hover:text-[#08a99d]"
+                  }`}
+                >
+                  <Icon size={16} className="shrink-0" />
+                  <span className="truncate">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
+          {/* Login / Register toggle — hidden for admin, which is login-only */}
+          {role !== "admin" ? (
+            <div className="mt-3 grid grid-cols-2 rounded-2xl bg-[#f7fbff] p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("login");
+                  resetForm();
+                }}
+                className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                  mode === "login"
+                    ? "bg-[#08264a] text-white shadow-sm"
+                    : "text-slate-600 hover:text-[#08a99d]"
+                }`}
+              >
+                <LockKeyhole size={17} />
+                {text.loginTab}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("register");
+                  resetForm();
+                }}
+                className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                  mode === "register"
+                    ? "bg-[#08264a] text-white shadow-sm"
+                    : "text-slate-600 hover:text-[#08a99d]"
+                }`}
+              >
+                <UserPlus size={17} />
+                {text.registerTab}
+              </button>
+            </div>
+          ) : (
+            <p className="mt-3 rounded-2xl border border-slate-100 bg-[#f7fbff] px-4 py-3 text-xs font-medium text-slate-500">
+              {text.adminNotice}
+            </p>
+          )}
+
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            {mode === "register" && (
+            {mode === "register" && role !== "admin" && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label
@@ -265,10 +342,7 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
             )}
 
             <div>
-              <label
-                htmlFor="email"
-                className="text-sm font-semibold text-[#08264a]"
-              >
+              <label htmlFor="email" className="text-sm font-semibold text-[#08264a]">
                 {text.email}
               </label>
 
@@ -285,10 +359,7 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="text-sm font-semibold text-[#08264a]"
-              >
+              <label htmlFor="password" className="text-sm font-semibold text-[#08264a]">
                 {text.password}
               </label>
 
@@ -297,9 +368,7 @@ export default function LoginPageClient({ locale }: LoginPageClientProps) {
                 type="password"
                 required
                 minLength={6}
-                autoComplete={
-                  mode === "login" ? "current-password" : "new-password"
-                }
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base text-[#08264a] outline-none transition placeholder:text-slate-400 focus:border-[#08a99d] focus:ring-4 focus:ring-[#08a99d]/10"
