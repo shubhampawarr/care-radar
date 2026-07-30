@@ -342,7 +342,7 @@ export default async function Home({ params }: HomeProps) {
                 <div className="rounded-[1.4rem] border border-white/20 bg-white/10 p-4 backdrop-blur-md">
                   <div className="flex items-center gap-3">
                     <Image
-                      src="/images/careradar-logo.jpeg"
+                      src="/logo.png"
                       alt="CareRadar Logo"
                       width={48}
                       height={48}

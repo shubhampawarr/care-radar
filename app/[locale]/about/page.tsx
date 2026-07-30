@@ -273,7 +273,7 @@ function BrandPromiseBox({
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
           <div className="rounded-[1.4rem] border border-white/20 bg-white/10 p-4 backdrop-blur-md text-center">
             <Image
-              src="/images/careradar-logo.jpeg"
+              src="/logo.png"
               alt="CareRadar Logo"
               width={56}
               height={56}

@@ -139,7 +139,7 @@ export default function Navbar() {
         >
           <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition group-hover:shadow-md md:h-12 md:w-12">
             <Image
-              src="/images/careradar-logo.jpeg"
+              src="/logo.png"
               alt="CareRadar Logo"
               width={42}
               height={42}

@@ -76,7 +76,7 @@ export default function Footer() {
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
               <Image
-                src="/images/careradar-logo.jpeg"
+                src="/logo.png"
                 alt="CareRadar Logo"
                 width={32}
                 height={32}
