@@ -3,15 +3,19 @@
 import { useMemo } from "react";
 import PaperScene from "../PaperScene";
 import {
+  contourRuns,
   makeRng,
   PAPER,
+  pointsToPath,
   seedFromString,
   SHADOW_OFFSET,
   SHADOW_OPACITY,
   wobbleLine,
+  wobblePoints,
   wobblePolygon,
   wobbleRect,
-} from "../paper";
+  type Pt,
+} from "../surface";
 
 /* ------------------------------------------------------------------ *
  * M1 — Needs assessment and mandate
@@ -50,6 +54,50 @@ function CutShadow({ d, id }: { d: string; id: string }) {
   );
 }
 
+/**
+ * A scissor-cut shape: one flat fill, and its contour stroked as several
+ * overlapping runs at different weights. A cut edge is never one uniform
+ * width, and that variation is most of what separates "paper-cut" from
+ * "flat-coloured vector".
+ */
+function CutShape({
+  id,
+  points,
+  fill,
+  rng,
+  base = 2.9,
+  wobble = 1.7,
+  runs = 3,
+}: {
+  id: string;
+  points: readonly Pt[];
+  fill: string;
+  rng: () => number;
+  base?: number;
+  wobble?: number;
+  runs?: number;
+}) {
+  const pts = wobblePoints(points, rng, wobble);
+  const segments = contourRuns(pts, runs);
+  return (
+    <g id={id}>
+      <path id={`${id}-fill`} d={pointsToPath(pts)} fill={fill} stroke="none" />
+      {segments.map((run, i) => (
+        <path
+          key={i}
+          id={`${id}-edge-0${i + 1}`}
+          d={pointsToPath(run, false)}
+          fill="none"
+          stroke={PAPER.ink}
+          strokeWidth={Number((base + (rng() * 1.5 - 0.6)).toFixed(2))}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+    </g>
+  );
+}
+
 function ink(rng: () => number, extra = 0) {
   return {
     stroke: PAPER.ink,
@@ -73,9 +121,38 @@ type FigureProps = {
   idx: number;
 };
 
+/**
+ * The two figures are different people, not a shape and its mirror: different
+ * shoulder line, different head cut, different hair, different gesture. The
+ * employer (left) is pointing into the vacancy profile; the CareRadar side
+ * (right) has a hand flat on the table, listening. Neither presents to the
+ * other — this is a working table.
+ */
 function Figure({ x, lean, seed, bodyFill, idx }: FigureProps) {
   const rng = makeRng(seedFromString(seed));
   const side = lean === 1 ? "left" : "right";
+  const isLeft = lean === 1;
+
+  const torso: Pt[] = isLeft
+    ? [[-56, 6], [-50, -68], [-30, -92], [16, -95], [44, -74], [54, 6]]
+    : [[-46, 6], [-42, -60], [-26, -84], [10, -90], [40, -70], [58, 6]];
+
+  const head: Pt[] = isLeft
+    ? [[-29, -138], [-19, -162], [14, -165], [30, -145], [27, -117], [3, -105], [-23, -113]]
+    : [[-26, -132], [-14, -158], [18, -158], [32, -136], [26, -110], [0, -101], [-22, -110]];
+
+  const hair: Pt[] = isLeft
+    ? [[-30, -138], [-21, -165], [15, -168], [32, -147], [20, -149], [0, -157], [-18, -148]]
+    : [[-27, -130], [-16, -161], [20, -161], [34, -138], [37, -118], [30, -128], [14, -150], [-10, -146], [-24, -118]];
+
+  // Left points into the profile; right rests a flat hand on the table.
+  const arm: Pt[] = isLeft
+    ? [[22, -56], [56, -36], [68, -10], [46, -12], [26, -34]]
+    : [[-24, -52], [-58, -32], [-70, -8], [-46, -10], [-22, -30]];
+
+  const hand: Pt[] = isLeft
+    ? [[62, -18], [84, -15], [86, -3], [60, -1]]
+    : [[-64, -16], [-86, -12], [-86, 0], [-60, -1]];
 
   return (
     <g transform={`translate(${x},${TABLE_Y}) rotate(${lean * 7})`}>
@@ -85,121 +162,32 @@ function Figure({ x, lean, seed, bodyFill, idx }: FigureProps) {
         style={step(0)}
         id={`figure-${side}`}
       >
-        {/* Torso — a cut shape, shoulders asymmetric so it is not a symbol. */}
-        <path
-          id={`figure-${side}-torso`}
-          d={wobblePolygon(
-            [
-              [-52, 4],
-              [-44, -74],
-              [-20, -96],
-              [22, -96],
-              [48, -72],
-              [56, 4],
-            ],
-            rng,
-            1.7,
-          )}
-          fill={bodyFill}
-          {...ink(rng, 0.4)}
-        />
-        {/* Forearm laid along the table edge — this is a working table, so the
-            arms rest on it rather than gesturing. */}
-        <path
-          id={`figure-${side}-arm`}
-          d={wobblePolygon(
-            [
-              [lean * 30, -62],
-              [lean * 78, -18],
-              [lean * 76, -2],
-              [lean * 52, -4],
-              [lean * 20, -40],
-            ],
-            rng,
-            1.5,
-          )}
-          fill={bodyFill}
-          {...ink(rng)}
-        />
-        {/* Hand */}
-        <path
-          id={`figure-${side}-hand`}
-          d={wobblePolygon(
-            [
-              [lean * 74, -20],
-              [lean * 94, -14],
-              [lean * 96, 0],
-              [lean * 74, 0],
-            ],
-            rng,
-            1.2,
-          )}
-          fill={PAPER.sand}
-          {...ink(rng)}
-        />
-        {/* Neck */}
+        <CutShape id={`figure-${side}-torso`} points={torso} fill={bodyFill} rng={rng} base={3.1} />
+        <CutShape id={`figure-${side}-arm`} points={arm} fill={bodyFill} rng={rng} base={2.7} />
+        <CutShape id={`figure-${side}-hand`} points={hand} fill={PAPER.sand} rng={rng} base={2.5} wobble={1.3} />
         <path
           id={`figure-${side}-neck`}
-          d={wobbleRect(-9, -112, 18, 22, rng, 1.1, 2)}
+          d={wobbleRect(isLeft ? -9 : -8, isLeft ? -112 : -106, 18, 22, rng, 1.2, 2)}
           fill={PAPER.sand}
           {...ink(rng)}
         />
-        {/* Head */}
-        <path
-          id={`figure-${side}-head`}
-          d={wobblePolygon(
-            [
-              [-30, -140],
-              [-18, -164],
-              [16, -166],
-              [31, -146],
-              [28, -116],
-              [4, -104],
-              [-24, -114],
-            ],
-            rng,
-            1.6,
-          )}
-          fill={PAPER.sand}
-          {...ink(rng, 0.4)}
-        />
-        {/* Hair — one flat cut shape, no gradient. */}
+        <CutShape id={`figure-${side}-head`} points={head} fill={PAPER.sand} rng={rng} base={3} />
         <path
           id={`figure-${side}-hair`}
-          d={wobblePolygon(
-            [
-              [-31, -140],
-              [-20, -167],
-              [17, -169],
-              [33, -149],
-              [22, -150],
-              [2, -158],
-              [-19, -150],
-            ],
-            rng,
-            1.5,
-          )}
+          d={pointsToPath(wobblePoints(hair, rng, 1.5))}
           fill={PAPER.ink}
           stroke="none"
         />
-        {/* Face: two eyes and a mouth. Simple, present, not expressive. */}
-        <circle
-          id={`figure-${side}-eye-left`}
-          cx={-13}
-          cy={-138}
-          r={3.1}
-          fill={PAPER.ink}
-        />
-        <circle
-          id={`figure-${side}-eye-right`}
-          cx={9}
-          cy={-140}
-          r={3.1}
-          fill={PAPER.ink}
-        />
+        {/* Faces: present and simple, and not the same face twice. */}
+        <circle id={`figure-${side}-eye-left`} cx={isLeft ? -13 : -11} cy={isLeft ? -137 : -130} r={3.1} fill={PAPER.ink} />
+        <circle id={`figure-${side}-eye-right`} cx={isLeft ? 9 : 12} cy={isLeft ? -139 : -131} r={3.1} fill={PAPER.ink} />
         <path
           id={`figure-${side}-mouth`}
-          d={wobbleLine(-8, -124, 7, -125, rng, 2, 0.7)}
+          d={
+            isLeft
+              ? wobbleLine(-8, -123, 7, -124, rng, 2, 0.7)
+              : wobbleLine(-6, -117, 9, -119, rng, 2, 0.7)
+          }
           stroke={PAPER.ink}
           strokeWidth={2.1}
           fill="none"
@@ -217,12 +205,14 @@ export default function M1Scene({ className = "" }: { className?: string }) {
   const rng = useMemo(() => makeRng(seedFromString("m1-objects")), []);
 
   /* Computed once so the shadow and the face share exactly one cut edge. */
-  const { profileD, noteLeftD, noteRightD } = useMemo(() => {
+  const { profileD, noteLeftD, noteRightD, cupD, penD } = useMemo(() => {
     const r = makeRng(seedFromString("m1-object-shapes"));
     return {
       profileD: wobbleRect(-74, -34, 148, 68, r, 1.5, 4),
       noteLeftD: wobblePolygon([[-92, -30], [-2, -36], [-2, 30], [-88, 26]], r, 1.4),
       noteRightD: wobblePolygon([[-2, -36], [90, -30], [86, 26], [-2, 30]], r, 1.4),
+      cupD: wobblePolygon([[-19, -20], [19, -22], [15, 20], [-15, 18]], r, 1.3),
+      penD: wobblePolygon([[-66, -5], [50, -8], [50, 4], [-66, 6]], r, 1.1),
     };
   }, []);
 
@@ -368,13 +358,10 @@ export default function M1Scene({ className = "" }: { className?: string }) {
         ].map((cup) => (
           <g key={cup.id} transform={`translate(${cup.x},${TABLE_Y + 30})`}>
             <g data-unfold-index={cup.delay + 2} style={step(cup.delay)} id={cup.id}>
+              <CutShadow id={`${cup.id}-shadow`} d={cupD} />
               <path
                 id={`${cup.id}-body`}
-                d={wobblePolygon(
-                  [[-19, -20], [19, -22], [15, 20], [-15, 18]],
-                  rng,
-                  1.3,
-                )}
+                d={cupD}
                 fill={PAPER.white}
                 {...ink(rng, 0.3)}
               />
@@ -402,13 +389,10 @@ export default function M1Scene({ className = "" }: { className?: string }) {
         {/* Pen laid across the vacancy profile */}
         <g transform={`translate(272,${TABLE_Y + 62}) rotate(-13)`}>
           <g data-unfold-index={7} style={step(5)} id="pen">
+            <CutShadow id="pen-shadow" d={penD} />
             <path
               id="pen-barrel"
-              d={wobblePolygon(
-                [[-66, -5], [50, -8], [50, 4], [-66, 6]],
-                rng,
-                1.1,
-              )}
+              d={penD}
               fill={PAPER.teal}
               {...ink(rng)}
             />

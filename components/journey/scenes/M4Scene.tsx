@@ -10,340 +10,255 @@ import {
   wobbleLine,
   wobblePolygon,
   wobbleRect,
-} from "../paper";
+} from "../surface";
 
 /* ------------------------------------------------------------------ *
- * Braid geometry
+ * M4 — Qualification and official procedures
  *
- * Three strands share one centre line and one amplitude, phase-shifted by
- * 2pi/3. Depth is cos() of the same phase, so a strand is in front exactly
- * where it is mid-sweep — that is what produces over/under rather than a
- * merge. Segments are emitted per band, back-to-front, so the ink outline of
- * the nearer strand occludes the one behind it.
+ * Three vertical columns, identical at 360px and 1440px. The braid is gone at
+ * all widths: it read as a single woven rope at mobile, and keeping braid on
+ * desktop with a different mechanic at mobile would mean two designs to
+ * maintain and five more scenes inheriting the split.
+ *
+ * Simultaneity is now carried by geometry rather than by weaving — a common
+ * start line and a common end line, with a brace across the top and a matching
+ * closing rule at the base. Three columns that begin together and end together
+ * cannot be misread as three consecutive steps, which is the failure mode this
+ * scene exists to avoid (it would turn a 12-18 month route into an apparent
+ * 22-month one).
+ *
+ * Coordinates are in SHEET space (PaperScene translates children by `inset`).
  * ------------------------------------------------------------------ */
 
-type BraidConfig = {
+type Layout = {
   viewW: number;
   viewH: number;
-  x0: number;
-  x1: number;
-  cy: number;
-  amp: number;
-  periods: number;
-  thickness: number;
-  bands: number;
+  /** Common start and end lines — the simultaneity carriers. */
+  startY: number;
+  endY: number;
+  colX: [number, number, number];
+  colWidth: number;
+  objScale: number;
+  labelSize: number;
 };
 
-/* Coordinates below are in SHEET space: PaperScene translates scene children
-   by `inset`, so the drawable area is (viewW - inset*2) x (viewH - inset*2). */
+const INSET = 26;
 
-const MOBILE: BraidConfig = {
+const MOBILE: Layout = {
   viewW: 360,
-  viewH: 400,
-  x0: 56,
-  x1: 292,
-  cy: 176,
-  amp: 58,
-  periods: 1.5,
-  thickness: 13,
-  bands: 30,
+  viewH: 470,
+  startY: 74,
+  endY: 372,
+  colX: [52, 154, 256],
+  colWidth: 40,
+  objScale: 0.62,
+  labelSize: 10,
 };
 
-const DESKTOP: BraidConfig = {
+const DESKTOP: Layout = {
   viewW: 900,
-  viewH: 430,
-  x0: 116,
-  x1: 800,
-  cy: 190,
-  amp: 62,
-  periods: 2,
-  thickness: 21,
-  bands: 60,
+  viewH: 500,
+  startY: 84,
+  endY: 404,
+  colX: [178, 424, 670],
+  colWidth: 72,
+  objScale: 1,
+  labelSize: 15,
 };
 
-const STRANDS = [
-  { key: "sprache", label: "Sprache", colour: PAPER.teal, phase: 0 },
-  { key: "dossier", label: "Anerkennungsdossier", colour: PAPER.navy, phase: (2 * Math.PI) / 3 },
-  { key: "visum", label: "Visum", colour: PAPER.tealLight, phase: (4 * Math.PI) / 3 },
+const COLUMNS = [
+  { key: "sprache", label: "Sprache", colour: PAPER.teal },
+  { key: "dossier", label: "Anerkennungsdossier", colour: PAPER.navy },
+  { key: "visum", label: "Visum", colour: PAPER.tealLight },
 ] as const;
 
-type StrandKey = (typeof STRANDS)[number]["key"];
-
-/**
- * Mobile falls back to three stacked strands.
- *
- * The braid was built and judged at 360px first, per the build order, and it
- * read as a single woven rope: the usable sheet is 308x348, the bracket takes
- * ~50 of it, and three strands plus the six objects that give them their
- * identity do not fit in the ~92px of height that leaves. Stacked lanes keep
- * the three concerns separable; the bracket carries the simultaneity instead.
- */
-const STACK_LANES = [0, 1, 2] as const;
-
-function laneY(cfg: BraidConfig, lane: number): number {
-  return cfg.cy + (lane - 1) * (cfg.amp * 0.92);
-}
-
-function strandY(cfg: BraidConfig, phase: number, x: number): number {
-  const t = (x - cfg.x0) / (cfg.x1 - cfg.x0);
-  return cfg.cy + cfg.amp * Math.sin(2 * Math.PI * cfg.periods * t + phase);
-}
-
-function strandDepth(cfg: BraidConfig, phase: number, x: number): number {
-  const t = (x - cfg.x0) / (cfg.x1 - cfg.x0);
-  return Math.cos(2 * Math.PI * cfg.periods * t + phase);
-}
-
-type Segment = { strand: number; d: string; depth: number };
-
-/** Emits band-sliced segments already ordered back-to-front. */
-function buildBraid(cfg: BraidConfig): Segment[] {
-  const segments: Segment[] = [];
-  const bandW = (cfg.x1 - cfg.x0) / cfg.bands;
-
-  for (let b = 0; b < cfg.bands; b += 1) {
-    const bx0 = cfg.x0 + b * bandW;
-    const bx1 = bx0 + bandW;
-    const mid = (bx0 + bx1) / 2;
-
-    const ordered = STRANDS.map((s, i) => ({
-      i,
-      depth: strandDepth(cfg, s.phase, mid),
-    })).sort((a, b2) => a.depth - b2.depth);
-
-    for (const { i, depth } of ordered) {
-      const phase = STRANDS[i].phase;
-      // 1px overlap each side so bands do not show hairline seams.
-      const from = Math.max(cfg.x0, bx0 - 1);
-      const to = Math.min(cfg.x1, bx1 + 1);
-      const steps = 4;
-      const pts: string[] = [];
-      for (let s = 0; s <= steps; s += 1) {
-        const x = from + ((to - from) * s) / steps;
-        pts.push(`${s === 0 ? "M" : "L"}${x.toFixed(2)},${strandY(cfg, phase, x).toFixed(2)}`);
-      }
-      segments.push({ strand: i, d: pts.join(" "), depth });
-    }
-  }
-  return segments;
-}
-
-/**
- * X positions where a strand is furthest forward — safe places for objects,
- * since a front-most strand is not occluded by the other two there.
- */
-function frontPoints(cfg: BraidConfig, phase: number, count: number): number[] {
-  const out: number[] = [];
-  const span = cfg.x1 - cfg.x0;
-  for (let k = -2; k < 12 && out.length < count; k += 1) {
-    // cos peaks where 2*pi*periods*t + phase = 2*pi*k
-    const t = (2 * Math.PI * k - phase) / (2 * Math.PI * cfg.periods);
-    if (t > 0.1 && t < 0.9) out.push(cfg.x0 + span * t);
-  }
-  // Never hand back an off-strand position.
-  return out.map((x) => Math.min(cfg.x1 - 24, Math.max(cfg.x0 + 24, x)));
-}
-
-/* ------------------------------------------------------------------ *
- * Scene objects — flat cut-outs, max 3 layers, no gradients
- * ------------------------------------------------------------------ */
-
-type ObjProps = { x: number; y: number; seed: string; idx: number; scale?: number };
-
-function outlineProps(rng: () => number) {
+function ink(rng: () => number, extra = 0) {
   return {
     stroke: PAPER.ink,
-    strokeWidth: 2.4 + rng() * 1.2,
+    strokeWidth: 2.3 + rng() * 1.1 + extra,
     strokeLinejoin: "round" as const,
   };
 }
 
-function SpeechBubbles({ x, y, seed, idx, scale = 1 }: ObjProps) {
+/* ------------------------------------------------------------------ *
+ * Objects — paper cut-outs on paper, reoriented for vertical columns.
+ * No crossings: each object sits on its own column.
+ * ------------------------------------------------------------------ */
+
+type ObjProps = { x: number; y: number; seed: string; scale: number };
+
+/** Sprache — speech bubbles. */
+function SpeechBubbles({ x, y, seed, scale }: ObjProps) {
   const rng = makeRng(seedFromString(seed));
   return (
     <g transform={`translate(${x},${y}) scale(${scale})`}>
-      <g data-unfold-index={idx} style={{ ["--unfold-delay" as string]: "0ms" }}>
       <path
         id="m4-sprache-bubble-back"
         d={wobblePolygon(
-          [[-30, -30], [8, -32], [10, -6], [-6, -4], [-14, 6], [-15, -4], [-30, -6]],
+          [[-34, -26], [6, -29], [8, -2], [-10, 0], [-18, 11], [-19, 0], [-34, -2]],
           rng,
           1.4,
         )}
         fill={PAPER.white}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
       <path
         id="m4-sprache-bubble-front"
         d={wobblePolygon(
-          [[-2, -20], [30, -22], [32, 0], [16, 2], [10, 12], [9, 2], [-1, 0]],
+          [[-4, 8], [34, 5], [36, 30], [16, 32], [8, 43], [7, 32], [-3, 33]],
           rng,
           1.4,
         )}
         fill={PAPER.teal}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
       <path
         id="m4-sprache-bubble-line-01"
-        d={wobbleLine(-24, -22, -2, -23, rng, 3, 0.9)}
+        d={wobbleLine(-28, -18, -4, -19, rng, 3, 0.9)}
         stroke={PAPER.ink}
-        strokeWidth={1.8}
+        strokeWidth={1.9}
         fill="none"
-        opacity={0.75}
+        opacity={0.7}
       />
       <path
         id="m4-sprache-bubble-line-02"
-        d={wobbleLine(-24, -15, -8, -16, rng, 3, 0.9)}
+        d={wobbleLine(-28, -10, -12, -11, rng, 3, 0.9)}
         stroke={PAPER.ink}
-        strokeWidth={1.8}
+        strokeWidth={1.9}
         fill="none"
-        opacity={0.75}
+        opacity={0.7}
       />
-      </g>
     </g>
   );
 }
 
-function AlphabetCards({ x, y, seed, idx, scale = 1 }: ObjProps) {
+/** Sprache — alphabet cards, stacked down the column. */
+function AlphabetCards({ x, y, seed, scale }: ObjProps) {
   const rng = makeRng(seedFromString(seed));
   return (
     <g transform={`translate(${x},${y}) scale(${scale})`}>
-      <g data-unfold-index={idx} style={{ ["--unfold-delay" as string]: "0ms" }}>
       {[0, 1, 2].map((i) => (
         <path
           key={i}
           id={`m4-sprache-card-0${i + 1}`}
-          d={wobbleRect(-26 + i * 19, -14 - i * 3, 22, 28, rng, 1.3, 2)}
+          d={wobbleRect(-30 + i * 21, -16 + i * 5, 26, 32, rng, 1.3, 2)}
           fill={i === 2 ? PAPER.teal : PAPER.white}
-          {...outlineProps(rng)}
+          {...ink(rng)}
         />
       ))}
-      </g>
     </g>
   );
 }
 
-function DocumentStack({ x, y, seed, idx, scale = 1 }: ObjProps) {
+/** Dossier — documents stacking one onto another. */
+function DocumentStack({ x, y, seed, scale }: ObjProps) {
   const rng = makeRng(seedFromString(seed));
   return (
     <g transform={`translate(${x},${y}) scale(${scale})`}>
-      <g data-unfold-index={idx} style={{ ["--unfold-delay" as string]: "0ms" }}>
       {[0, 1, 2].map((i) => (
         <path
           key={i}
           id={`m4-dossier-page-0${i + 1}`}
-          d={wobbleRect(-24 + i * 5, -22 + i * 7, 40, 30, rng, 1.3, 2)}
+          d={wobbleRect(-26 + i * 6, -34 + i * 15, 46, 34, rng, 1.3, 2)}
           fill={i === 2 ? PAPER.cream : PAPER.white}
-          {...outlineProps(rng)}
+          {...ink(rng)}
         />
       ))}
       <path
         id="m4-dossier-rule-01"
-        d={wobbleLine(-14, 0, 6, 0, rng, 3, 0.8)}
+        d={wobbleLine(-12, 0, 10, 0, rng, 3, 0.8)}
         stroke={PAPER.ink}
-        strokeWidth={1.7}
+        strokeWidth={1.8}
         fill="none"
-        opacity={0.6}
+        opacity={0.55}
       />
-      <path
-        id="m4-dossier-rule-02"
-        d={wobbleLine(-14, 7, 0, 7, rng, 3, 0.8)}
-        stroke={PAPER.ink}
-        strokeWidth={1.7}
-        fill="none"
-        opacity={0.6}
-      />
-      </g>
     </g>
   );
 }
 
-function SealedEnvelope({ x, y, seed, idx, scale = 1 }: ObjProps) {
+/** Dossier — folded into a sealed envelope. */
+function SealedEnvelope({ x, y, seed, scale }: ObjProps) {
   const rng = makeRng(seedFromString(seed));
   return (
     <g transform={`translate(${x},${y}) scale(${scale})`}>
-      <g data-unfold-index={idx} style={{ ["--unfold-delay" as string]: "0ms" }}>
       <path
         id="m4-dossier-envelope-body"
-        d={wobbleRect(-28, -20, 56, 38, rng, 1.4, 3)}
+        d={wobbleRect(-32, -22, 64, 44, rng, 1.4, 3)}
         fill={PAPER.navy}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
       <path
         id="m4-dossier-envelope-flap"
-        d={wobblePolygon([[-28, -20], [28, -20], [0, 6]], rng, 1.4)}
+        d={wobblePolygon([[-32, -22], [32, -22], [0, 8]], rng, 1.4)}
         fill={PAPER.white}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
       <path
         id="m4-dossier-envelope-seal"
-        d={wobblePolygon([[-7, 0], [7, -2], [9, 11], [-5, 13]], rng, 1.2)}
+        d={wobblePolygon([[-8, 2], [8, 0], [10, 15], [-6, 17]], rng, 1.2)}
         fill={PAPER.teal}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
-      </g>
     </g>
   );
 }
 
-function Passport({ x, y, seed, idx, scale = 1 }: ObjProps) {
+/** Visum — passport booklet opening. */
+function Passport({ x, y, seed, scale }: ObjProps) {
   const rng = makeRng(seedFromString(seed));
   return (
     <g transform={`translate(${x},${y}) scale(${scale})`}>
-      <g data-unfold-index={idx} style={{ ["--unfold-delay" as string]: "0ms" }}>
       <path
         id="m4-visum-passport-left"
-        d={wobblePolygon([[-30, -22], [0, -18], [0, 20], [-30, 16]], rng, 1.3)}
+        d={wobblePolygon([[-34, -24], [0, -20], [0, 22], [-34, 18]], rng, 1.3)}
         fill={PAPER.navyDeep}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
       <path
         id="m4-visum-passport-right"
-        d={wobblePolygon([[0, -18], [30, -22], [30, 16], [0, 20]], rng, 1.3)}
+        d={wobblePolygon([[0, -20], [34, -24], [34, 18], [0, 22]], rng, 1.3)}
         fill={PAPER.white}
-        {...outlineProps(rng)}
+        {...ink(rng)}
       />
       <path
         id="m4-visum-passport-line-01"
-        d={wobbleLine(8, -6, 24, -7, rng, 3, 0.8)}
+        d={wobbleLine(9, -7, 27, -8, rng, 3, 0.8)}
         stroke={PAPER.ink}
-        strokeWidth={1.7}
+        strokeWidth={1.8}
         fill="none"
-        opacity={0.6}
+        opacity={0.55}
       />
       <path
         id="m4-visum-passport-line-02"
-        d={wobbleLine(8, 2, 20, 1, rng, 3, 0.8)}
+        d={wobbleLine(9, 3, 22, 2, rng, 3, 0.8)}
         stroke={PAPER.ink}
-        strokeWidth={1.7}
+        strokeWidth={1.8}
         fill="none"
-        opacity={0.6}
+        opacity={0.55}
       />
-      </g>
     </g>
   );
 }
 
-function Stamp({ x, y, seed, idx, scale = 1 }: ObjProps) {
+/** Visum — stamp descending. */
+function Stamp({ x, y, seed, scale }: ObjProps) {
   const rng = makeRng(seedFromString(seed));
   return (
     <g transform={`translate(${x},${y}) scale(${scale})`}>
-      <g data-unfold-index={idx} style={{ ["--unfold-delay" as string]: "0ms" }}>
       <path
         id="m4-visum-stamp-mark"
-        d={wobblePolygon([[-20, -14], [20, -17], [22, 12], [-18, 15]], rng, 2)}
+        d={wobblePolygon([[-24, -16], [24, -19], [26, 14], [-22, 17]], rng, 2)}
         fill="none"
         stroke={PAPER.teal}
-        strokeWidth={3.4}
+        strokeWidth={3.6}
       />
       <path
         id="m4-visum-stamp-bar"
-        d={wobbleLine(-12, 0, 14, -1, rng, 3, 1)}
+        d={wobbleLine(-14, 0, 16, -1, rng, 3, 1)}
         stroke={PAPER.teal}
-        strokeWidth={3}
+        strokeWidth={3.2}
         fill="none"
       />
-      </g>
     </g>
   );
 }
@@ -352,51 +267,39 @@ function Stamp({ x, y, seed, idx, scale = 1 }: ObjProps) {
  * M4
  * ------------------------------------------------------------------ */
 
-export type M4SceneProps = {
-  /** Force a geometry variant — the sandbox uses this to preview 360px. */
-  force?: "mobile" | "desktop";
-  className?: string;
-};
-
-export default function M4Scene({ force, className = "" }: M4SceneProps) {
+export default function M4Scene({ className = "" }: { className?: string }) {
   const { isMobile, reducedMotion } = useJourneyVariant();
-  const useMobile = force ? force === "mobile" : isMobile;
-  const cfg = useMobile ? MOBILE : DESKTOP;
+  const L = isMobile ? MOBILE : DESKTOP;
 
-  const segments = useMemo(() => buildBraid(cfg), [cfg]);
-  const rng = useMemo(() => makeRng(seedFromString("m4-braid")), []);
-
+  const rng = useMemo(() => makeRng(seedFromString("m4-frame")), []);
   const markerRef = useRef<SVGGElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  /* The Sprache level marker slides continuously with scroll and is the last
-     element still moving after the others settle. */
+  /* The Sprache level marker slides down its column with scroll and is the
+     last element still moving after the others settle — it is the pacemaker
+     of the overall duration, and the animation says so before the copy does. */
   const positionMarker = useCallback(
     (progress: number) => {
       const node = markerRef.current;
       if (!node) return;
-      const x = cfg.x0 + (cfg.x1 - cfg.x0) * clamp01(progress);
-      const y = useMobile ? laneY(cfg, 0) : strandY(cfg, 0, x);
-      node.setAttribute("transform", `translate(${x.toFixed(2)},${y.toFixed(2)})`);
+      const y = L.startY + (L.endY - L.startY) * clamp01(progress);
+      node.setAttribute("transform", `translate(${L.colX[0]},${y.toFixed(2)})`);
     },
-    [cfg, useMobile],
+    [L],
   );
 
   useEffect(() => {
     if (reducedMotion) {
-      positionMarker(0.62);
+      positionMarker(0.58);
       return;
     }
     const root = rootRef.current;
     if (!root) return;
-
     let raf: number | null = null;
     const tick = () => {
       const rect = root.getBoundingClientRect();
       const vh = window.innerHeight;
-      // 0 as the scene enters from the bottom, 1 as it leaves the top.
-      const p = clamp01((vh - rect.top) / (vh + rect.height));
-      positionMarker(p);
+      positionMarker(clamp01((vh - rect.top) / (vh + rect.height)));
       raf = requestAnimationFrame(tick);
     };
     const io = new IntersectionObserver(
@@ -418,69 +321,42 @@ export default function M4Scene({ force, className = "" }: M4SceneProps) {
     };
   }, [reducedMotion, positionMarker]);
 
-  const objScale = useMobile ? 0.74 : 1;
+  const braceX0 = L.colX[0] - L.colWidth / 2 - (isMobile ? 8 : 16);
+  const braceX1 = L.colX[2] + L.colWidth / 2 + (isMobile ? 8 : 16);
+  const s = L.objScale;
 
-  /**
-   * Six object anchors, in render order:
-   * bubbles, cards (Sprache) · docs, envelope (Dossier) · passport, stamp (Visum)
-   *
-   * Desktop places them where their strand is furthest forward, so the other
-   * two never occlude them. Mobile places them on their stacked lane.
-   */
-  const spots = useMemo(() => {
-    const span = cfg.x1 - cfg.x0;
-    if (useMobile) {
-      const at = (lane: number, t: number) => ({
-        x: cfg.x0 + span * t,
-        y: laneY(cfg, lane),
-      });
-      return [at(0, 0.3), at(0, 0.74), at(1, 0.3), at(1, 0.74), at(2, 0.3), at(2, 0.74)];
-    }
-    const front: Record<StrandKey, number[]> = {
-      sprache: frontPoints(cfg, STRANDS[0].phase, 2),
-      dossier: frontPoints(cfg, STRANDS[1].phase, 2),
-      visum: frontPoints(cfg, STRANDS[2].phase, 2),
-    };
-    const on = (s: 0 | 1 | 2, xs: number[], i: number, fallbackT: number, dy: number) => {
-      const x = xs[i] ?? cfg.x0 + span * fallbackT;
-      return { x, y: strandY(cfg, STRANDS[s].phase, x) + dy };
-    };
-    return [
-      on(0, front.sprache, 0, 0.2, -46),
-      on(0, front.sprache, 1, 0.78, -42),
-      on(1, front.dossier, 0, 0.34, -48),
-      on(1, front.dossier, 1, 0.86, -48),
-      on(2, front.visum, 0, 0.16, 48),
-      on(2, front.visum, 1, 0.66, 46),
-    ];
-  }, [cfg, useMobile]);
-
-  const bracketTop = useMobile
-    ? laneY(cfg, 0) - cfg.thickness * 1.6
-    : cfg.cy - cfg.amp - cfg.thickness;
-  const bracketBottom = useMobile
-    ? laneY(cfg, 2) + cfg.thickness * 1.6
-    : cfg.cy + cfg.amp + cfg.thickness;
-  const bracketX = cfg.x0 - (useMobile ? 32 : 54);
+  /* Object positions down each column, clear of the start and end rules. */
+  const span = L.endY - L.startY;
+  const at = (col: 0 | 1 | 2, t: number) => ({
+    x: L.colX[col],
+    y: L.startY + span * t,
+  });
 
   return (
     <div ref={rootRef} className={className}>
       <PaperScene
         seed="m4-qualification"
-        width={cfg.viewW}
-        height={cfg.viewH}
+        width={L.viewW}
+        height={L.viewH}
+        inset={INSET}
         unfoldAt={380}
-        title={
-          useMobile
-            ? "Three paper ribbons — Sprache, Anerkennungsdossier and Visum — running as three parallel lanes across the frame at the same time, with a bracket at the left spanning all three, marked months three to twelve."
-            : "Three paper ribbons — Sprache, Anerkennungsdossier and Visum — braided horizontally across the frame, crossing over and under without merging, with a bracket at the left spanning all three, marked months three to twelve."
-        }
+        title="Three paper columns side by side — Sprache, Anerkennungsdossier and Visum — all beginning at one shared start line and ending at one shared finish line, braced across the top and closed at the base, marked months three to twelve."
       >
-        {/* Bracket spanning all three strands. */}
+        {/* Brace across the top spanning all three, and the matching closing
+            rule at the base. These carry the simultaneity now. */}
         <g data-unfold-index={0} style={{ ["--unfold-delay" as string]: "0ms" }}>
           <path
-            id="m4-bracket"
-            d={`M${bracketX + 14},${bracketTop} L${bracketX},${bracketTop} L${bracketX},${bracketBottom} L${bracketX + 14},${bracketBottom}`}
+            id="m4-brace-top"
+            d={`M${braceX0},${L.startY - 20} L${braceX0},${L.startY} L${braceX1},${L.startY} L${braceX1},${L.startY - 20}`}
+            fill="none"
+            stroke={PAPER.ink}
+            strokeWidth={3.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            id="m4-brace-base"
+            d={`M${braceX0},${L.endY + 20} L${braceX0},${L.endY} L${braceX1},${L.endY} L${braceX1},${L.endY + 20}`}
             fill="none"
             stroke={PAPER.ink}
             strokeWidth={3.2}
@@ -488,13 +364,12 @@ export default function M4Scene({ force, className = "" }: M4SceneProps) {
             strokeLinejoin="round"
           />
           <text
-            id="m4-bracket-label"
+            id="m4-brace-label"
             data-scene-text=""
-            x={bracketX + 4}
-            y={cfg.cy}
-            transform={`rotate(-90 ${bracketX + 4} ${cfg.cy})`}
+            x={(braceX0 + braceX1) / 2}
+            y={L.startY - 28}
             textAnchor="middle"
-            fontSize={useMobile ? 12 : 15}
+            fontSize={L.labelSize}
             fontWeight={700}
             fill={PAPER.ink}
           >
@@ -502,71 +377,54 @@ export default function M4Scene({ force, className = "" }: M4SceneProps) {
           </text>
         </g>
 
-        {/* All three strands are ONE unfold item, so they can only begin
-            together — any stagger would read as three sequential steps and
-            turn a 12-18 month route into an apparent 22-month one. */}
-        <g data-unfold-index={0} style={{ ["--unfold-delay" as string]: "0ms" }}>
-          {useMobile
-            ? STACK_LANES.map((lane) => {
-                const y = laneY(cfg, lane);
-                const d = `M${cfg.x0},${y} L${cfg.x1},${y}`;
-                return (
-                  <g key={lane}>
-                    <path
-                      id={`m4-strand-${STRANDS[lane].key}-ink`}
-                      d={d}
-                      fill="none"
-                      stroke={PAPER.ink}
-                      strokeWidth={cfg.thickness + 6}
-                      strokeLinecap="round"
-                    />
-                    <path
-                      id={`m4-strand-${STRANDS[lane].key}-fill`}
-                      d={d}
-                      fill="none"
-                      stroke={STRANDS[lane].colour}
-                      strokeWidth={cfg.thickness}
-                      strokeLinecap="round"
-                    />
-                  </g>
-                );
-              })
-            : segments.map((seg, i) => (
-                <g key={i}>
-                  <path
-                    id={`m4-strand-${STRANDS[seg.strand].key}-ink-${i}`}
-                    d={seg.d}
-                    fill="none"
-                    stroke={PAPER.ink}
-                    strokeWidth={cfg.thickness + 6}
-                    strokeLinecap="butt"
-                  />
-                  <path
-                    id={`m4-strand-${STRANDS[seg.strand].key}-fill-${i}`}
-                    d={seg.d}
-                    fill="none"
-                    stroke={STRANDS[seg.strand].colour}
-                    strokeWidth={cfg.thickness}
-                    strokeLinecap="butt"
-                  />
-                </g>
-              ))}
+        {/* All three columns are ONE unfold item, so they can only begin
+            together. Any stagger reintroduces the sequential reading. */}
+        <g data-unfold-index={1} style={{ ["--unfold-delay" as string]: "0ms" }}>
+          {COLUMNS.map((col, i) => (
+            <g key={col.key}>
+              <path
+                id={`m4-column-${col.key}`}
+                d={wobbleRect(
+                  L.colX[i] - L.colWidth / 2,
+                  L.startY,
+                  L.colWidth,
+                  span,
+                  rng,
+                  1.5,
+                  4,
+                )}
+                fill={col.colour}
+                {...ink(rng, 0.3)}
+              />
+            </g>
+          ))}
         </g>
 
-        {/* Strand objects. */}
-        <SpeechBubbles x={spots[0].x} y={spots[0].y} seed="m4-bubbles" idx={1} scale={objScale} />
-        <AlphabetCards x={spots[1].x} y={spots[1].y} seed="m4-cards" idx={2} scale={objScale} />
-        <DocumentStack x={spots[2].x} y={spots[2].y} seed="m4-docs" idx={3} scale={objScale} />
-        <SealedEnvelope x={spots[3].x} y={spots[3].y} seed="m4-envelope" idx={4} scale={objScale} />
-        <Passport x={spots[4].x} y={spots[4].y} seed="m4-passport" idx={5} scale={objScale} />
-        <Stamp x={spots[5].x} y={spots[5].y} seed="m4-stamp" idx={6} scale={objScale} />
+        {/* Column objects — no crossings, each sits on its own column. */}
+        <g data-unfold-index={2} style={{ ["--unfold-delay" as string]: "80ms" }}>
+          <SpeechBubbles {...at(0, 0.18)} seed="m4-bubbles" scale={s} />
+          <AlphabetCards {...at(0, 0.72)} seed="m4-cards" scale={s} />
+        </g>
+        <g data-unfold-index={3} style={{ ["--unfold-delay" as string]: "80ms" }}>
+          <DocumentStack {...at(1, 0.24)} seed="m4-docs" scale={s} />
+          <SealedEnvelope {...at(1, 0.74)} seed="m4-envelope" scale={s} />
+        </g>
+        <g data-unfold-index={4} style={{ ["--unfold-delay" as string]: "80ms" }}>
+          <Passport {...at(2, 0.22)} seed="m4-passport" scale={s} />
+          <Stamp {...at(2, 0.74)} seed="m4-stamp" scale={s} />
+        </g>
 
-        {/* Level marker — rides the Sprache strand, driven by scroll. */}
+        {/* Sprache level marker — rides its column, driven by scroll. */}
         <g ref={markerRef} id="m4-sprache-level-marker">
           <path
             id="m4-sprache-level-marker-body"
             d={wobblePolygon(
-              [[-13, -13], [13, -15], [15, 12], [-11, 14]],
+              [
+                [-L.colWidth / 2 - 9, -9],
+                [L.colWidth / 2 + 9, -11],
+                [L.colWidth / 2 + 10, 9],
+                [-L.colWidth / 2 - 8, 11],
+              ],
               rng,
               1.2,
             )}
@@ -577,7 +435,7 @@ export default function M4Scene({ force, className = "" }: M4SceneProps) {
           />
           <path
             id="m4-sprache-level-marker-notch"
-            d={wobbleLine(-6, -2, 8, -3, rng, 2, 0.7)}
+            d={wobbleLine(-8, 0, 10, -1, rng, 2, 0.7)}
             stroke={PAPER.teal}
             strokeWidth={3.4}
             fill="none"

@@ -306,3 +306,179 @@ export function power2Out(t: number): number {
 }
 
 export const clamp01 = (n: number): number => (n < 0 ? 0 : n > 1 ? 1 : n);
+
+/* ------------------------------------------------------------------ *
+ * CRYSTAL MODE
+ *
+ * The ground: cold, precise, machined. Same seeded 14-facet lattice as paper
+ * mode — a facet occupies the identical polygon in both, which is what lets
+ * the turn read as one surface changing state rather than two surfaces
+ * swapping. Flat stepped tints only: no gradient within a facet, no blur,
+ * no glow, no specular, no fake refraction, and no black outline.
+ * ------------------------------------------------------------------ */
+
+/** Logo colours only. Facets step between these, never blend. */
+const CRYSTAL_BASES = [
+  PAPER.navyDeep,
+  PAPER.navy,
+  PAPER.teal,
+  PAPER.tealLight,
+] as const;
+
+/** Discrete lightness steps — stepped, not continuous. */
+const CRYSTAL_STEPS = [-10, -5, 0, 6, 12] as const;
+
+export type CrystalFacet = {
+  fill: string;
+  /** 0.55-0.8, varied per facet. */
+  opacity: number;
+  /** 1px, lighter than the fill — catching the light, not outlining. */
+  edge: string;
+};
+
+/**
+ * Deterministic crystal treatment per facet index. Derived from the same seed
+ * family as the sheet so it is stable across renders and across modes.
+ */
+/**
+ * Facet edge: reads as the cut catching the light rather than as an outline.
+ *
+ * "Lighter than the fill" alone fails for the pale tints — against the warm
+ * page ground a near-white 1px line is invisible, and at edge-on the whole
+ * field would disappear instead of resolving into lines. So pale fills get a
+ * darker edge and dark fills a lighter one: the edge always separates from
+ * BOTH its own facet and the ground behind it.
+ */
+function catchLightEdge(fill: string): string {
+  const [r, g, b] = hexToRgb(fill);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return shiftLightness(fill, luminance > 0.6 ? -26 : 22);
+}
+
+export function buildCrystalFacets(seed: number, count: number): CrystalFacet[] {
+  const rng = makeRng(seed ^ 0x9e3779b9);
+  return Array.from({ length: count }, () => {
+    const base = CRYSTAL_BASES[Math.floor(rng() * CRYSTAL_BASES.length)];
+    const step = CRYSTAL_STEPS[Math.floor(rng() * CRYSTAL_STEPS.length)];
+    const fill = shiftLightness(base, step);
+    return {
+      fill,
+      opacity: Number((0.55 + rng() * 0.25).toFixed(3)),
+      edge: catchLightEdge(fill),
+    };
+  });
+}
+
+/**
+ * The turn: each facet rotates about its own vertical axis through its
+ * centroid, rendered as scaleX = |cos(angle)| so it stays flat SVG.
+ *
+ *   p 0    flush, coplanar, one plane
+ *   p 0.5  edge-on, each facet a thin line
+ *   p 1    flush again
+ *
+ * abs() rather than raw cos so p=1 returns to an unmirrored flush and the
+ * facets tile exactly again.
+ */
+export function facetTurnScaleX(facetProgress: number): number {
+  const s = Math.abs(Math.cos(clamp01(facetProgress) * Math.PI));
+  // Never fully zero: the 1px edge must survive edge-on so the surface reads
+  // as a field of lines rather than as nothing.
+  return Math.max(s, 0.0012);
+}
+
+/**
+ * Wave axis. Varied per boundary so six turns share a language without being
+ * six copies — an identical left-to-right sweep every time is what makes a
+ * repeated transition read as mechanical.
+ */
+export type TurnAxis = "lr" | "rl" | "tl-br" | "br-tl" | "center";
+
+/** Where a facet sits in the wave, 0 = turns first, 1 = turns last. */
+export function facetAxisPhase(
+  axis: TurnAxis,
+  cx: number,
+  cy: number,
+  width: number,
+  height: number,
+): number {
+  const u = clamp01(cx / Math.max(width, 1));
+  const v = clamp01(cy / Math.max(height, 1));
+  switch (axis) {
+    case "lr":
+      return u;
+    case "rl":
+      return 1 - u;
+    case "tl-br":
+      return (u + v) / 2;
+    case "br-tl":
+      return 1 - (u + v) / 2;
+    case "center": {
+      // Non-directional: the centre goes first and the turn opens outward.
+      const dx = u - 0.5;
+      const dy = v - 0.5;
+      return clamp01(Math.hypot(dx, dy) / Math.SQRT1_2);
+    }
+  }
+}
+
+/**
+ * Spread is the fraction of p the stagger occupies; it maps 1:1 from the
+ * design values in ms (180ms -> 0.18).
+ */
+export function facetTurnProgress(
+  p: number,
+  phase: number,
+  spread = 0.18,
+): number {
+  const s = Math.min(Math.max(spread, 0), 0.6);
+  return clamp01((p - phase * s) / (1 - s));
+}
+
+export const spreadFromMs = (ms: number): number => ms / 1000;
+
+/* ------------------------------------------------------------------ *
+ * Hand-cut contours
+ *
+ * A single cut edge is never one weight. These return the *jittered* points
+ * so the fill and the overlaid stroke segments trace exactly the same edge —
+ * re-running wobblePolygon would re-randomise and the outline would drift off
+ * the shape.
+ * ------------------------------------------------------------------ */
+
+export type Pt = readonly [number, number];
+
+export function wobblePoints(
+  points: readonly Pt[],
+  rng: () => number,
+  amount = 1.6,
+): Pt[] {
+  return points.map(([x, y]) => [
+    x + (rng() * 2 - 1) * amount,
+    y + (rng() * 2 - 1) * amount,
+  ]);
+}
+
+export function pointsToPath(pts: readonly Pt[], close = true): string {
+  const d = pts
+    .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`)
+    .join(" ");
+  return close ? `${d} Z` : d;
+}
+
+/**
+ * Splits a closed contour into `count` overlapping open runs, so each can be
+ * stroked at a different weight. Runs overlap by one point so there is no gap
+ * at the joins.
+ */
+export function contourRuns(pts: readonly Pt[], count = 3): Pt[][] {
+  const n = pts.length;
+  if (n < 3 || count < 2) return [[...pts, pts[0]]];
+  const loop = [...pts, pts[0]];
+  const per = Math.ceil(loop.length / count);
+  const runs: Pt[][] = [];
+  for (let i = 0; i < loop.length - 1; i += per) {
+    runs.push(loop.slice(i, Math.min(i + per + 1, loop.length)));
+  }
+  return runs.filter((r) => r.length > 1);
+}

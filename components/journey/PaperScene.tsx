@@ -20,7 +20,7 @@ import {
   SHADOW_OFFSET,
   SHADOW_OPACITY,
   wobbleRect,
-} from "./paper";
+} from "./surface";
 
 /* ------------------------------------------------------------------ *
  * Viewport variant
