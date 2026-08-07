@@ -204,15 +204,17 @@ export function buildSheet(
   seed: number,
   width: number,
   height: number,
+  cols = 4,
+  rows = 3,
 ): Sheet {
   const rng = makeRng(seed);
-  const cols = 4;
-  const rows = 3;
 
   const cellW = width / cols;
   const cellH = height / rows;
-  const jitterX = cellW * 0.16;
-  const jitterY = cellH * 0.16;
+  // Wider jitter so the tessellation never reads as a grid. Naturally cut,
+  // not computer generated.
+  const jitterX = cellW * 0.3;
+  const jitterY = cellH * 0.3;
 
   // Lattice of (rows+1) x (cols+1) vertices, interior ones jittered.
   const grid: [number, number][][] = [];
@@ -231,8 +233,20 @@ export function buildSheet(
   const cy = height / 2;
   const facets: Facet[] = [];
 
-  // Which cells get split into two triangles.
-  const splitCells = new Set(["1-1", "2-3"]);
+  // Roughly one cell in six is split on a diagonal, to break the quad rhythm.
+  // Seeded, so the same sheet always splits the same cells.
+  const splitCells = new Set<string>();
+  {
+    const pick = makeRng(seed ^ 0x5bf03635);
+    for (let r = 0; r < rows; r += 1) {
+      for (let c = 0; c < cols; c += 1) {
+        // Split rate itself varies across the sheet, so runs of quads and
+        // runs of triangles cluster the way a real cut would.
+        const local = 0.16 + 0.26 * Math.abs(Math.sin(r * 1.7 + c * 0.9));
+        if (pick() < local) splitCells.add(`${r}-${c}`);
+      }
+    }
+  }
 
   const addFacet = (pts: [number, number][], index: number) => {
     const centroid: [number, number] = [
@@ -481,4 +495,208 @@ export function contourRuns(pts: readonly Pt[], count = 3): Pt[][] {
     runs.push(loop.slice(i, Math.min(i + per + 1, loop.length)));
   }
   return runs.filter((r) => r.length > 1);
+}
+
+
+/**
+ * Facet counts for a fullscreen lattice.
+ *
+ * 14 facets is a panel-scale count and reads as sparse edge to edge. Targets
+ * facets of roughly 180-260px on their long edge, so a 1440x900 viewport lands
+ * around 7x4 cells (~30 facets after diagonal splits). Facets stay large and
+ * irregular — this scales the count, it does not subdivide into detail.
+ */
+export function latticeForViewport(
+  width: number,
+  height: number,
+  target = 118,
+): { cols: number; rows: number } {
+  return {
+    cols: Math.max(3, Math.round(width / target)),
+    rows: Math.max(2, Math.round(height / target)),
+  };
+}
+
+/**
+ * Fullscreen phase timeline. Maps scroll progress p to turn progress, where
+ * turn 0 = flush, 0.5 = edge-on, 1 = flush again.
+ *
+ *   0.00-0.15  flush, phase text settled
+ *   0.15-0.45  turning toward edge-on
+ *   0.45-0.55  HOLD edge-on — the midpoint the sequence exists for
+ *   0.55-0.85  continuing to flush, same facets, no swapped geometry
+ *   0.85-1.00  next phase text arrives
+ */
+export function phaseTurnProgress(p: number): number {
+  const c = clamp01(p);
+  if (c <= 0.15) return 0;
+  if (c < 0.45) return ((c - 0.15) / 0.3) * 0.5;
+  if (c <= 0.55) return 0.5;
+  if (c < 0.85) return 0.5 + ((c - 0.55) / 0.3) * 0.5;
+  return 1;
+}
+
+/* ------------------------------------------------------------------ *
+ * CRYSTAL MATERIAL
+ *
+ * One object, one light. Every facet is a different response to the SAME
+ * lighting environment rather than a different colour: a single sapphire base
+ * modulated by how much a facet faces the light, plus a small cool/warm shift.
+ *
+ * Light is upper-left, fixed. Every gradient runs along that axis, so
+ * highlights and falloff agree across the whole surface — that consistency is
+ * what sells it as one solid material instead of tinted polygons.
+ *
+ * Deliberately cheap: static gradients declared once in <defs>, no filters, no
+ * blur, no per-frame repaints of the fills.
+ * ------------------------------------------------------------------ */
+
+/**
+ * The palette ramp.
+ *
+ * Every colour in the material is a point on the line walking navyDeep ->
+ * navy -> teal -> tealLight. Nothing is mixed in from outside the logo set, so
+ * no new blue, purple or cyan can enter: a facet is only ever "further along
+ * the CareRadar ramp", which is what makes the whole field read as one lit
+ * object rather than many tinted polygons.
+ */
+const ICE = "#EAF7F6";
+const RAMP = [PAPER.navy, PAPER.teal, PAPER.tealLight, ICE] as const;
+
+function mixHex(a: string, b: string, t: number): string {
+  const [ar, ag, ab] = hexToRgb(a);
+  const [br, bg, bb] = hexToRgb(b);
+  const to2 = (n: number) =>
+    Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0");
+  return `#${to2(ar + (br - ar) * t)}${to2(ag + (bg - ag) * t)}${to2(ab + (bb - ab) * t)}`;
+}
+
+function paletteRamp(t: number): string {
+  const c = clamp01(t) * (RAMP.length - 1);
+  const i = Math.min(Math.floor(c), RAMP.length - 2);
+  return mixHex(RAMP[i], RAMP[i + 1], c - i);
+}
+
+export type CrystalMaterial = {
+  /** Gradient stops, upper-left to lower-right. */
+  hi: string;
+  mid: string;
+  lo: string;
+  /** Gradient axis, jittered a little per facet so it is not procedural. */
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  fillOpacity: number;
+  /** Polished edge — brighter than the faces it separates. */
+  edge: string;
+  edgeOpacity: number;
+  /** Specular catch on the light-facing side only. */
+  specular: string;
+  specularOpacity: number;
+  specularWidth: number;
+  highlightPhase: number;
+};
+
+/**
+ * Light direction, upper-left, in SVG coordinates (y grows downward).
+ * Normalised so the dot product below stays in -1..1.
+ */
+const LIGHT = { x: -0.707, y: -0.707 } as const;
+
+export function buildCrystalMaterial(
+  seed: number,
+  facets: readonly Facet[],
+  width: number,
+  height: number,
+): CrystalMaterial[] {
+  const rng = makeRng(seed ^ 0x7f4a7c15);
+
+  return facets.map((f) => {
+    const [cx, cy] = f.centroid;
+    const u = cx / Math.max(width, 1);
+    const v = cy / Math.max(height, 1);
+
+    const px = u * 2 - 1;
+    const py = v * 2 - 1;
+
+    /* Pseudo-normal. The seeded tilt is deliberately strong relative to the
+       positional term: in real crystal a facet's angle, not its location,
+       decides what it catches, so a face can fall into shadow with a lit one
+       beside it. That is what stops the lighting reading as a smooth ramp
+       painted across the field. */
+    const tiltX = (rng() * 2 - 1) * 0.95;
+    const tiltY = (rng() * 2 - 1) * 0.95;
+    const nx = px * 0.3 + tiltX;
+    const ny = py * 0.3 + tiltY;
+    const len = Math.hypot(nx, ny) || 1;
+    const facing = clamp01(0.5 + 0.5 * ((nx / len) * LIGHT.x + (ny / len) * LIGHT.y));
+
+    // Microscopic irregularity — Leica, not scratched.
+    const grit = (rng() * 2 - 1) * 0.03;
+
+    /* Sits high on the ramp: pale aqua through cool white, with the navy end
+       reserved for the few faces genuinely turned away from the light. */
+    const t = clamp01(0.42 + facing * 0.5 + grit);
+
+    return {
+      hi: paletteRamp(t + 0.14),
+      mid: paletteRamp(t),
+      lo: paletteRamp(t - 0.13),
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+      /* Thick laminated glass: translucent enough that the light layers
+         beneath read through as internal scattering. */
+      fillOpacity: Number((0.62 + facing * 0.2 + rng() * 0.05).toFixed(3)),
+      edge: paletteRamp(Math.min(1, t + 0.22)),
+      edgeOpacity: Number((0.3 + facing * 0.34).toFixed(3)),
+      specular: "#FBFFFE",
+      specularOpacity: Number((facing * facing * 0.16).toFixed(3)),
+      specularWidth: Number((0.7 + facing * 0.85).toFixed(2)),
+      /* Where this facet sits in the travelling highlight's path. Diagonal,
+         so the front sweeps with the light rather than across it. */
+      highlightPhase: Number((((u * 0.62 + v * 0.38) + rng() * 0.05) % 1).toFixed(4)),
+    };
+  });
+}
+
+/**
+ * Travelling highlight.
+ *
+ * A narrow front sweeps across the crystal; only facets it is currently
+ * passing catch a hard specular. The band is ~7% wide and wraps, so roughly
+ * 5-10% of edges are lit at any instant — they appear, travel, fade, and
+ * reappear elsewhere. No sparkle layer and nothing random: the same facet
+ * always lights at the same point in the sweep.
+ */
+export function travellingHighlight(
+  base: number,
+  scaleX: number,
+  phase: number,
+  front: number,
+): number {
+  let d = Math.abs(phase - front);
+  if (d > 0.5) d = 1 - d;
+  const band = Math.max(0, 1 - d / 0.07);
+  // Sharp, not soft: a thin knife rather than a bloom.
+  const knife = band * band * band;
+
+  /* Grazing angles catch harder — as a facet turns edge-on its normal swings
+     across the light. Kept modest so it never lights the whole field. */
+  const graze = Math.pow(1 - clamp01(scaleX), 3) * 0.35;
+
+  return clamp01(base + knife * 0.95 + graze);
+}
+
+/**
+ * Facet opacity through the turn.
+ *
+ * At the midpoint the faces surrender their fill rather than shrinking into
+ * hard bars — the crystal dissolves into light and reforms.
+ */
+export function dissolveOpacity(base: number, scaleX: number): number {
+  const s = clamp01(scaleX);
+  return Number((base * (0.12 + 0.88 * Math.pow(s, 0.55))).toFixed(3));
 }
