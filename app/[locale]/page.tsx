@@ -9,9 +9,10 @@ const pageText = {
   en: {
     hero: {
       eyebrow: "International Nursing Pathways",
-      title: "A clearer route from nursing qualification to Germany.",
+      title:
+        "Recruiting qualified, German-speaking nurses from India for German healthcare.",
       description:
-        "CareRadar helps nurses understand their pathway to working in Germany while supporting employers and partners with a structured, ethical, and human recruitment approach.",
+        "CareRadar supports healthcare providers throughout the entire recruitment journey—from candidate selection and language preparation to professional recognition, relocation, and successful integration into Germany.",
       primary: "View Process",
       secondary: "Create Account",
       note:
@@ -131,9 +132,10 @@ const pageText = {
   de: {
     hero: {
       eyebrow: "Internationale Pflegelaufbahn",
-      title: "Ein klarer Weg von Ihrer Pflegequalifikation zur Karriere in Deutschland.",
+      title:
+        "Qualifizierte, deutschsprachige Pflegefachkräfte aus Indien für das deutsche Gesundheitswesen.",
       description:
-        "CareRadar hilft Pflegekräften, ihren Weg zur Arbeit in Deutschland zu verstehen, und unterstützt Arbeitgeber sowie Partner mit einem strukturierten, ethischen und menschlichen Rekrutierungsansatz.",
+        "CareRadar unterstützt Gesundheitseinrichtungen während des gesamten Rekrutierungsprozesses – von der Auswahl geeigneter Kandidatinnen und Kandidaten über die Sprachvorbereitung bis hin zur beruflichen Anerkennung, dem Umzug und der erfolgreichen Integration in Deutschland.",
       primary: "Prozess ansehen",
       secondary: "Konto erstellen",
       note:
