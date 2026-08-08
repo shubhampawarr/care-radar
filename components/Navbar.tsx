@@ -154,7 +154,7 @@ export default function Navbar() {
               <Wordmark />
             </p>
 
-            <p className="mt-0.5 text-[9px] font-semibold lowercase tracking-[0.08em] text-slate-400 sm:text-[10px] md:text-[10px] md:tracking-[0.12em]">
+            <p className="mt-0.5 text-[7px]! font-semibold lowercase tracking-[0.08em] text-slate-400 sm:text-[8px]! md:text-[8px]! md:tracking-[0.12em]">
               {text.tagline}
             </p>
           </div>
