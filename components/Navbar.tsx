@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import Wordmark from "@/components/Wordmark";
 
 const navText = {
   en: {
@@ -150,10 +151,10 @@ export default function Navbar() {
 
           <div className="min-w-0 leading-none">
             <p className="truncate text-lg font-semibold tracking-tight text-[#061f3d] md:text-xl">
-              Care<span className="text-[#08a99d]">Radar</span>
+              <Wordmark />
             </p>
 
-            <p className="mt-1.5 text-[9px] font-semibold lowercase tracking-[0.08em] text-slate-400 sm:text-[10px] md:text-[10px] md:tracking-[0.12em]">
+            <p className="mt-0.5 text-[9px] font-semibold lowercase tracking-[0.08em] text-slate-400 sm:text-[10px] md:text-[10px] md:tracking-[0.12em]">
               {text.tagline}
             </p>
           </div>

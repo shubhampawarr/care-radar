@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Wordmark from "@/components/Wordmark";
 
 const footerText = {
   en: {
@@ -85,7 +86,7 @@ export default function Footer() {
             </div>
             <div>
               <p className="text-lg font-semibold tracking-tight">
-                Care<span className="text-[#10c4b6]">Radar</span>
+                <Wordmark tone="dark" />
               </p>
               <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                 {text.tagline}
