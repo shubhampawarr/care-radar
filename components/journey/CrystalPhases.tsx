@@ -10,35 +10,43 @@ import {
 } from "react";
 import { useJourneyVariant } from "./PaperScene";
 import {
-  buildCrystalMaterial,
-  buildSheet,
-  type CrystalMaterial,
   clamp01,
   facetAxisPhase,
-  facetTurnScaleX,
-  travellingHighlight,
-  dissolveOpacity,
-  latticeForViewport,
   phaseTurnProgress,
   spreadFromMs,
   type TurnAxis,
 } from "./surface";
+import {
+  buildCrystalBody,
+  buildFrame,
+  cellCountForViewport,
+  css,
+  GLOW,
+  GROUND,
+  makeCamera,
+  type Camera,
+  type CrystalBody,
+} from "./crystal-body";
 
 /* ------------------------------------------------------------------ *
- * CrystalPhases — fullscreen phase transition.
+ * CrystalPhases — one crystalline body, fracturing under scroll.
  *
- * GEOMETRY RESOLUTION
- * Facets rotate about their own vertical axis AND never separate cannot both
- * hold: adjacent facets on different axes must open at their shared edge. The
- * resolution is that facets NEVER TRANSLATE. Each holds its grid cell and only
- * scales about its own centroid, so the eye reads one surface turning even as
- * gaps open. The gaps are the midpoint — "hundreds of thin crystalline edges"
- * IS a gapped lattice seen edge-on.
+ * WHAT THIS IS
+ * A vertical slice presented from a much deeper crystal, matched to
+ * reference/blue-crystal-target.png: a dense triangulated mass on a near-black
+ * navy ground, lit hard from the upper left, with bright cut lines and hard
+ * selective glints where edges converge.
  *
- * Hard rules held here: no translation ever, no facet leaves its cell, no
- * explosion, no drift, no floating tiles, no 3D camera, no background rotation.
- * The transform below is a pure X scale about the facet's own centroid; the
- * two translates cancel exactly, which the centroid-invariance test asserts.
+ * The facets are cells of ONE fractured rectangle, and each cell is a shallow
+ * pyramid fan-triangulated from a raised apex. The cell is what hinges; its
+ * triangles are internal faceting and never move independently. That is what
+ * gives many small facets at many orientations while the body stays one piece.
+ *
+ * WHAT IS RETAINED
+ * The scroll architecture is unchanged: the same ScrollTrigger pin, the same
+ * phaseTurnProgress timeline with its edge-on hold, the same PhaseTransition
+ * API of axis + spreadMs, the same panel fade schedule, the same reduced-motion
+ * and mobile fallbacks, and the copy and layout untouched.
  * ------------------------------------------------------------------ */
 
 export type Phase = {
@@ -104,9 +112,6 @@ function Panel({
         data-panel-bg=""
         className="pointer-events-none absolute -inset-x-[85%] -inset-y-[190%]"
         style={{
-          // Falloff runs off-canvas on every side, so there is no visible
-          // boundary anywhere on screen — it reads as the crystal deepening
-          // under the copy, not as a shape laid on top of it.
           background:
             "radial-gradient(46% 34% at 34% 50%, rgba(3,20,32,0.95) 0%, rgba(3,20,32,0.91) 26%, rgba(3,20,32,0.78) 44%, rgba(3,20,32,0.5) 60%, rgba(3,20,32,0.2) 76%, rgba(3,20,32,0) 90%)",
         }}
@@ -118,114 +123,144 @@ function Panel({
   );
 }
 
+/* ------------------------------------------------------------------ *
+ * Rendering
+ * ------------------------------------------------------------------ */
 
 /**
- * Gradient defs for one crystal. Declared once, never touched per frame —
- * the light is a static environment, so the fills cost nothing to animate.
- */
-function CrystalDefs({ uid }: { uid: string }) {
-  return (
-    <defs>
-      {/* The light environment. These sit BENEATH the translucent facets, so
-          they read as light inside the material rather than as a wash over it.
-          Three static layers replace what used to be one gradient per facet:
-          the panel gains continuous internal light AND stops re-rasterising
-          76 gradients every frame. */}
-      <linearGradient id={`wash-${uid}`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-        <stop offset="34%" stopColor="#DCF3F1" stopOpacity="0.72" />
-        <stop offset="68%" stopColor="#8FD6D2" stopOpacity="0.5" />
-        <stop offset="100%" stopColor="#2E7C8C" stopOpacity="0.42" />
-      </linearGradient>
-
-      {/* Internal scattering: light entering upper-left and diffusing through
-          the body of the crystal. Gives thickness without any blur. */}
-      <radialGradient id={`scatter-${uid}`} cx="0.3" cy="0.24" r="0.85">
-        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.72" />
-        <stop offset="42%" stopColor="#CFEFEC" stopOpacity="0.32" />
-        <stop offset="100%" stopColor="#7FC6C6" stopOpacity="0" />
-      </radialGradient>
-
-      {/* A second, deeper bounce — the far side of a thick panel. */}
-      <radialGradient id={`bounce-${uid}`} cx="0.78" cy="0.82" r="0.7">
-        <stop offset="0%" stopColor="#BFE9E4" stopOpacity="0.3" />
-        <stop offset="100%" stopColor="#BFE9E4" stopOpacity="0" />
-      </radialGradient>
-
-      <radialGradient id={`sheen-${uid}`}>
-        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.34" />
-        <stop offset="55%" stopColor="#DFF6F2" stopOpacity="0.13" />
-        <stop offset="100%" stopColor="#DFF6F2" stopOpacity="0" />
-      </radialGradient>
-    </defs>
-  );
-}
-
-/** The light layers the facets sit on top of. */
-function CrystalLight({
-  uid,
-  w,
-  h,
-}: {
-  uid: string;
-  w: number;
-  h: number;
-}) {
-  return (
-    <g aria-hidden="true">
-      <rect width={w} height={h} fill={`url(#wash-${uid})`} />
-      <rect width={w} height={h} fill={`url(#scatter-${uid})`} />
-      <rect width={w} height={h} fill={`url(#bounce-${uid})`} />
-    </g>
-  );
-}
-
-/**
- * One facet: a flat tone from the palette ramp, a polished edge, and a
- * specular that only fires when the travelling highlight passes it.
+ * The ground the crystal sits in.
  *
- * The fill is flat by design. The internal gradient a viewer reads comes from
- * the light layers showing through the translucent face — which is both how
- * real laminated glass behaves and far cheaper to repaint while scaling.
+ * Near-black navy with a cold bloom set upper-left of centre, behind the mass
+ * and agreeing with the key light. The reference reads as a bright crystal on a
+ * dark field; painting a bright ground and darkening the facets against it is
+ * the same picture inverted, and it is why the previous pass looked like pale
+ * glass rather than crystal.
  */
-function CrystalFacets({
-  sheet,
-  material,
-}: {
-  sheet: ReturnType<typeof buildSheet>;
-  material: readonly CrystalMaterial[];
-}) {
-  return (
-    <>
-      {sheet.facets.map((f, i) => {
-        const m = material[i];
-        return (
-          <g key={f.id} data-turn-facet={i} id={`crystal-${f.id}`}>
-            <path
-              data-face=""
-              d={f.d}
-              fill={m.mid}
-              fillOpacity={m.fillOpacity}
-              stroke={m.edge}
-              strokeOpacity={m.edgeOpacity}
-              strokeWidth={0.9}
-              vectorEffect="non-scaling-stroke"
-            />
-            <path
-              data-spec=""
-              d={f.d}
-              fill="none"
-              stroke={m.specular}
-              strokeOpacity={m.specularOpacity}
-              strokeWidth={m.specularWidth}
-              vectorEffect="non-scaling-stroke"
-            />
-          </g>
-        );
-      })}
-    </>
-  );
+function paintGround(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  openness: number,
+) {
+  ctx.fillStyle = css(GROUND);
+  ctx.fillRect(0, 0, w, h);
+
+  // Must agree with keyFalloff(): the bloom behind the mass and the light on
+  // its facets are the same source, so they cannot sit in different places.
+  const cx = w * 0.63;
+  const cy = h * 0.3;
+  const r = Math.max(w, h) * 0.78;
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  // Swells slightly as the body opens: more of the interior is exposed.
+  g.addColorStop(0, css(GLOW, 0.5 + openness * 0.14));
+  g.addColorStop(0.45, css(GLOW, 0.2));
+  g.addColorStop(1, css(GLOW, 0));
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
 }
+
+/** Edge brightness buckets. Batching lets ~1,400 cut lines cost a handful of
+ *  strokes per frame instead of one stroke each. */
+const EDGE_BUCKETS = 6;
+
+/**
+ * One frame.
+ *
+ * Faces first, back to front, so the interior mass reads behind the presented
+ * facets. Then the cut lines additively, so crossings and clusters build up the
+ * way converging edges do in the reference. Then the glints last.
+ */
+function drawFrame(
+  ctx: CanvasRenderingContext2D,
+  body: CrystalBody,
+  cam: Camera,
+  w: number,
+  h: number,
+  turn: number,
+  axis: TurnAxis,
+  spread: number,
+) {
+  const openness = Math.sin(clamp01(turn) * Math.PI);
+  paintGround(ctx, w, h, openness);
+
+  const frame = buildFrame(
+    body,
+    cam,
+    turn,
+    (u, v) =>
+      facetAxisPhase(axis, u * body.width, v * body.height, body.width, body.height),
+    spread,
+  );
+
+  ctx.globalCompositeOperation = "source-over";
+  for (const f of frame.faces) {
+    ctx.beginPath();
+    ctx.moveTo(f.pts[0].x, f.pts[0].y);
+    ctx.lineTo(f.pts[1].x, f.pts[1].y);
+    ctx.lineTo(f.pts[2].x, f.pts[2].y);
+    ctx.closePath();
+    ctx.fillStyle = css(f.rgb);
+    ctx.fill();
+  }
+
+  /* Additive, so the cut lines read as light rather than as ink. Where many
+     edges converge the accumulation itself produces the bright node, which is
+     how the reference's stars are made. */
+  ctx.globalCompositeOperation = "lighter";
+  ctx.lineCap = "round";
+
+  for (let b = 0; b < EDGE_BUCKETS; b += 1) {
+    const lo = b / EDGE_BUCKETS;
+    const hi = (b + 1) / EDGE_BUCKETS;
+    const mid = (lo + hi) / 2;
+
+    ctx.beginPath();
+    let any = false;
+    for (const e of frame.edges) {
+      if (e.power < lo || e.power >= hi) continue;
+      ctx.moveTo(e.ax, e.ay);
+      ctx.lineTo(e.bx, e.by);
+      any = true;
+    }
+    if (!any) continue;
+
+    ctx.strokeStyle = css([0.62 + mid * 0.36, 0.83 + mid * 0.16, 0.94 + mid * 0.06]);
+    ctx.globalAlpha = 0.02 + Math.pow(mid, 2.2) * 0.92;
+    ctx.lineWidth = 0.3 + Math.pow(mid, 1.6) * 1.7;
+    ctx.stroke();
+  }
+
+  // Hard, selective stars where a fan converges under the key.
+  for (const g of frame.glints) {
+    const r = 5 + g.power * 26;
+    const rg = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, r);
+    rg.addColorStop(0, `rgba(255,255,255,${(g.power * 0.7).toFixed(3)})`);
+    rg.addColorStop(0.3, `rgba(196,232,246,${(g.power * 0.22).toFixed(3)})`);
+    rg.addColorStop(1, "rgba(150,205,232,0)");
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = rg;
+    ctx.beginPath();
+    ctx.arc(g.x, g.y, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    const arm = r * 1.5;
+    ctx.strokeStyle = `rgba(235,248,255,${(g.power * 0.5).toFixed(3)})`;
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(g.x - arm, g.y);
+    ctx.lineTo(g.x + arm, g.y);
+    ctx.moveTo(g.x, g.y - arm * 0.72);
+    ctx.lineTo(g.x, g.y + arm * 0.72);
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+/* ------------------------------------------------------------------ *
+ * Component
+ * ------------------------------------------------------------------ */
 
 export default function CrystalPhases({
   seed,
@@ -233,22 +268,22 @@ export default function CrystalPhases({
   transitions,
 }: CrystalPhasesProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const sheenRef = useRef<SVGGElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const staticCanvases = useRef<(HTMLCanvasElement | null)[]>([]);
   const panel0Ref = useRef<HTMLDivElement>(null);
   const panel1Ref = useRef<HTMLDivElement>(null);
   const panel2Ref = useRef<HTMLDivElement>(null);
 
-  // Below 768px and under reduced motion: no pin, no turn. Phases stack and
-  // scroll normally, crystal renders flush and static, copy cross-fades.
-  // Measured, not guessed: fullscreen makes the 360px gap problem worse.
+  // Below 768px and under reduced motion: no pin, no fracture. Phases stack
+  // and scroll normally, and the crystal renders as a still of the same body.
   const { isMobile, reducedMotion, isClient } = useJourneyVariant();
   const staticPath = isMobile || reducedMotion || !isClient;
 
   const [viewport, setViewport] = useState({ w: 1440, h: 900 });
 
   useEffect(() => {
-    const read = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    const read = () =>
+      setViewport({ w: window.innerWidth, h: window.innerHeight });
     read();
     let t: number | undefined;
     const onResize = () => {
@@ -262,186 +297,105 @@ export default function CrystalPhases({
     };
   }, []);
 
-  const { sheet, crystal } = useMemo(() => {
-    const { cols, rows } = latticeForViewport(viewport.w, viewport.h);
-    const s = buildSheet(seedFromStringLocal(seed), viewport.w, viewport.h, cols, rows);
-    return {
-      sheet: s,
-      crystal: buildCrystalMaterial(
+  const body = useMemo(
+    () =>
+      buildCrystalBody(
         seedFromStringLocal(seed),
-        s.facets,
         viewport.w,
         viewport.h,
+        cellCountForViewport(viewport.w),
       ),
-    };
-  }, [seed, viewport.w, viewport.h]);
-
-  const material = crystal;
-
-  /* Node cache. Querying the DOM per facet per frame cost ~77 lookups every
-     frame once the lattice went to 76 facets; resolved once here instead. */
-  const nodesRef = useRef<
-    {
-      g: SVGGElement;
-      face: SVGPathElement | null;
-      spec: SVGPathElement | null;
-      cx: number;
-      cy: number;
-    }[]
-  >([]);
-
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) {
-      nodesRef.current = [];
-      return;
-    }
-    nodesRef.current = Array.from(
-      svg.querySelectorAll<SVGGElement>("[data-turn-facet]"),
-    ).map((g) => {
-      const i = Number(g.dataset.turnFacet);
-      const f = sheet.facets[i];
-      return {
-        g,
-        face: g.querySelector<SVGPathElement>("[data-face]"),
-        spec: g.querySelector<SVGPathElement>("[data-spec]"),
-        cx: f ? f.centroid[0] : 0,
-        cy: f ? f.centroid[1] : 0,
-      };
-    });
-    // staticPath is in the deps deliberately: useSyncExternalStore serves the
-    // SERVER snapshot during hydration, so the static path renders first and
-    // the pinned path then mounts a DIFFERENT <svg>. Without this the cache
-    // stays bound to the discarded nodes and no facet ever turns.
-  }, [sheet.facets, staticPath]);
-
-  const applyProgress = useCallback(
-    (T: number) => {
-      const svg = svgRef.current;
-      if (!svg) return;
-
-      // Two transitions across the pin. Local p runs 0..1 within each.
-      const which = T < 0.5 ? 0 : 1;
-      const p = clamp01(which === 0 ? T * 2 : (T - 0.5) * 2);
-      const cfg = transitions[which];
-      const turn = phaseTurnProgress(p);
-      const spread = spreadFromMs(cfg.spreadMs);
-
-      /* The highlight front travels around the crystal as it turns — light
-         moving over the object, not an effect layered on top. */
-      const front = (turn * 1.35 + 0.12) % 1;
-
-      const cache = nodesRef.current;
-      for (let i = 0; i < cache.length; i += 1) {
-        const { g: node, face, spec, cx, cy } = cache[i];
-        const phase = facetAxisPhase(cfg.axis, cx, cy, sheet.width, sheet.height);
-        // Stagger shifts WHEN a facet turns, never where it sits.
-        const local = clamp01((turn - phase * spread) / (1 - spread));
-        const sx = facetTurnScaleX(local);
-        node.setAttribute(
-          "transform",
-          `translate(${cx.toFixed(3)},0) scale(${sx.toFixed(5)},1) translate(${(-cx).toFixed(3)},0)`,
-        );
-
-        /* Optics only — the transform above is untouched. As a facet swings
-           toward edge-on its edge catches the light harder, so the faces
-           dissolve into thin luminous lines at the midpoint rather than
-           thinning into bars. One attribute per facet per frame. */
-        const m = material[i];
-        if (m) {
-          if (spec) {
-            spec.setAttribute(
-              "stroke-opacity",
-              travellingHighlight(m.specularOpacity, sx, m.highlightPhase, front).toFixed(3),
-            );
-          }
-          // Faces surrender their fill at the midpoint: the crystal dissolves
-          // into light instead of collapsing into bars.
-          if (face) {
-            face.setAttribute(
-              "fill-opacity",
-              String(dissolveOpacity(m.fillOpacity, sx)),
-            );
-          }
-        }
-      }
-
-      /* Copy leaves by p=0.40 and the panel clears just after, at 0.45 — so
-         nothing is on screen across the edge-on hold. Arriving, the panel
-         lands first at 0.80 and the copy follows from 0.85. */
-      const textOut = 1 - clamp01((p - 0.15) / 0.25);
-      const bgOut = 1 - clamp01((p - 0.4) / 0.05);
-      const bgIn = clamp01((p - 0.8) / 0.05);
-      const textIn = clamp01((p - 0.85) / 0.15);
-
-      const set = (idx: 0 | 1 | 2, textO: number, bgO: number) => {
-        const el =
-          idx === 0
-            ? panel0Ref.current
-            : idx === 1
-              ? panel1Ref.current
-              : panel2Ref.current;
-        if (!el) return;
-        const bg = el.querySelector<HTMLElement>("[data-panel-bg]");
-        const tx = el.querySelector<HTMLElement>("[data-panel-text]");
-        el.style.visibility = bgO <= 0.002 && textO <= 0.002 ? "hidden" : "visible";
-        if (bg) bg.style.opacity = bgO.toFixed(3);
-        if (tx) tx.style.opacity = textO.toFixed(3);
-        // Drift is capped at TEXT_DRIFT px left, and never vertical.
-        el.style.transform = `translate(calc(-50% + ${(-TEXT_DRIFT * (1 - textO)).toFixed(1)}px), -50%)`;
-      };
-
-      set(0, which === 0 ? textOut : 0, which === 0 ? bgOut : 0);
-      set(1, which === 0 ? textIn : textOut, which === 0 ? bgIn : bgOut);
-      set(2, which === 1 ? textIn : 0, which === 1 ? bgIn : 0);
-    },
-    [sheet.facets, sheet.width, sheet.height, transitions, material],
+    [seed, viewport.w, viewport.h],
   );
 
-  const applyRef = useRef(applyProgress);
-  useEffect(() => {
-    applyRef.current = applyProgress;
-  }, [applyProgress]);
+  const camera = useMemo(
+    () => makeCamera(viewport.w, viewport.h),
+    [viewport.w, viewport.h],
+  );
 
-  /* Static path: flush facets, first phase visible, no pin. */
+  /* Scroll writes here; the render loop reads it. Decoupling the two is what
+     keeps painting continuous — the canvas repaints on its own cadence
+     regardless of how scroll events arrive. */
+  const progressRef = useRef(0);
+
+  const sizeCanvas = useCallback(
+    (canvas: HTMLCanvasElement) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth || viewport.w;
+      const h = canvas.clientHeight || viewport.h;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w, h };
+    },
+    [viewport.w, viewport.h],
+  );
+
+  /* ---------------- static still (mobile / reduced motion) ---------------- */
   useEffect(() => {
     if (!staticPath) return;
-    const svg = svgRef.current;
-    if (!svg) return;
-    svg.querySelectorAll<SVGPathElement>("[data-turn-facet]").forEach((n) => {
-      n.removeAttribute("transform");
+    staticCanvases.current.forEach((canvas, i) => {
+      if (!canvas) return;
+      const { ctx, w, h } = sizeCanvas(canvas);
+      if (!ctx) return;
+      const cam = { ...camera, cx: w / 2, cy: h / 2 };
+      // Each section holds the same body at a slightly different rest state,
+      // so the object stays continuous down the page without animating.
+      drawFrame(ctx, body, cam, w, h, i * 0.05, transitions[0].axis, 0.2);
     });
-  }, [staticPath, sheet.facets.length]);
+  }, [staticPath, body, camera, sizeCanvas, transitions]);
 
-  /* The stationary state.
-   *
-   * Geometry never moves here — this drifts the light only. One <g> with one
-   * transform and a slow opacity swell, on a Lissajous path so it never
-   * visibly repeats. Amplitude is a few percent of the viewport over ~40s:
-   * the surface stops reading as frozen without ever pulling attention off
-   * the copy. Separate from the ScrollTrigger loop and untouched by it. */
+  /* ---------------- pinned render loop ---------------- */
   useEffect(() => {
     if (staticPath) return;
-    const node = sheenRef.current;
-    if (!node) return;
+    const canvas = canvasRef.current;
+    const section = sectionRef.current;
+    if (!canvas || !section) return;
 
+    let sized = sizeCanvas(canvas);
     let raf: number | null = null;
     const t0 = performance.now();
 
-    const drift = (now: number) => {
-      const t = (now - t0) / 1000;
-      const x = Math.sin(t * 0.152) * 5.2 + Math.sin(t * 0.071) * 2.6;
-      const y = Math.cos(t * 0.117) * 3.4 + Math.sin(t * 0.049) * 1.8;
-      const swell = 0.86 + Math.sin(t * 0.094) * 0.14;
-      node.setAttribute("transform", `translate(${x.toFixed(2)},${y.toFixed(2)})`);
-      node.setAttribute("opacity", swell.toFixed(3));
-      raf = requestAnimationFrame(drift);
+    const frame = (now: number) => {
+      const { ctx, w, h } = sized;
+      if (ctx) {
+        const time = (now - t0) / 1000;
+        const T = progressRef.current;
+        const which = T < 0.5 ? 0 : 1;
+        const p = clamp01(which === 0 ? T * 2 : (T - 0.5) * 2);
+        const cfg = transitions[which];
+
+        /* The only ambient motion. The camera breathes by about half a degree
+           over ~50 seconds; the crystal itself never moves at rest. Moving the
+           observer rather than the object is both more physical and far less
+           distracting than animating the material. */
+        const cam: Camera = {
+          ...camera,
+          cx: w / 2,
+          cy: h / 2,
+          yaw: camera.yaw + Math.sin(time * 0.126) * 0.011,
+          pitch: camera.pitch + Math.cos(time * 0.098) * 0.006,
+        };
+
+        drawFrame(
+          ctx,
+          body,
+          cam,
+          w,
+          h,
+          phaseTurnProgress(p),
+          cfg.axis,
+          spreadFromMs(cfg.spreadMs),
+        );
+      }
+      raf = requestAnimationFrame(frame);
     };
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (e.isIntersecting && raf === null) raf = requestAnimationFrame(drift);
+          if (e.isIntersecting && raf === null) raf = requestAnimationFrame(frame);
           else if (!e.isIntersecting && raf !== null) {
             cancelAnimationFrame(raf);
             raf = null;
@@ -450,16 +404,59 @@ export default function CrystalPhases({
       },
       { rootMargin: "10% 0px" },
     );
-    const section = sectionRef.current;
-    if (section) io.observe(section);
+    io.observe(section);
+
+    let rt: number | undefined;
+    const onResize = () => {
+      window.clearTimeout(rt);
+      rt = window.setTimeout(() => {
+        sized = sizeCanvas(canvas);
+      }, 150);
+    };
+    window.addEventListener("resize", onResize);
 
     return () => {
       io.disconnect();
+      window.clearTimeout(rt);
+      window.removeEventListener("resize", onResize);
       if (raf !== null) cancelAnimationFrame(raf);
     };
-  }, [staticPath]);
+  }, [staticPath, body, camera, sizeCanvas, transitions]);
 
-  /* Pinned sequence. Scroll drives timeline progress only. */
+  /* Copy schedule. Unchanged: copy leaves by p=0.40 and the panel clears at
+     0.45, so nothing is on screen across the edge-on hold. Arriving, the panel
+     lands at 0.80 and the copy follows from 0.85. */
+  const applyCopy = useCallback((T: number) => {
+    const which = T < 0.5 ? 0 : 1;
+    const p = clamp01(which === 0 ? T * 2 : (T - 0.5) * 2);
+
+    const textOut = 1 - clamp01((p - 0.15) / 0.25);
+    const bgOut = 1 - clamp01((p - 0.4) / 0.05);
+    const bgIn = clamp01((p - 0.8) / 0.05);
+    const textIn = clamp01((p - 0.85) / 0.15);
+
+    const set = (idx: 0 | 1 | 2, textO: number, bgO: number) => {
+      const el =
+        idx === 0
+          ? panel0Ref.current
+          : idx === 1
+            ? panel1Ref.current
+            : panel2Ref.current;
+      if (!el) return;
+      const bg = el.querySelector<HTMLElement>("[data-panel-bg]");
+      const tx = el.querySelector<HTMLElement>("[data-panel-text]");
+      el.style.visibility = bgO <= 0.002 && textO <= 0.002 ? "hidden" : "visible";
+      if (bg) bg.style.opacity = bgO.toFixed(3);
+      if (tx) tx.style.opacity = textO.toFixed(3);
+      el.style.transform = `translate(calc(-50% + ${(-TEXT_DRIFT * (1 - textO)).toFixed(1)}px), -50%)`;
+    };
+
+    set(0, which === 0 ? textOut : 0, which === 0 ? bgOut : 0);
+    set(1, which === 0 ? textIn : textOut, which === 0 ? bgIn : bgOut);
+    set(2, which === 1 ? textIn : 0, which === 1 ? bgIn : 0);
+  }, []);
+
+  /* ---------------- pinned sequence ---------------- */
   useEffect(() => {
     if (staticPath) return;
     const section = sectionRef.current;
@@ -476,7 +473,7 @@ export default function CrystalPhases({
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      applyRef.current(0);
+      applyCopy(0);
 
       const st = ScrollTrigger.create({
         trigger: section,
@@ -487,7 +484,10 @@ export default function CrystalPhases({
         scrub: 1,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        onUpdate: (self) => applyRef.current(self.progress),
+        onUpdate: (self) => {
+          progressRef.current = self.progress;
+          applyCopy(self.progress);
+        },
       });
 
       let t: number | undefined;
@@ -508,7 +508,7 @@ export default function CrystalPhases({
       cancelled = true;
       cleanup?.();
     };
-  }, [staticPath, transitions.length]);
+  }, [staticPath, transitions, applyCopy]);
 
   /* ---------------- static stack (mobile / reduced motion) ---------------- */
   if (staticPath) {
@@ -516,17 +516,13 @@ export default function CrystalPhases({
       <section aria-label="CareRadar phases" className="relative">
         {phases.map((phase, i) => (
           <div key={phase.id} className="relative overflow-hidden bg-[#041826]">
-            <svg
-              ref={i === 0 ? svgRef : undefined}
-              className="crystal-field absolute inset-0 h-full w-full"
-              viewBox={`0 0 ${sheet.width} ${sheet.height}`}
-              preserveAspectRatio="xMidYMid slice"
+            <canvas
+              ref={(el) => {
+                staticCanvases.current[i] = el;
+              }}
+              className="absolute inset-0 h-full w-full"
               aria-hidden="true"
-            >
-              <CrystalDefs uid={`s${i}`} />
-              <CrystalLight uid={`s${i}`} w={sheet.width} h={sheet.height} />
-              <CrystalFacets sheet={sheet} material={crystal} />
-            </svg>
+            />
             <div className="relative flex min-h-[78svh] items-center px-6 py-24">
               <div
                 aria-hidden="true"
@@ -550,29 +546,13 @@ export default function CrystalPhases({
     <section
       ref={sectionRef}
       aria-label="CareRadar phases"
-      className="relative h-screen w-full overflow-hidden bg-white"
+      className="relative h-screen w-full overflow-hidden bg-[#050B13]"
     >
-      <svg
-        ref={svgRef}
-        className="crystal-field absolute inset-0 h-full w-full"
-        viewBox={`0 0 ${sheet.width} ${sheet.height}`}
-        preserveAspectRatio="none"
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full"
         aria-hidden="true"
-      >
-        <CrystalDefs uid="p" />
-        <CrystalLight uid="p" w={sheet.width} h={sheet.height} />
-        <CrystalFacets sheet={sheet} material={crystal} />
-        {/* Lighting breathes; geometry never does. */}
-        <g ref={sheenRef} id="crystal-sheen">
-          <ellipse
-            cx={sheet.width * 0.34}
-            cy={sheet.height * 0.3}
-            rx={sheet.width * 0.52}
-            ry={sheet.height * 0.6}
-            fill="url(#sheen-p)"
-          />
-        </g>
-      </svg>
+      />
 
       <div className="pointer-events-none absolute inset-0">
         {phases.map((phase, i) => (
