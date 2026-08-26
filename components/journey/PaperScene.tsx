@@ -6,9 +6,13 @@ import {
   useId,
   useMemo,
   useRef,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useJourneyVariant } from "./use-journey-variant";
+
+/* Re-exported so the four components that already imported the hook from here
+   keep working untouched. */
+export { useJourneyVariant, type JourneyVariant } from "./use-journey-variant";
 import {
   buildSheet,
   clamp01,
@@ -25,53 +29,6 @@ import {
 /* ------------------------------------------------------------------ *
  * Viewport variant
  * ------------------------------------------------------------------ */
-
-const emptySubscribe = () => () => {};
-
-function useMediaQuery(query: string, serverValue: boolean): boolean {
-  const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      const mq = window.matchMedia(query);
-      mq.addEventListener("change", onStoreChange);
-      return () => mq.removeEventListener("change", onStoreChange);
-    },
-    [query],
-  );
-  return useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(query).matches,
-    () => serverValue,
-  );
-}
-
-export type JourneyVariant = {
-  isClient: boolean;
-  isMobile: boolean;
-  reducedMotion: boolean;
-  /** Settle immediately, no crumple: mobile or reduced motion. */
-  simplified: boolean;
-};
-
-/**
- * Scenes and PaperScene both call this; they resolve identically, so no
- * context plumbing is needed.
- */
-export function useJourneyVariant(): JourneyVariant {
-  const isClient = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
-  // Server-renders as mobile + reduced: the settled, static, legible state.
-  const isMobile = useMediaQuery("(max-width: 767px)", true);
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)", true);
-  return {
-    isClient,
-    isMobile,
-    reducedMotion,
-    simplified: !isClient || isMobile || reducedMotion,
-  };
-}
 
 /* ------------------------------------------------------------------ *
  * Unfold choreography (CSS side)
